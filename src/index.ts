@@ -1,1 +1,2 @@
-console.log('hello remult-forms')
+// console.log('hello remult-forms')
+export * from './Form'
