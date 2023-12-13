@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ChangeEvent, ReactNode, useEffect, useReducer, useState } from 'react'
+import { ChangeEvent, ReactNode, useReducer } from 'react'
 import { FieldMetadata, FieldsMetadata, remult } from 'remult'
 import { Button, Checkbox, FormControlLabel, TextField } from '@mui/material'
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
@@ -12,12 +12,13 @@ type ClassType<T> = {
 	new (...args: any[]): T // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
-const reducer = <T,>(state: T, action) => {
+const reducer = <T,>(state: T, action: any) => {
 	return {
 		...state,
 		...action,
 	}
 }
+
 export const RemultForm = <T,>({
 	entity,
 	item,
@@ -122,7 +123,7 @@ export const RemultForm = <T,>({
 		})
 	}
 
-	console.log('state', state)
+	// console.log('state', state)
 	return (
 		<div style={{ display: 'flex', flexDirection: 'column' }}>
 			{renderForm(repo.fields)}

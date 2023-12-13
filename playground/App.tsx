@@ -9,10 +9,10 @@ import { remult } from 'remult'
 function App() {
 	// const [count, setCount] = useState(0)
 	useEffect(() => {
-		remult
-			.repo(User)
-			.find()
-			.then((res) => console.log('users', res))
+		// remult
+		// 	.repo(User)
+		// 	.find()
+		// 	.then((res) => console.log('users', res))
 		// const user = remult.repo(User).create()
 		// user.email = 'why like this'
 		// console.log('app user', user)
