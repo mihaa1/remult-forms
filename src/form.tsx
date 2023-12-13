@@ -48,6 +48,12 @@ export const RemultForm = <T,>({
 		})
 	}
 
+	const onChangeCheckbox = (e: ChangeEvent<HTMLInputElement>, key: string) => {
+		dispatch({
+			[key]: e.target.checked,
+		})
+	}
+
 	const onSubmit = async () => {
 		if (isEdit) {
 			return await onEdit()
@@ -90,7 +96,7 @@ export const RemultForm = <T,>({
 						// }
 						// checked={!!internalItem[field.key as keyof typeof internalItem]}
 						checked={!!state[field.key as keyof typeof state]}
-						// onChange={(e) => saveUserAttr(e.target.checked, attr.id)}
+						onChange={(e) => onChangeCheckbox(e, field.key)}
 					/>
 				}
 				label={field.caption || field.key}
