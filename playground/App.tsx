@@ -16,9 +16,9 @@ function App() {
 	}, [])
 
 	return (
-		<>
+		<div style={{ width: '80%' }}>
 			<RemultForm entity={User} />
-		</>
+		</div>
 	)
 }
 
