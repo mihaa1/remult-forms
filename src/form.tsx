@@ -54,6 +54,12 @@ export const RemultForm = <T,>({
 		})
 	}
 
+	const onChangeDate = (newDate: any, key: string) => {
+		dispatch({
+			[key]: new Date(newDate),
+		})
+	}
+
 	const onSubmit = async () => {
 		if (isEdit) {
 			return await onEdit()
@@ -61,13 +67,9 @@ export const RemultForm = <T,>({
 		return await onCreate()
 	}
 
-	const onEdit = async () => {
-		await remult.repo(entity).save(state)
-	}
+	const onEdit = async () => await remult.repo(entity).save(state)
 
-	const onCreate = async () => {
-		await remult.repo(entity).insert(state)
-	}
+	const onCreate = async () => await remult.repo(entity).insert(state)
 
 	const renderTextField = <T,>(field: FieldMetadata<any, T>) => {
 		return (
@@ -79,7 +81,7 @@ export const RemultForm = <T,>({
 				disabled={field.options.allowApiUpdate === false}
 				// required={field.options} TODO:
 				// value={internalItem[field.key as keyof typeof internalItem]}
-				value={state[field.key as keyof typeof state]}
+				value={state[field.key as keyof typeof state] || ''}
 				onChange={(e) => onChangeTextfield(e, field.key)}
 			/>
 		)
@@ -104,22 +106,23 @@ export const RemultForm = <T,>({
 		)
 	}
 
-	// @ts-ignore
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const renderDatePicker = <T,>(field: FieldMetadata<any, T>) => {
 		return (
 			<LocalizationProvider dateAdapter={AdapterDayjs} key={`${field.key}`}>
 				<DemoContainer components={['DatePicker']}>
-					<DatePicker label='Basic date picker' />
+					<DatePicker
+						label='Basic date picker'
+						onChange={(e) => onChangeDate(e, field.key)}
+					/>
 				</DemoContainer>
 			</LocalizationProvider>
 		)
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const renderForm = <T,>(fields: FieldsMetadata<T>) => {
 		return fields.toArray().map((f) => {
-			if (!f.inputType || f.inputType === 'number') {
+			console.log('f', f)
+			if (!f.inputType || f.inputType === 'text' || f.inputType === 'number') {
 				return renderTextField(f)
 			} else if (f.inputType === 'checkbox') {
 				return renderCheckbox(f)

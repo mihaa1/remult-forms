@@ -22,6 +22,7 @@ export class User {
 
 	@Fields.string({
 		// caption: 'This is Email',
+		// TODO: how to read required to show a required field
 		validate: [Validators.required, Validators.unique],
 		// allowNull: true,
 		// saving: (row) => (row.email = row.email.toLowerCase()),
@@ -35,21 +36,26 @@ export class User {
 	isActive = true
 
 	@Fields.number()
-	activeDays = 999
-
-	@Fields.date()
-	birthday?: Date
+	activeDays?: number
 
 	@Fields.integer()
 	height?: number
 
+	@Fields.dateOnly()
+	dateOnlyField?: Date
+
 	@Fields.createdAt()
 	createdAt?: Date
 
-	// Not working
+	// TODO: Not showing as date - inputType is not date as in dateOnly
+	@Fields.date()
+	birthday?: Date
+
+	// TODO: Not working
 	// @Fields.json()
 	// settings?: Person
 
-	@Fields.dateOnly()
-	dateOnlyField?: Date
+	// TODO: this gives inputType=text
+	@Fields.object()
+	attributes = {}
 }
