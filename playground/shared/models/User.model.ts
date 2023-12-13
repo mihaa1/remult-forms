@@ -7,14 +7,22 @@ import { Allow, Entity, Fields, Validators } from 'remult'
 
 @Entity<User>('users', {
 	allowApiCrud: Allow.everyone,
+	validation: (row) => {
+		console.log('validation(): row', row)
+	},
+	saving: (row, lc) => {
+		console.log('saving(): row', row)
+		console.log('saving(): lc', lc)
+		console.log('saving(): lc.isNew', lc.isNew)
+	},
 })
 export class User {
-	@Fields.uuid()
+	@Fields.cuid()
 	id = ''
 
 	@Fields.string({
-		caption: 'This is Email',
-		validate: [Validators.required],
+		// caption: 'This is Email',
+		validate: [Validators.required, Validators.unique],
 		// allowNull: true,
 		// saving: (row) => (row.email = row.email.toLowerCase()),
 	})
@@ -23,9 +31,7 @@ export class User {
 	@Fields.string()
 	email2?: string
 
-	@Fields.boolean({
-		defaultValue: () => true,
-	})
+	@Fields.boolean()
 	isActive = true
 
 	@Fields.number()

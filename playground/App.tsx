@@ -13,6 +13,15 @@ function App() {
 			.repo(User)
 			.find()
 			.then((res) => console.log('users', res))
+		// const user = remult.repo(User).create()
+		// user.email = 'why like this'
+		// console.log('app user', user)
+		// remult
+		// 	.repo(User)
+		// 	.save(user)
+		// 	.then((res) => {
+		// 		console.log('save res', res)
+		// 	})
 	}, [])
 
 	return (

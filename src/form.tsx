@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ReactNode } from 'react'
+import { ChangeEvent, ReactNode, useEffect, useReducer, useState } from 'react'
 import { FieldMetadata, FieldsMetadata, remult } from 'remult'
-import { Checkbox, FormControlLabel, TextField } from '@mui/material'
+import { Button, Checkbox, FormControlLabel, TextField } from '@mui/material'
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
@@ -12,23 +12,55 @@ type ClassType<T> = {
 	new (...args: any[]): T // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
+const reducer = <T,>(state: T, action) => {
+	return {
+		...state,
+		...action,
+	}
+}
 export const RemultForm = <T,>({
 	entity,
+	item,
 }: {
 	entity: ClassType<T>
+	item?: T
 }): ReactNode => {
-	// export const RemultForm = <T,>(repo: Repository<T>) => {
-	// console.log('entity', entity)
+	const isEdit = !!item
+	// const [internalItem, setInternalItem] = useState<T>(
+	// 	item ? { ...item } : remult.repo(entity).create()
+	// )
+	const [state, dispatch] = useReducer(
+		reducer,
+		item ? { ...item } : remult.repo(entity).create()
+	)
 	const repo = remult.repo(entity)
-	// console.log('repo', repo)
-	// console.log('repo.fields', repo.fields)
-	// console.log('repo.metadata', repo.metadata)
-	// console.log('repo.fields.toArray()', repo.fields.toArray())
-	// repo.metadata.columnsInfo.forEach((c) => {
-	// 	console.log('xxx c', c)
-	// 	console.log('xxx c.valueType()', c.valueType())
-	// })
-	console.log('remult.repo(entity)', remult.repo(entity))
+
+	const onChangeTextfield = (
+		e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+		key: string
+	) => {
+		// setInternalItem({ ...internalItem, [key]: e.target.value })
+		// item.email = e.target.value
+		// setItem(item)
+		dispatch({
+			[key]: e.target.value,
+		})
+	}
+
+	const onSubmit = async () => {
+		if (isEdit) {
+			return await onEdit()
+		}
+		return await onCreate()
+	}
+
+	const onEdit = async () => {
+		await remult.repo(entity).save(state)
+	}
+
+	const onCreate = async () => {
+		await remult.repo(entity).insert(state)
+	}
 
 	const renderTextField = <T,>(field: FieldMetadata<any, T>) => {
 		return (
@@ -38,10 +70,10 @@ export const RemultForm = <T,>({
 				type={field.inputType || 'text'}
 				label={field.caption || field.key}
 				disabled={field.options.allowApiUpdate === false}
-				defaultValue={
-					field.options.defaultValue && field.options.defaultValue(entity)
-				}
-				// value={}
+				// required={field.options} TODO:
+				// value={internalItem[field.key as keyof typeof internalItem]}
+				value={state[field.key as keyof typeof state]}
+				onChange={(e) => onChangeTextfield(e, field.key)}
 			/>
 		)
 	}
@@ -52,9 +84,11 @@ export const RemultForm = <T,>({
 				key={`${field.key}`}
 				control={
 					<Checkbox
-						checked={
-							field.options.defaultValue && field.options.defaultValue(entity)
-						}
+						// checked={
+						// 	field.options.defaultValue && field.options.defaultValue(entity)
+						// }
+						// checked={!!internalItem[field.key as keyof typeof internalItem]}
+						checked={!!state[field.key as keyof typeof state]}
 						// onChange={(e) => saveUserAttr(e.target.checked, attr.id)}
 					/>
 				}
@@ -67,7 +101,7 @@ export const RemultForm = <T,>({
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const renderDatePicker = <T,>(field: FieldMetadata<any, T>) => {
 		return (
-			<LocalizationProvider dateAdapter={AdapterDayjs}>
+			<LocalizationProvider dateAdapter={AdapterDayjs} key={`${field.key}`}>
 				<DemoContainer components={['DatePicker']}>
 					<DatePicker label='Basic date picker' />
 				</DemoContainer>
@@ -77,13 +111,7 @@ export const RemultForm = <T,>({
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const renderForm = <T,>(fields: FieldsMetadata<T>) => {
-		console.log('=========================')
 		return fields.toArray().map((f) => {
-			console.log('f.key', f.key)
-			console.log('f', f)
-			console.log('f.valueType()', f.valueType())
-			console.log('f.inputType', f.inputType)
-			console.log('f.valueConverter.inputType', f.valueConverter.inputType)
 			if (!f.inputType || f.inputType === 'number') {
 				return renderTextField(f)
 			} else if (f.inputType === 'checkbox') {
@@ -94,9 +122,13 @@ export const RemultForm = <T,>({
 		})
 	}
 
+	console.log('state', state)
 	return (
 		<div style={{ display: 'flex', flexDirection: 'column' }}>
 			{renderForm(repo.fields)}
+			<Button sx={{ m: 1 }} variant='contained' onClick={onSubmit}>
+				Create
+			</Button>
 		</div>
 	)
 }
