@@ -4,3 +4,9 @@ tsconfig.json
 .prettierrc
 index.html
 index.ts
+db
+dist
+.eslintrc.cjs
+tsconfig.node.json
+tsconfig.server.json
+vite.config.ts
