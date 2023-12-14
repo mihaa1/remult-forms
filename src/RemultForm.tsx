@@ -70,7 +70,6 @@ export const RemultForm = <T,>({
 
 	const renderForm = <T,>(fields: FieldsMetadata<T>) => {
 		return fields.toArray().map((f) => {
-			console.log('f', f)
 			if (!f.inputType || f.inputType === 'text' || f.inputType === 'number') {
 				return (
 					<RemultTextField
