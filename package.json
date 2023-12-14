@@ -13,6 +13,10 @@
 		"preview": "vite preview",
 		"publishme": "yarn publish --patch && git push && git push --tags"
 	},
+	"repository": {
+		"type": "git",
+		"url": "git@github.com:mihaa1/remult-forms.git"
+	},
 	"dependencies": {},
 	"devDependencies": {
 		"@emotion/react": "^11.11.1",
