@@ -5,6 +5,7 @@ import { ChangeEvent, ReactNode, useReducer } from 'react'
 import { FieldMetadata, FieldsMetadata, remult } from 'remult'
 import { Button, Checkbox, FormControlLabel, TextField } from '@mui/material'
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
+console.log('aaa')
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
