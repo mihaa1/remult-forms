@@ -6,10 +6,7 @@ import RemultTextField from './components/Textfield'
 import { Button, Typography } from '@mui/material'
 import RemultCheckbox from './components/Checkbox'
 import RemultDatepicker from './components/Datepicker'
-
-type ClassType<T> = {
-	new (...args: any[]): T // eslint-disable-line @typescript-eslint/no-explicit-any
-}
+import type { ClassType } from './types'
 
 const reducer = <T,>(state: T, action: any) => {
 	return {
