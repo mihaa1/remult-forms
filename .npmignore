@@ -10,3 +10,4 @@ dist
 tsconfig.node.json
 tsconfig.server.json
 vite.config.ts
+src
