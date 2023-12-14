@@ -69,10 +69,23 @@ export const RemultForm = <T,>({
 	const onCreate = async () => await remult.repo(entity).insert(state)
 
 	const renderForm = <T,>(fields: FieldsMetadata<T>) => {
+		console.log('remult.repo(entity)', remult.repo(entity))
+		console.log(
+			'remult.repo(entity).relations',
+			remult.repo(entity).relations(item!)
+		)
 		return fields.toArray().map((f) => {
+			console.log('============')
+			console.log('f', f.key)
+			console.log('f', f)
+			console.log('f.valueType()', f.valueType && f.valueType())
+			console.log('f.inputType', f.inputType)
+			console.log('============')
+
 			if (!f.inputType || f.inputType === 'text' || f.inputType === 'number') {
 				return (
 					<RemultTextField
+						key={`${f.key}`}
 						val={state[f.key as keyof typeof state]}
 						field={f}
 						onChange={onChangeTextfield}
@@ -81,13 +94,20 @@ export const RemultForm = <T,>({
 			} else if (f.inputType === 'checkbox') {
 				return (
 					<RemultCheckbox
+						key={`${f.key}`}
 						val={!!state[f.key as keyof typeof state]}
 						field={f}
 						onChange={onChangeCheckbox}
 					/>
 				)
 			} else if (f.inputType === 'date') {
-				return <RemultDatepicker field={f} onChange={onChangeDate} />
+				return (
+					<RemultDatepicker
+						key={`${f.key}`}
+						field={f}
+						onChange={onChangeDate}
+					/>
+				)
 			}
 		})
 	}

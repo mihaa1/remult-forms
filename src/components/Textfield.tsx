@@ -15,7 +15,6 @@ const RemultTextField = <T,>({ val, field, onChange }: RemultTextFieldP<T>) => {
 	return (
 		<TextField
 			sx={{ m: 1 }}
-			key={`${field.key}`}
 			type={field.inputType || 'text'}
 			label={field.caption || field.key}
 			disabled={field.options.allowApiUpdate === false}

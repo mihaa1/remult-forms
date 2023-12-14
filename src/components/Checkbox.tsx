@@ -10,7 +10,6 @@ interface RemultCheckboxP<T> {
 const RemultCheckbox = <T,>({ val, field, onChange }: RemultCheckboxP<T>) => {
 	return (
 		<FormControlLabel
-			key={`${field.key}`}
 			control={
 				<Checkbox
 					// checked={

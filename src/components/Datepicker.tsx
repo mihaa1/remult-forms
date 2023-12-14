@@ -10,7 +10,7 @@ interface RemultDatepickerP<T> {
 }
 const RemultDatepicker = <T,>({ field, onChange }: RemultDatepickerP<T>) => {
 	return (
-		<LocalizationProvider dateAdapter={AdapterDayjs} key={`${field.key}`}>
+		<LocalizationProvider dateAdapter={AdapterDayjs}>
 			<DemoContainer components={['DatePicker']}>
 				<DatePicker
 					label='Date picker'

@@ -60,6 +60,8 @@ export class User {
 	@Fields.object()
 	attributes = {}
 
+	// TODO: how to know that this is a relation?
+	// show a select instead of 2 text fields
 	@Fields.string()
 	organizationId = ''
 	@Relations.toOne<User, Organization>(() => Organization, {
