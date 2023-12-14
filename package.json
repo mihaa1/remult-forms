@@ -4,7 +4,7 @@
 	"type": "module",
 	"main": "dist/index.js",
 	"scripts": {
-		"dev:vite": "vite",
+		"dev:playground": "vite",
 		"dev": "tsx watch index.ts",
 		"dev:node": "tsx watch playground/server",
 		"build:vite": "tsc && vite build",

@@ -1,4 +1,5 @@
-import { Allow, Entity, Fields, Validators } from 'remult'
+import { Allow, Entity, Fields, Relations, Validators } from 'remult'
+import { Organization } from './Organization.model'
 
 // type Person = {
 // 	name: string
@@ -58,4 +59,11 @@ export class User {
 	// TODO: this gives inputType=text
 	@Fields.object()
 	attributes = {}
+
+	@Fields.string()
+	organizationId = ''
+	@Relations.toOne<User, Organization>(() => Organization, {
+		field: 'organizationId',
+	})
+	organization?: Organization
 }
