@@ -2,9 +2,9 @@ import { useEffect } from 'react'
 // import reactLogo from './assets/react.svg'
 // import viteLogo from '/vite.svg'
 import './App.css'
-import { RemultForm } from '../src/index'
+import { RemultForm } from '../index'
 import { User } from './shared/models/User.model'
-import { remult } from 'remult'
+// import { remult } from 'remult'
 
 function App() {
 	// const [count, setCount] = useState(0)

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+console.log('hello forms xxxxxxxxxx')
 import { ChangeEvent, ReactNode, useReducer } from 'react'
 import { FieldMetadata, FieldsMetadata, remult } from 'remult'
 import { Button, Checkbox, FormControlLabel, TextField } from '@mui/material'
