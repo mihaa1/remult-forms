@@ -19,10 +19,18 @@ const reducer = <T,>(state: T, action: any) => {
 }
 
 interface RemultFormP<T> {
+	/** Model to generate form for */
 	entity: ClassType<T>
+	/** Existing model instance if edit case. Empty for create */
 	item?: T
+	/** Show item id */
 	showId?: boolean
+	/** Custom form title */
 	title?: string
+	/** Trigger on form submit. This will pass the created/edited item and will NOT perform the action. */
+	onSubmit?: (item: T | undefined) => void
+	/** Trigger on action completed. When create/edit action is done this will be fired */
+	onDone?: (item: T[] | undefined) => void
 }
 
 export const RemultForm = <T,>({
@@ -30,6 +38,8 @@ export const RemultForm = <T,>({
 	item,
 	showId,
 	title,
+	onSubmit,
+	onDone,
 }: RemultFormP<T>): ReactNode => {
 	const isEdit = !!item
 	// const [internalItem, setInternalItem] = useState<T>(
@@ -63,16 +73,28 @@ export const RemultForm = <T,>({
 			[key]: new Date(newDate as any),
 		})
 
-	const onSubmit = async () => {
+	const onSubmitInternal = async () => {
+		console.log('onSubmitInternal(): state', state)
+		if (onSubmit) {
+			return onSubmit(state)
+		}
 		if (isEdit) {
 			return await onEdit()
 		}
 		return await onCreate()
 	}
 
-	const onEdit = async () => await remult.repo(entity).save(state)
+	const onEdit = async () => {
+		const res = await remult.repo(entity).save(state)
+		console.log('onEdit(): res', res)
+		onDone && onDone(res)
+	}
 
-	const onCreate = async () => await remult.repo(entity).insert(state)
+	const onCreate = async () => {
+		const res = await remult.repo(entity).insert(state)
+		console.log('onCreate(): res', res)
+		onDone && onDone(res)
+	}
 
 	const renderForm = <T,>(fields: FieldsMetadata<T>) => {
 		console.log('remult.repo(entity)', remult.repo(entity))
@@ -129,7 +151,7 @@ export const RemultForm = <T,>({
 				{title || `${isEdit ? 'Edit ' : 'Create'} ${repo.metadata.caption}`}
 			</Typography>
 			{renderForm(repo.fields)}
-			<Button sx={{ m: 1 }} variant='contained' onClick={onSubmit}>
+			<Button sx={{ m: 1 }} variant='contained' onClick={onSubmitInternal}>
 				Create
 			</Button>
 		</div>

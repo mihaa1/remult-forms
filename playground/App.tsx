@@ -1,10 +1,7 @@
 import { useEffect } from 'react'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from '/vite.svg'
 import './App.css'
 import { RemultForm } from '../index'
 import { User } from './shared/models/User.model'
-// import { remult } from 'remult'
 
 function App() {
 	// const [count, setCount] = useState(0)
@@ -26,7 +23,10 @@ function App() {
 
 	return (
 		<div style={{ width: '80%' }}>
-			<RemultForm entity={User} />
+			<RemultForm
+				entity={User}
+				onSubmit={(item) => console.log('item', item)}
+			/>
 		</div>
 	)
 }
