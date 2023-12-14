@@ -5,7 +5,6 @@ tsconfig.json
 index.html
 index.ts
 db
-dist
 .eslintrc.cjs
 tsconfig.node.json
 tsconfig.server.json
