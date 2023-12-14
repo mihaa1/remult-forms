@@ -11,6 +11,7 @@ import { Organization } from './Organization.model'
 	validation: (row) => {
 		console.log('validation(): row', row)
 	},
+	caption: 'User',
 	saving: (row, lc) => {
 		console.log('saving(): row', row)
 		console.log('saving(): lc', lc)

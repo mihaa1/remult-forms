@@ -3,7 +3,7 @@
 import { ChangeEvent, ReactNode, useReducer } from 'react'
 import { FieldsMetadata, remult } from 'remult'
 import RemultTextField from './components/Textfield'
-import { Button } from '@mui/material'
+import { Button, Typography } from '@mui/material'
 import RemultCheckbox from './components/Checkbox'
 import RemultDatepicker from './components/Datepicker'
 
@@ -18,13 +18,19 @@ const reducer = <T,>(state: T, action: any) => {
 	}
 }
 
+interface RemultFormP<T> {
+	entity: ClassType<T>
+	item?: T
+	showId?: boolean
+	title?: string
+}
+
 export const RemultForm = <T,>({
 	entity,
 	item,
-}: {
-	entity: ClassType<T>
-	item?: T
-}): ReactNode => {
+	showId,
+	title,
+}: RemultFormP<T>): ReactNode => {
 	const isEdit = !!item
 	// const [internalItem, setInternalItem] = useState<T>(
 	// 	item ? { ...item } : remult.repo(entity).create()
@@ -81,6 +87,9 @@ export const RemultForm = <T,>({
 			console.log('f.valueType()', f.valueType && f.valueType())
 			console.log('f.inputType', f.inputType)
 			console.log('============')
+			if (f.key === 'id' && (!showId || !isEdit)) {
+				return
+			}
 
 			if (!f.inputType || f.inputType === 'text' || f.inputType === 'number') {
 				return (
@@ -116,6 +125,9 @@ export const RemultForm = <T,>({
 
 	return (
 		<div style={{ display: 'flex', flexDirection: 'column' }}>
+			<Typography>
+				{title || `${isEdit ? 'Edit ' : 'Create'} ${repo.metadata.caption}`}
+			</Typography>
 			{renderForm(repo.fields)}
 			<Button sx={{ m: 1 }} variant='contained' onClick={onSubmit}>
 				Create
