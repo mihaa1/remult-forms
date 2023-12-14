@@ -1,12 +1,11 @@
 {
 	"name": "remult-forms",
-	"private": true,
 	"version": "0.0.0",
 	"type": "module",
 	"main": "dist/index.js",
 	"scripts": {
 		"dev:vite": "vite",
-		"dev": "tsx watch src/index.ts",
+		"dev": "tsx watch index.ts",
 		"dev:node": "tsx watch playground/server",
 		"build:vite": "tsc && vite build",
 		"build": "tsc",
