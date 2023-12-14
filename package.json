@@ -11,7 +11,7 @@
 		"build": "tsc",
 		"lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
 		"preview": "vite preview",
-		"publish": "yarn publish --patch && git push && git push --tags"
+		"publishme": "yarn publish --patch && git push && git push --tags"
 	},
 	"dependencies": {},
 	"devDependencies": {
