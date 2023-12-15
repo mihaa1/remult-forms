@@ -1,10 +1,10 @@
 import { Allow, Entity, Fields, Relations, Validators } from 'remult'
 import { Organization } from './Organization.model'
 
-// type Person = {
-// 	name: string
-// 	age: number
-// }
+type Person = {
+	name: string
+	age: number
+}
 
 @Entity<User>('users', {
 	allowApiCrud: Allow.everyone,
@@ -31,7 +31,9 @@ export class User {
 	})
 	email = ''
 
-	@Fields.string()
+	@Fields.string({
+		displayValue: (v) => v.toLowerCase(),
+	})
 	email2?: string
 
 	@Fields.boolean()
@@ -49,13 +51,16 @@ export class User {
 	@Fields.createdAt()
 	createdAt?: Date
 
+	@Fields.updatedAt()
+	updatedAt?: Date
+
 	// TODO: Not showing as date - inputType is not date as in dateOnly
 	@Fields.date()
 	birthday?: Date
 
-	// TODO: Not working
-	// @Fields.json()
-	// settings?: Person
+	// TODO: Throws error
+	@Fields.json()
+	settings?: Person
 
 	// TODO: this gives inputType=text
 	@Fields.object()

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ChangeEvent, ReactNode, useReducer } from 'react'
-import { FieldsMetadata, remult } from 'remult'
+import { FieldMetadata, FieldsMetadata, remult } from 'remult'
 import RemultTextField from './components/Textfield'
 import { Button, Typography } from '@mui/material'
 import RemultCheckbox from './components/Checkbox'
@@ -22,6 +22,10 @@ interface RemultFormP<T> {
 	item?: T
 	/** Show item id */
 	showId?: boolean
+	/** Show createdAt */
+	showCreatedAt?: boolean
+	/** Show updatedAt */
+	showUpdatedAt?: boolean
 	/** Custom form title */
 	title?: string
 	/** Trigger on form submit. This will pass the created/edited item and will NOT perform the action. */
@@ -34,6 +38,8 @@ export const RemultForm = <T,>({
 	entity,
 	item,
 	showId,
+	showCreatedAt,
+	showUpdatedAt,
 	title,
 	onSubmit,
 	onDone,
@@ -93,6 +99,17 @@ export const RemultForm = <T,>({
 		onDone && onDone(res)
 	}
 
+	const isHideField = (f: FieldMetadata<T>) => {
+		if (f.key === 'id' || f.key === 'createdAt' || f.key === 'updatedAt') {
+			return (
+				!isEdit ||
+				(!showId && f.key === 'id') ||
+				(!showCreatedAt && f.key === 'createdAt') ||
+				(!showUpdatedAt && f.key === 'updatedAt')
+			)
+		}
+	}
+
 	const renderForm = <T,>(fields: FieldsMetadata<T>) => {
 		console.log('remult.repo(entity)', remult.repo(entity))
 		console.log(
@@ -105,8 +122,14 @@ export const RemultForm = <T,>({
 			console.log('f', f)
 			console.log('f.valueType()', f.valueType && f.valueType())
 			console.log('f.inputType', f.inputType)
+			console.log('f.options', f.options)
 			console.log('============')
-			if (f.key === 'id' && (!showId || !isEdit)) {
+			if (f.key === 'email') {
+				console.log('f.options.validate', f.options.validate)
+				console.log('f.options.validate[0]', f.options.validate[0])
+				console.log('f.options.validate[0]()', f.options.validate[0](entity, f))
+			}
+			if (isHideField(f)) {
 				return
 			}
 
