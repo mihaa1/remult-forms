@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ChangeEvent, ReactNode, useReducer } from 'react'
-import { FieldMetadata, FieldsMetadata, remult } from 'remult'
+import { ChangeEvent, FormEvent, ReactNode, useReducer } from 'react'
+import { FieldMetadata, FieldsMetadata, RelationOptions, remult } from 'remult'
 import RemultTextField from './components/Textfield'
-import { Button, Typography } from '@mui/material'
+import { Box, Button, Typography } from '@mui/material'
 import RemultCheckbox from './components/Checkbox'
 import RemultDatepicker from './components/Datepicker'
 import type { ClassType } from './types'
+import { getRelationInfo } from 'remult/internals'
 
 const reducer = <T,>(state: T, action: any) => {
 	return {
@@ -76,7 +77,8 @@ export const RemultForm = <T,>({
 			[key]: new Date(newDate as any),
 		})
 
-	const onSubmitInternal = async () => {
+	const onSubmitInternal = async (e: FormEvent<HTMLFormElement>) => {
+		console.log('e', e.preventDefault())
 		console.log('onSubmitInternal(): state', state)
 		if (onSubmit) {
 			return onSubmit(state)
@@ -88,18 +90,18 @@ export const RemultForm = <T,>({
 	}
 
 	const onEdit = async () => {
-		const res = await remult.repo(entity).save(state)
+		const res = await repo.save(state)
 		console.log('onEdit(): res', res)
 		onDone && onDone(res)
 	}
 
 	const onCreate = async () => {
-		const res = await remult.repo(entity).insert(state)
+		const res = await repo.insert(state)
 		console.log('onCreate(): res', res)
 		onDone && onDone(res)
 	}
 
-	const isHideField = (f: FieldMetadata<T>) => {
+	const isHideField = (f: FieldMetadata<T>, fields: FieldMetadata<T>[]) => {
 		if (f.key === 'id' || f.key === 'createdAt' || f.key === 'updatedAt') {
 			return (
 				!isEdit ||
@@ -108,36 +110,50 @@ export const RemultForm = <T,>({
 				(!showUpdatedAt && f.key === 'updatedAt')
 			)
 		}
+		const relationInfo = getRelationInfo(f.options)
+		if (relationInfo) {
+			return true
+		} else {
+			for (const otherField of fields) {
+				// Check related field of relation - when defined using options.field
+				// TODO: support fields - that use as relation 2 columns
+				const relationInfo = getRelationInfo(otherField.options)
+				if (
+					relationInfo &&
+					(
+						otherField.options as RelationOptions<
+							T,
+							typeof relationInfo,
+							string
+						>
+					).field === f.key
+				) {
+					return true
+				}
+			}
+		}
 	}
 
 	const renderForm = <T,>(fields: FieldsMetadata<T>) => {
-		console.log('remult.repo(entity)', remult.repo(entity))
-		console.log(
-			'remult.repo(entity).relations',
-			remult.repo(entity).relations(item!)
-		)
 		return fields.toArray().map((f) => {
-			console.log('============')
-			console.log('f', f.key)
-			console.log('f', f)
-			console.log('f.valueType()', f.valueType && f.valueType())
-			console.log('f.inputType', f.inputType)
-			console.log('f.options', f.options)
-			console.log('============')
-			if (f.key === 'email') {
-				console.log('f.options.validate', f.options.validate)
-				console.log('f.options.validate[0]', f.options.validate[0])
-				console.log('f.options.validate[0]()', f.options.validate[0](entity, f))
-			}
-			if (isHideField(f)) {
+			if (isHideField(f, fields.toArray())) {
 				return
 			}
 
+			console.log('============')
+			console.log('f', f)
 			if (!f.inputType || f.inputType === 'text' || f.inputType === 'number') {
+				// TODO: use fromInput, toInput
+				// if (f.valueType == String || f.valueType == Number) {
 				return (
 					<RemultTextField
 						key={`${f.key}`}
-						val={state[f.key as keyof typeof state]}
+						// val={state[f.key as keyof typeof state]}
+						val={
+							(f.valueConverter.toInput &&
+								f.valueConverter.toInput(state[f.key as keyof typeof state])) ||
+							state[f.key as keyof typeof state]
+						}
 						field={f}
 						onChange={onChangeTextfield}
 					/>
@@ -151,7 +167,7 @@ export const RemultForm = <T,>({
 						onChange={onChangeCheckbox}
 					/>
 				)
-			} else if (f.inputType === 'date') {
+			} else if (f.inputType === 'date' || f.inputType === 'datetime-local') {
 				return (
 					<RemultDatepicker
 						key={`${f.key}`}
@@ -163,17 +179,19 @@ export const RemultForm = <T,>({
 		})
 	}
 
-	// console.log('state', state)
-
 	return (
-		<div style={{ display: 'flex', flexDirection: 'column' }}>
+		<Box
+			component='form'
+			onSubmit={onSubmitInternal}
+			sx={{ display: 'flex', flexDirection: 'column' }}
+		>
 			<Typography>
 				{title || `${isEdit ? 'Edit ' : 'Create'} ${repo.metadata.caption}`}
 			</Typography>
 			{renderForm(repo.fields)}
-			<Button sx={{ m: 1 }} variant='contained' onClick={onSubmitInternal}>
+			<Button type='submit' sx={{ m: 1 }} variant='contained'>
 				Create
 			</Button>
-		</div>
+		</Box>
 	)
 }

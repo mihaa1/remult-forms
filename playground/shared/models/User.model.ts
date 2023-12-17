@@ -28,11 +28,14 @@ export class User {
 		validate: [Validators.required, Validators.unique],
 		// allowNull: true,
 		// saving: (row) => (row.email = row.email.toLowerCase()),
+		// valueType: String,
+		// inputType: 'string',
+		required: true,
 	})
 	email = ''
 
-	@Fields.string({
-		displayValue: (v) => v.toLowerCase(),
+	@Fields.string<User>({
+		// displayValue: (v, val) => val.toLowerCase() || '',
 	})
 	email2?: string
 
@@ -54,17 +57,30 @@ export class User {
 	@Fields.updatedAt()
 	updatedAt?: Date
 
-	// TODO: Not showing as date - inputType is not date as in dateOnly
-	@Fields.date()
+	// @Fields.date({ valueType: Date })
+	@Fields.date({
+		inputType: 'datetime-local',
+	})
 	birthday?: Date
 
-	// TODO: Throws error
 	@Fields.json()
 	settings?: Person
 
-	// TODO: this gives inputType=text
 	@Fields.object()
 	attributes = {}
+
+	// User should add inputType
+	@Fields.object<string[]>({
+		// valueConverter: {
+		// 	toInput: (val) => val?.join(', '),
+		// 	fromInput: (val) =>
+		// 		val
+		// 			?.split(',')
+		// 			.map((x) => x.trim())
+		// 			.filter((x) => x),
+		// },
+	})
+	tags: string[] = []
 
 	// TODO: how to know that this is a relation?
 	// show a select instead of 2 text fields

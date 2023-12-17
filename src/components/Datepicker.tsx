@@ -13,7 +13,7 @@ const RemultDatepicker = <T,>({ field, onChange }: RemultDatepickerP<T>) => {
 		<LocalizationProvider dateAdapter={AdapterDayjs}>
 			<DemoContainer components={['DatePicker']}>
 				<DatePicker
-					label='Date picker'
+					label={field.caption}
 					onChange={(e) => onChange(e, field.key)}
 				/>
 			</DemoContainer>

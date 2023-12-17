@@ -22,6 +22,7 @@ const RemultTextField = <T,>({ val, field, onChange }: RemultTextFieldP<T>) => {
 			// value={internalItem[field.key as keyof typeof internalItem]}
 			value={val || ''}
 			onChange={(e) => onChange(e, field.key)}
+			required={field.options.required}
 		/>
 	)
 }
