@@ -9,12 +9,11 @@ export const isDisabled = <T>(field: FieldMetadata<any, T>) => {
 	) {
 		return false
 	}
-	const res =
+	return (
 		field.options.allowApiUpdate === false ||
 		(typeof field.options.allowApiUpdate === 'function' &&
 			field.options.allowApiUpdate() === false) ||
 		(!remult.user && !!field.options.allowApiUpdate) ||
 		(remult.user && !remult.isAllowed(field.options.allowApiUpdate))
-	console.log(field.key, 'res', res)
-	return res
+	)
 }
