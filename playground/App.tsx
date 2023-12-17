@@ -31,7 +31,7 @@ function App() {
 		<div style={{ width: '80%' }}>
 			<BrowserRouter>
 				<Router>
-					<Route path='form' element={<FormRoute />} />
+					<Route path='form/:id?' element={<FormRoute />} />
 					<Route path='grid' element={<GridRoute />} />
 					<Route path='/' element={<Navigate to='/form' replace />} />
 					<Route path='*' element={<Navigate to='/' />} />

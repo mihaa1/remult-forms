@@ -1,6 +1,13 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ChangeEvent, FormEvent, ReactNode, useReducer } from 'react'
+import {
+	ChangeEvent,
+	FormEvent,
+	ReactNode,
+	useEffect,
+	useReducer,
+	useState,
+} from 'react'
 import { FieldMetadata, FieldsMetadata, RelationOptions, remult } from 'remult'
 import RemultTextField from './components/Textfield'
 import { Box, Button, Typography } from '@mui/material'
@@ -45,15 +52,22 @@ export const RemultForm = <T,>({
 	onSubmit,
 	onDone,
 }: RemultFormP<T>): ReactNode => {
-	const isEdit = !!item
+	const [isEdit, setIsEdit] = useState(false)
+	// const [item, setItem] = useState<T>();
 	// const [internalItem, setInternalItem] = useState<T>(
 	// 	item ? { ...item } : remult.repo(entity).create()
 	// )
 	const [state, dispatch] = useReducer(
 		reducer,
-		item ? { ...item } : remult.repo(entity).create()
+		// item ? { ...item } : remult.repo(entity).create()
+		{}
 	)
 	const repo = remult.repo(entity)
+
+	useEffect(() => {
+		dispatch(item)
+		setIsEdit(!!item)
+	}, [item])
 
 	const onChangeTextfield = (
 		e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -142,6 +156,7 @@ export const RemultForm = <T,>({
 
 			console.log('============')
 			console.log('f', f)
+			const rawVal = state[f.key as keyof typeof state]
 			if (!f.inputType || f.inputType === 'text' || f.inputType === 'number') {
 				// TODO: use fromInput, toInput
 				// if (f.valueType == String || f.valueType == Number) {
@@ -150,9 +165,10 @@ export const RemultForm = <T,>({
 						key={`${f.key}`}
 						// val={state[f.key as keyof typeof state]}
 						val={
-							(f.valueConverter.toInput &&
-								f.valueConverter.toInput(state[f.key as keyof typeof state])) ||
-							state[f.key as keyof typeof state]
+							(rawVal &&
+								f.valueConverter.toInput &&
+								f.valueConverter.toInput(rawVal)) ||
+							rawVal
 						}
 						field={f}
 						onChange={onChangeTextfield}
@@ -162,7 +178,7 @@ export const RemultForm = <T,>({
 				return (
 					<RemultCheckbox
 						key={`${f.key}`}
-						val={!!state[f.key as keyof typeof state]}
+						val={!!rawVal}
 						field={f}
 						onChange={onChangeCheckbox}
 					/>

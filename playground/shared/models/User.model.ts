@@ -71,14 +71,14 @@ export class User {
 
 	// User should add inputType
 	@Fields.object<string[]>({
-		// valueConverter: {
-		// 	toInput: (val) => val?.join(', '),
-		// 	fromInput: (val) =>
-		// 		val
-		// 			?.split(',')
-		// 			.map((x) => x.trim())
-		// 			.filter((x) => x),
-		// },
+		valueConverter: {
+			toInput: (val) => val.join && val?.join(', '),
+			fromInput: (val) =>
+				val
+					?.split(',')
+					.map((x) => x.trim())
+					.filter((x) => x),
+		},
 	})
 	tags: string[] = []
 
