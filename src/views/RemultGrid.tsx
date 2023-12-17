@@ -20,11 +20,11 @@ const VISIBLE_FIELDS = ['name', 'rating', 'country', 'dateCreated', 'isAdmin']
 
 export const RemultGrid = <T,>({
 	entity,
-	showId,
-	title,
-	onSubmit,
-	onDone,
-}: RemultTableP<T>) => {
+}: // showId,
+// title,
+// onSubmit,
+// onDone,
+RemultTableP<T>) => {
 	const repo = remult.repo(entity)
 	const [data, setData] = useState<T[]>()
 	const { data: exampleData } = useDemoData({
@@ -53,6 +53,7 @@ export const RemultGrid = <T,>({
 			{data && (
 				<DataGrid
 					columns={transformToFields()}
+					// @ts-expect-error TODO: fix this
 					rows={data}
 					slots={{ toolbar: GridToolbar }}
 				/>
