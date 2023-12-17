@@ -92,8 +92,7 @@ export const RemultForm = <T,>({
 		})
 
 	const onSubmitInternal = async (e: FormEvent<HTMLFormElement>) => {
-		console.log('e', e.preventDefault())
-		console.log('onSubmitInternal(): state', state)
+		e.preventDefault()
 		if (onSubmit) {
 			return onSubmit(state)
 		}
@@ -105,17 +104,18 @@ export const RemultForm = <T,>({
 
 	const onEdit = async () => {
 		const res = await repo.save(state)
-		console.log('onEdit(): res', res)
 		onDone && onDone(res)
 	}
 
 	const onCreate = async () => {
 		const res = await repo.insert(state)
-		console.log('onCreate(): res', res)
 		onDone && onDone(res)
 	}
 
 	const isHideField = (f: FieldMetadata<T>, fields: FieldMetadata<T>[]) => {
+		if (f.options.includeInApi === false) {
+			return true
+		}
 		if (f.key === 'id' || f.key === 'createdAt' || f.key === 'updatedAt') {
 			return (
 				!isEdit ||
@@ -154,8 +154,8 @@ export const RemultForm = <T,>({
 				return
 			}
 
-			console.log('============')
-			console.log('f', f)
+			// console.log('============')
+			// console.log('f', f)
 			const rawVal = state[f.key as keyof typeof state]
 			if (!f.inputType || f.inputType === 'text' || f.inputType === 'number') {
 				// TODO: use fromInput, toInput

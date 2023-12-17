@@ -1,6 +1,7 @@
 import { TextField } from '@mui/material'
 import { ChangeEvent } from 'react'
 import { FieldMetadata } from 'remult'
+import { isDisabled } from '../util'
 
 interface RemultTextFieldP<T> {
 	val: string | number
@@ -17,8 +18,7 @@ const RemultTextField = <T,>({ val, field, onChange }: RemultTextFieldP<T>) => {
 			sx={{ m: 1 }}
 			type={field.inputType || 'text'}
 			label={field.caption || field.key}
-			disabled={field.options.allowApiUpdate === false}
-			// required={field.options} TODO:
+			disabled={isDisabled(field)}
 			// value={internalItem[field.key as keyof typeof internalItem]}
 			value={val || ''}
 			onChange={(e) => onChange(e, field.key)}

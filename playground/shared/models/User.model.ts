@@ -39,13 +39,24 @@ export class User {
 	})
 	email2?: string
 
-	@Fields.boolean()
+	@Fields.boolean({
+		allowApiUpdate: false,
+	})
 	isActive = true
 
-	@Fields.number()
+	@Fields.boolean({
+		includeInApi: false,
+	})
+	isIncludedInAPI = false
+
+	@Fields.number({
+		allowApiUpdate: Allow.everyone,
+	})
 	activeDays?: number
 
-	@Fields.integer()
+	@Fields.integer({
+		allowApiUpdate: Allow.authenticated,
+	})
 	height?: number
 
 	@Fields.dateOnly()
@@ -60,6 +71,7 @@ export class User {
 	// @Fields.date({ valueType: Date })
 	@Fields.date({
 		inputType: 'datetime-local',
+		allowApiUpdate: Allow.everyone,
 	})
 	birthday?: Date
 
@@ -82,8 +94,6 @@ export class User {
 	})
 	tags: string[] = []
 
-	// TODO: how to know that this is a relation?
-	// show a select instead of 2 text fields
 	@Fields.string()
 	organizationId = ''
 	@Relations.toOne<User, Organization>(() => Organization, {
