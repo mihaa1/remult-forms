@@ -1,9 +1,9 @@
 import { Allow, Entity, Fields, Relations, Validators, remult } from 'remult'
 import { Role } from '../../server/consts'
 import { Organization } from './Organization.model'
-import { DAYS } from '../../../src/types'
 // import { AttributeXUser } from './Attribute-X-User'
 import { Location } from './Location.model'
+import { DAYS } from '../../types'
 
 @Entity<User>('users', {
 	allowApiCrud: Allow.authenticated,
@@ -157,7 +157,7 @@ export class User {
 	@Fields.string({
 		// only SUPER_ADMIN can directly update org id.
 		// in all other cases this field is updated through creating org
-		allowApiUpdate: [Role.SUPER_ADMIN],
+		// allowApiUpdate: [Role.SUPER_ADMIN],
 	})
 	organizationId = ''
 	@Relations.toOne<User, Organization>(() => Organization, {

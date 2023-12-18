@@ -6,7 +6,7 @@ import { isMetaActionBlocked } from '../util'
 interface RemultCheckboxP<T> {
 	val: boolean
 	field: FieldMetadata<any, T> // eslint-disable-line @typescript-eslint/no-explicit-any
-	onChange: (e: ChangeEvent<HTMLInputElement>, key: string) => void
+	onChange: (e: ChangeEvent<HTMLInputElement>) => void
 }
 const RemultCheckbox = <T,>({ val, field, onChange }: RemultCheckboxP<T>) => {
 	return (
@@ -19,7 +19,7 @@ const RemultCheckbox = <T,>({ val, field, onChange }: RemultCheckboxP<T>) => {
 					// checked={!!internalItem[field.key as keyof typeof internalItem]}
 					// checked={!!state[field.key as keyof typeof state]}
 					checked={val}
-					onChange={(e) => onChange(e, field.key)}
+					onChange={onChange}
 					disabled={isMetaActionBlocked(field.options.allowApiUpdate)}
 				/>
 			}

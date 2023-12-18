@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
 	ChangeEvent,
@@ -8,13 +7,17 @@ import {
 	useReducer,
 	useState,
 } from 'react'
-import { FieldsMetadata, remult } from 'remult'
-import RemultTextField from './components/Textfield'
+import { remult } from 'remult'
+import type { FieldMetadata, FieldsMetadata } from 'remult'
 import { Box, Button, Typography } from '@mui/material'
-import RemultCheckbox from './components/Checkbox'
-import RemultDatepicker from './components/Datepicker'
 import type { ClassType } from './types'
 import { isHideField } from './util'
+import { getRelationInfo } from 'remult/internals'
+import RemultTextField from './components/Textfield'
+import RemultCheckbox from './components/Checkbox'
+import RemultDatepicker from './components/Datepicker'
+import RemultAutocomplete from './components/Autocomplete'
+import type { AutocompleteOption } from './components/Autocomplete'
 
 const reducer = <T,>(state: T, action: any) => {
 	return {
@@ -40,6 +43,8 @@ interface RemultFormP<T> {
 	onSubmit?: (item: T | undefined) => void
 	/** Trigger on action completed. When create/edit action is done this will be fired */
 	onDone?: (item: T[] | undefined) => void
+	/** Show only these fields in form from the provided entity */
+	showOnly?: (keyof T)[]
 }
 
 export const RemultForm = <T,>({
@@ -51,23 +56,38 @@ export const RemultForm = <T,>({
 	title,
 	onSubmit,
 	onDone,
+	showOnly,
 }: RemultFormP<T>): ReactNode => {
 	const [isEdit, setIsEdit] = useState(false)
-	// const [item, setItem] = useState<T>();
-	// const [internalItem, setInternalItem] = useState<T>(
-	// 	item ? { ...item } : remult.repo(entity).create()
-	// )
+	const [relations, setRelations] = useState<
+		{ [k in keyof Partial<T>]: any[] } | Record<string, never>
+	>({})
+
 	const [state, dispatch] = useReducer(
 		reducer,
 		// item ? { ...item } : remult.repo(entity).create()
 		{}
 	)
+
 	const repo = remult.repo(entity)
 
 	useEffect(() => {
 		dispatch(item ? { ...item } : remult.repo(entity).create())
+		loadRelations(repo.fields)
 		setIsEdit(!!item)
 	}, [item, entity])
+
+	const loadRelations = async (fields: FieldsMetadata<T>) => {
+		const res: any = {}
+		for (const f of fields.toArray()) {
+			const relationInfo = getRelationInfo(f.options)
+			if (relationInfo) {
+				const relatedEntities = await remult.repo(relationInfo.toType()).find()
+				res[f.key] = relatedEntities
+			}
+		}
+		setRelations({ ...res })
+	}
 
 	const onChangeTextfield = (
 		e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -90,6 +110,13 @@ export const RemultForm = <T,>({
 		dispatch({
 			[key]: new Date(newDate as any),
 		})
+
+	const onSelectAutocomplete = <T,>(
+		selected: AutocompleteOption,
+		field: FieldMetadata<any, T>
+	) => {
+		dispatch({ [field.key]: { id: selected.id } })
+	}
 
 	const resetForm = () => dispatch(remult.repo(entity).create())
 
@@ -126,16 +153,40 @@ export const RemultForm = <T,>({
 					isEdit,
 					showId,
 					showCreatedAt,
-					showUpdatedAt
+					showUpdatedAt,
+					showOnly
 				)
 			) {
 				return
 			}
 
-			// console.log('============')
-			// console.log('f', f)
 			const rawVal = state[f.key as keyof typeof state]
-			if (!f.inputType || f.inputType === 'text' || f.inputType === 'number') {
+			const relationInfo = getRelationInfo(f.options)
+			// @ts-expect-error TODO: how to do keyof Partial<T>
+			// Thought of using PropertyKey as suggested here:
+			// https://stackoverflow.com/a/71531880/5248229
+			// but this created other issues
+			if (relationInfo && relations[f.key]) {
+				// @ts-expect-error TODO: fix
+				const mapped = relations[f.key].map((r: any) => ({
+					id: r.id,
+					label: r.name,
+				}))
+				return (
+					<RemultAutocomplete
+						key={`${f.key}`}
+						onSelect={(newVal) => onSelectAutocomplete(newVal, f)}
+						options={mapped}
+						label={f.key}
+						// @ts-expect-error TODO: fix this
+						selectedId={state[f.options.field]}
+					/>
+				)
+			} else if (
+				!f.inputType ||
+				f.inputType === 'text' ||
+				f.inputType === 'number'
+			) {
 				// if (f.valueType == String || f.valueType == Number) {
 				return (
 					<RemultTextField
@@ -148,7 +199,7 @@ export const RemultForm = <T,>({
 							rawVal
 						}
 						field={f}
-						onChange={onChangeTextfield}
+						onChange={(e) => onChangeTextfield(e, f.key)}
 					/>
 				)
 			} else if (f.inputType === 'checkbox') {
@@ -157,7 +208,7 @@ export const RemultForm = <T,>({
 						key={`${f.key}`}
 						val={!!rawVal}
 						field={f}
-						onChange={onChangeCheckbox}
+						onChange={(e) => onChangeCheckbox(e, f.key)}
 					/>
 				)
 			} else if (f.inputType === 'date' || f.inputType === 'datetime-local') {
@@ -165,12 +216,15 @@ export const RemultForm = <T,>({
 					<RemultDatepicker
 						key={`${f.key}`}
 						field={f}
-						onChange={onChangeDate}
+						onChange={(newDate) => onChangeDate(newDate, f.key)}
 					/>
 				)
 			}
 		})
 	}
+
+	console.log('xxx state', state)
+	console.log('xxx relations', relations)
 
 	return (
 		<Box

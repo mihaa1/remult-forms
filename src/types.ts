@@ -10,33 +10,3 @@ export type RequireAtLeastOne<T, Keys extends keyof T = keyof T> = Pick<
 	{
 		[K in Keys]-?: Required<Pick<T, K>> & Partial<Pick<T, Exclude<Keys, K>>>
 	}[Keys]
-
-export type HourInDay =
-	| -1
-	| 0
-	| 1
-	| 2
-	| 3
-	| 4
-	| 5
-	| 6
-	| 7
-	| 8
-	| 9
-	| 10
-	| 11
-	| 12
-	| 13
-	| 14
-	| 15
-	| 16
-	| 17
-	| 18
-	| 19
-	| 20
-	| 21
-	| 22
-	| 23
-	| 24
-
-export const DAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat']

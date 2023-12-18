@@ -7,7 +7,7 @@ import { isMetaActionBlocked } from '../util'
 
 interface RemultDatepickerP<T> {
 	field: FieldMetadata<any, T> // eslint-disable-line @typescript-eslint/no-explicit-any
-	onChange: (e: unknown, key: string) => void
+	onChange: (e: unknown) => void
 }
 const RemultDatepicker = <T,>({ field, onChange }: RemultDatepickerP<T>) => {
 	return (
@@ -15,7 +15,7 @@ const RemultDatepicker = <T,>({ field, onChange }: RemultDatepickerP<T>) => {
 			<DemoContainer components={['DatePicker']}>
 				<DatePicker
 					label={field.caption}
-					onChange={(e) => onChange(e, field.key)}
+					onChange={onChange}
 					disabled={isMetaActionBlocked(field.options.allowApiUpdate)}
 				/>
 			</DemoContainer>

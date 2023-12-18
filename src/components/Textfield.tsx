@@ -6,22 +6,19 @@ import { isMetaActionBlocked } from '../util'
 interface RemultTextFieldP<T> {
 	val: string | number
 	field: FieldMetadata<any, T> // eslint-disable-line @typescript-eslint/no-explicit-any
-	onChange: (
-		e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-		key: string
-	) => void
+	onChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
 }
 
 const RemultTextField = <T,>({ val, field, onChange }: RemultTextFieldP<T>) => {
 	return (
 		<TextField
-			sx={{ m: 1 }}
+			sx={{ mb: 1 }}
 			type={field.inputType || 'text'}
 			label={field.caption || field.key}
 			disabled={isMetaActionBlocked(field.options.allowApiUpdate)}
 			// value={internalItem[field.key as keyof typeof internalItem]}
 			value={val || ''}
-			onChange={(e) => onChange(e, field.key)}
+			onChange={onChange}
 			required={field.options.required}
 		/>
 	)

@@ -12,9 +12,14 @@ export const isHideField = <T>(
 	isEdit: boolean,
 	showId: boolean | undefined,
 	showCreatedAt: boolean | undefined,
-	showUpdatedAt: boolean | undefined
+	showUpdatedAt: boolean | undefined,
+	showOnly?: (keyof T)[]
 ) => {
-	if (f.options.hideOnCreate || isMetaActionBlocked(f.options.includeInApi)) {
+	if (
+		(showOnly && showOnly.length > 0 && !showOnly.includes(f.key as keyof T)) ||
+		f.options.hideOnCreate ||
+		isMetaActionBlocked(f.options.includeInApi)
+	) {
 		return true
 	}
 	if (f.key === 'id' || f.key === 'createdAt' || f.key === 'updatedAt') {
@@ -27,7 +32,8 @@ export const isHideField = <T>(
 	}
 	const relationInfo = getRelationInfo(f.options)
 	if (relationInfo) {
-		return true
+		// TODO: remove this - we no longer auto hide relation field
+		return false
 	} else {
 		for (const otherField of fields) {
 			// Check related field of relation - when defined using options.field

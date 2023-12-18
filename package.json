@@ -18,12 +18,15 @@
 		"type": "git",
 		"url": "git@github.com:mihaa1/remult-forms.git"
 	},
+	"license": "MIT",
+	"author": "spiderman",
 	"dependencies": {},
 	"devDependencies": {
 		"@emotion/react": "^11.11.1",
 		"@emotion/styled": "^11.11.0",
 		"@mui/icons-material": "^5.15.0",
 		"@mui/material": "^5.15.0",
+		"@mui/system": "^5.15.0",
 		"@mui/x-data-grid": "^6.18.5",
 		"@mui/x-data-grid-generator": "^6.18.5",
 		"@mui/x-date-pickers": "^6.18.4",

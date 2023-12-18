@@ -1,6 +1,7 @@
 import { remultExpress } from 'remult/remult-express'
 import { User } from '../shared/models/User.model'
 import { Organization } from '../shared/models/Organization.model'
+import { Location } from '../shared/models/Location.model'
 
 export const api = remultExpress({
 	getUser: async () => {
@@ -11,5 +12,5 @@ export const api = remultExpress({
 			roles: ['admin'],
 		})
 	},
-	entities: [User, Organization],
+	entities: [User, Organization, Location],
 })

@@ -13,7 +13,7 @@ const FormRoute = () => {
 		}
 		remult
 			.repo(User)
-			.findId(id)
+			.findId(id, { include: { organization: true } })
 			.then(setUser)
 			.catch((e) => {
 				console.log('e', e)
@@ -27,6 +27,7 @@ const FormRoute = () => {
 			// item={remult.repo(User).create()}
 			// onSubmit={(item) => console.log('onSubmit(): item', item)}
 			onDone={(item) => console.log('onDone(): item', item)}
+			// showOnly={['email']}
 		/>
 	)
 }

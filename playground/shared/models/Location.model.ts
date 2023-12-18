@@ -5,7 +5,7 @@ import {
 	SHIFT_LENGTH_DEFAULT,
 	SHIFT_PERSON_COUNT_DEFAULT,
 } from '../../server/consts'
-import { HourInDay } from '../../../src/types'
+import { HourInDay } from '../../types'
 
 @Entity<Location>('location', {
 	allowApiCrud: Allow.authenticated,
@@ -13,20 +13,20 @@ import { HourInDay } from '../../../src/types'
 	allowApiUpdate: [Role.SUPER_ADMIN, Role.ADMIN],
 	allowApiDelete: [Role.SUPER_ADMIN, Role.ADMIN],
 	defaultOrderBy: { name: 'asc' },
-	backendPrefilter: () => {
-		if (!remult.user?.organizationId) {
-			return { id: '' }
-		}
-		if (remult.isAllowed(Role.SUPER_ADMIN)) {
-			return {}
-		}
-		return { organizationId: remult.user?.organizationId }
-	},
-	saving: (row) => {
-		if (!remult.user?.internal) {
-			row.organizationId = remult.user!.organizationId
-		}
-	},
+	// backendPrefilter: () => {
+	// 	if (!remult.user?.organizationId) {
+	// 		return { id: '' }
+	// 	}
+	// 	if (remult.isAllowed(Role.SUPER_ADMIN)) {
+	// 		return {}
+	// 	}
+	// 	return { organizationId: remult.user?.organizationId }
+	// },
+	// saving: (row) => {
+	// 	if (!remult.user?.internal) {
+	// 		row.organizationId = remult.user!.organizationId
+	// 	}
+	// },
 })
 export class Location {
 	@Fields.cuid()
