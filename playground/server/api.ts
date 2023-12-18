@@ -3,5 +3,13 @@ import { User } from '../shared/models/User.model'
 import { Organization } from '../shared/models/Organization.model'
 
 export const api = remultExpress({
+	getUser: async () => {
+		return Promise.resolve({
+			id: 'abc',
+			email: 'admin@forms.com',
+			organizationId: 'hogwarts',
+			roles: ['admin'],
+		})
+	},
 	entities: [User, Organization],
 })

@@ -65,9 +65,9 @@ export const RemultForm = <T,>({
 	const repo = remult.repo(entity)
 
 	useEffect(() => {
-		dispatch(item)
+		dispatch(item ? { ...item } : remult.repo(entity).create())
 		setIsEdit(!!item)
-	}, [item])
+	}, [item, entity])
 
 	const onChangeTextfield = (
 		e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -91,15 +91,20 @@ export const RemultForm = <T,>({
 			[key]: new Date(newDate as any),
 		})
 
+	const resetForm = () => dispatch(remult.repo(entity).create())
+
 	const onSubmitInternal = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
 		if (onSubmit) {
-			return onSubmit(state)
+			onSubmit(state)
+			return resetForm()
 		}
 		if (isEdit) {
-			return await onEdit()
+			await onEdit()
+		} else {
+			await onCreate()
 		}
-		return await onCreate()
+		resetForm()
 	}
 
 	const onEdit = async () => {

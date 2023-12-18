@@ -8,10 +8,20 @@ import {
 } from 'react-router-dom'
 import FormRoute from './pages/FormRoute/FormRoute'
 import GridRoute from './pages/GridRoute/GridRoute'
+import { remult } from 'remult'
+import { User } from './shared/models/User.model'
+import { Organization } from './shared/models/Organization.model'
 
 function App() {
 	// const [count, setCount] = useState(0)
+	Object.assign(globalThis, { remult, User })
+	Object.assign(globalThis, { remult, Organization })
 	useEffect(() => {
+		remult.user = {
+			id: 'abc',
+			email: 'admin@forms.com',
+			organizationId: 'hogwarts',
+		}
 		// remult
 		// 	.repo(User)
 		// 	.find()
