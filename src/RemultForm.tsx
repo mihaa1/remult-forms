@@ -8,13 +8,13 @@ import {
 	useReducer,
 	useState,
 } from 'react'
-import { FieldMetadata, FieldsMetadata, RelationOptions, remult } from 'remult'
+import { FieldsMetadata, remult } from 'remult'
 import RemultTextField from './components/Textfield'
 import { Box, Button, Typography } from '@mui/material'
 import RemultCheckbox from './components/Checkbox'
 import RemultDatepicker from './components/Datepicker'
 import type { ClassType } from './types'
-import { getRelationInfo } from 'remult/internals'
+import { isHideField } from './util'
 
 const reducer = <T,>(state: T, action: any) => {
 	return {
@@ -112,45 +112,18 @@ export const RemultForm = <T,>({
 		onDone && onDone(res)
 	}
 
-	const isHideField = (f: FieldMetadata<T>, fields: FieldMetadata<T>[]) => {
-		if (f.options.includeInApi === false) {
-			return true
-		}
-		if (f.key === 'id' || f.key === 'createdAt' || f.key === 'updatedAt') {
-			return (
-				!isEdit ||
-				(!showId && f.key === 'id') ||
-				(!showCreatedAt && f.key === 'createdAt') ||
-				(!showUpdatedAt && f.key === 'updatedAt')
-			)
-		}
-		const relationInfo = getRelationInfo(f.options)
-		if (relationInfo) {
-			return true
-		} else {
-			for (const otherField of fields) {
-				// Check related field of relation - when defined using options.field
-				// TODO: support fields - that use as relation 2 columns
-				const relationInfo = getRelationInfo(otherField.options)
-				if (
-					relationInfo &&
-					(
-						otherField.options as RelationOptions<
-							T,
-							typeof relationInfo,
-							string
-						>
-					).field === f.key
-				) {
-					return true
-				}
-			}
-		}
-	}
-
 	const renderForm = <T,>(fields: FieldsMetadata<T>) => {
 		return fields.toArray().map((f) => {
-			if (isHideField(f, fields.toArray())) {
+			if (
+				isHideField(
+					f,
+					fields.toArray(),
+					isEdit,
+					showId,
+					showCreatedAt,
+					showUpdatedAt
+				)
+			) {
 				return
 			}
 
@@ -158,7 +131,6 @@ export const RemultForm = <T,>({
 			// console.log('f', f)
 			const rawVal = state[f.key as keyof typeof state]
 			if (!f.inputType || f.inputType === 'text' || f.inputType === 'number') {
-				// TODO: use fromInput, toInput
 				// if (f.valueType == String || f.valueType == Number) {
 				return (
 					<RemultTextField

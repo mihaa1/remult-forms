@@ -45,9 +45,10 @@ export class User {
 	isActive = true
 
 	@Fields.boolean({
-		includeInApi: false,
+		allowApiUpdate: Allow.everyone,
+		includeInApi: ['admin'],
 	})
-	isIncludedInAPI = false
+	isIncludedInApi = false
 
 	@Fields.number({
 		allowApiUpdate: Allow.everyone,

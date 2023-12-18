@@ -1,7 +1,7 @@
 import { Checkbox, FormControlLabel } from '@mui/material'
 import { ChangeEvent } from 'react'
 import { FieldMetadata } from 'remult'
-import { isDisabled } from '../util'
+import { isMetaActionBlocked } from '../util'
 
 interface RemultCheckboxP<T> {
 	val: boolean
@@ -20,7 +20,7 @@ const RemultCheckbox = <T,>({ val, field, onChange }: RemultCheckboxP<T>) => {
 					// checked={!!state[field.key as keyof typeof state]}
 					checked={val}
 					onChange={(e) => onChange(e, field.key)}
-					disabled={isDisabled(field)}
+					disabled={isMetaActionBlocked(field.options.allowApiUpdate)}
 				/>
 			}
 			label={field.caption || field.key}
