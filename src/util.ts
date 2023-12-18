@@ -13,10 +13,12 @@ export const isHideField = <T>(
 	showId: boolean | undefined,
 	showCreatedAt: boolean | undefined,
 	showUpdatedAt: boolean | undefined,
-	showOnly?: (keyof T)[]
+	showOnly?: (keyof T)[],
+	hideOnly?: (keyof T)[]
 ) => {
 	if (
 		(showOnly && showOnly.length > 0 && !showOnly.includes(f.key as keyof T)) ||
+		(hideOnly && hideOnly.length > 0 && hideOnly.includes(f.key as keyof T)) ||
 		f.options.hideOnCreate ||
 		isMetaActionBlocked(f.options.includeInApi)
 	) {

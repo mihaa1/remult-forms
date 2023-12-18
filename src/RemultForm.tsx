@@ -43,8 +43,10 @@ interface RemultFormP<T> {
 	onSubmit?: (item: T | undefined) => void
 	/** Trigger on action completed. When create/edit action is done this will be fired */
 	onDone?: (item: T[] | undefined) => void
-	/** Show only these fields in form from the provided entity */
-	showOnly?: (keyof T)[]
+	/** Show these fields in form from the provided entity. PROVIDE ONLY ONE OF showPartial OR hidePartial */
+	showPartial?: (keyof T)[]
+	/** Hide these fields in form from the provided entity. PROVIDE ONLY ONE OF hidePartial OR showPartial */
+	hidePartial?: (keyof T)[]
 }
 
 export const RemultForm = <T,>({
@@ -56,7 +58,8 @@ export const RemultForm = <T,>({
 	title,
 	onSubmit,
 	onDone,
-	showOnly,
+	showPartial,
+	hidePartial,
 }: RemultFormP<T>): ReactNode => {
 	const [isEdit, setIsEdit] = useState(false)
 	const [relations, setRelations] = useState<
@@ -154,7 +157,8 @@ export const RemultForm = <T,>({
 					showId,
 					showCreatedAt,
 					showUpdatedAt,
-					showOnly
+					showPartial,
+					hidePartial
 				)
 			) {
 				return
