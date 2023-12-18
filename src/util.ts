@@ -14,7 +14,7 @@ export const isHideField = <T>(
 	showCreatedAt: boolean | undefined,
 	showUpdatedAt: boolean | undefined
 ) => {
-	if (isMetaActionBlocked(f.options.includeInApi)) {
+	if (f.options.hideOnCreate || isMetaActionBlocked(f.options.includeInApi)) {
 		return true
 	}
 	if (f.key === 'id' || f.key === 'createdAt' || f.key === 'updatedAt') {

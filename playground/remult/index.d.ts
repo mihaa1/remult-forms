@@ -3,5 +3,6 @@ export {}
 declare module 'remult' {
 	export interface FieldOptions<entityType, valueType> {
 		required?: boolean
+		hideOnCreate?: boolean
 	}
 }

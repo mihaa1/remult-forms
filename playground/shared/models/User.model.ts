@@ -101,4 +101,9 @@ export class User {
 		field: 'organizationId',
 	})
 	organization?: Organization
+
+	@Fields.string({
+		hideOnCreate: false,
+	})
+	createdBy = ''
 }
