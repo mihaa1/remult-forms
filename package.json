@@ -1,5 +1,5 @@
 {
-	"name": "remult-forms",
+	"name": "remult-uikit",
 	"version": "0.0.22",
 	"type": "module",
 	"main": "dist/index.js",
