@@ -10,14 +10,15 @@ import {
 import { remult } from 'remult'
 import type { FieldMetadata, FieldsMetadata } from 'remult'
 import { Box, Button, Typography } from '@mui/material'
-import type { ClassType } from './types'
-import { isHideField } from './util'
+import type { ClassType, MultiSelectOption } from './types'
+import { isHideField, isMetaActionBlocked } from './util'
 import { getRelationInfo } from 'remult/internals'
 import RemultTextField from './components/Textfield'
 import RemultCheckbox from './components/Checkbox'
 import RemultDatepicker from './components/Datepicker'
 import RemultAutocomplete from './components/Autocomplete'
-import type { AutocompleteOption } from './components/Autocomplete'
+import RemultAutocompleteMultiple from './components/AutocompleteMultiple'
+import RemultCheckboxMultiple from './components/CheckboxMultiple'
 
 const reducer = <T,>(state: T, action: any) => {
 	return {
@@ -115,10 +116,17 @@ export const RemultForm = <T,>({
 		})
 
 	const onSelectAutocomplete = <T,>(
-		selected: AutocompleteOption,
-		field: FieldMetadata<any, T>
+		selected: MultiSelectOption,
+		f: FieldMetadata<any, T>
 	) => {
-		dispatch({ [field.key]: { id: selected.id } })
+		dispatch({ [f.key]: { id: selected.id } })
+	}
+
+	const onMultiSelect = <T,>(
+		selected: Pick<MultiSelectOption, 'id'>[],
+		f: FieldMetadata<any, T>
+	) => {
+		dispatch({ [f.key]: [...selected.map((item) => item.id)] })
 	}
 
 	const resetForm = () => dispatch(remult.repo(entity).create())
@@ -133,8 +141,8 @@ export const RemultForm = <T,>({
 			await onEdit()
 		} else {
 			await onCreate()
+			resetForm()
 		}
-		resetForm()
 	}
 
 	const onEdit = async () => {
@@ -178,7 +186,7 @@ export const RemultForm = <T,>({
 				}))
 				return (
 					<RemultAutocomplete
-						key={`${f.key}`}
+						key={f.key}
 						onSelect={(newVal) => onSelectAutocomplete(newVal, f)}
 						options={mapped}
 						label={f.key}
@@ -186,6 +194,35 @@ export const RemultForm = <T,>({
 						selectedId={state[f.options.field]}
 					/>
 				)
+			} else if (f.options.multiSelect) {
+				if (
+					!f.options.multiSelect.type ||
+					f.options.multiSelect.type === 'select'
+				) {
+					return (
+						<RemultAutocompleteMultiple
+							isMultiple={!!f.options.multiSelect}
+							key={f.key}
+							onSelect={(newVal) => onMultiSelect(newVal, f)}
+							options={f.options.multiSelect.options}
+							label={f.options.caption || f.key}
+							selected={state[f.key]?.map((item: string) => ({
+								id: item,
+							}))}
+						/>
+					)
+				} else if (f.options.multiSelect.type === 'checkbox') {
+					return (
+						<RemultCheckboxMultiple
+							key={f.key}
+							options={f.options.multiSelect.options}
+							selected={state[f.key]?.map((item: string) => ({
+								id: item,
+							}))}
+							onSelect={(newVal) => onMultiSelect(newVal, f)}
+						/>
+					)
+				}
 			} else if (
 				!f.inputType ||
 				f.inputType === 'text' ||
@@ -194,7 +231,7 @@ export const RemultForm = <T,>({
 				// if (f.valueType == String || f.valueType == Number) {
 				return (
 					<RemultTextField
-						key={`${f.key}`}
+						key={f.key}
 						// val={state[f.key as keyof typeof state]}
 						val={
 							(rawVal &&
@@ -209,16 +246,17 @@ export const RemultForm = <T,>({
 			} else if (f.inputType === 'checkbox') {
 				return (
 					<RemultCheckbox
-						key={`${f.key}`}
-						val={!!rawVal}
-						field={f}
+						key={f.key}
+						checked={!!rawVal}
+						label={f.options.caption || f.key}
+						disabled={isMetaActionBlocked(f.options.allowApiUpdate)}
 						onChange={(e) => onChangeCheckbox(e, f.key)}
 					/>
 				)
 			} else if (f.inputType === 'date' || f.inputType === 'datetime-local') {
 				return (
 					<RemultDatepicker
-						key={`${f.key}`}
+						key={f.key}
 						field={f}
 						onChange={(newDate) => onChangeDate(newDate, f.key)}
 					/>
@@ -226,9 +264,6 @@ export const RemultForm = <T,>({
 			}
 		})
 	}
-
-	console.log('xxx state', state)
-	console.log('xxx relations', relations)
 
 	return (
 		<Box
@@ -241,7 +276,7 @@ export const RemultForm = <T,>({
 			</Typography>
 			{renderForm(repo.fields)}
 			<Button type='submit' sx={{ m: 1 }} variant='contained'>
-				Create
+				{`${isEdit ? 'Save' : 'Create'}`}
 			</Button>
 		</Box>
 	)

@@ -208,8 +208,14 @@ export class User {
 	// @Relations.toMany(() => AttributeXUser, 'userId')
 	// attributes?: AttributeXUser[]
 
-	@Fields.json()
-	availableDays = DAYS
+	@Fields.json({
+		multiSelect: {
+			options: DAYS.map((d) => ({ id: d, label: d.toUpperCase() })),
+			// type: 'checkbox',
+		},
+		caption: 'Available Days',
+	})
+	availableDays = []
 
 	/**
 	 * flows to set org id

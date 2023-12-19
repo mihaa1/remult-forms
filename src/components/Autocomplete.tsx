@@ -1,7 +1,7 @@
 import TextField from '@mui/material/TextField'
 import AutocompleteMUI from '@mui/material/Autocomplete'
 import { useMemo } from 'react'
-import { RequireAtLeastOne } from '../types'
+import { MultiSelectOption } from '../types'
 
 // Generic component example
 // interface OptionWithId {
@@ -15,24 +15,10 @@ import { RequireAtLeastOne } from '../types'
 // }: AutocompleteP<T>) => {
 // END Generic component example
 
-interface AutocompleteOptionRaw {
-	id: string | number
-	label?: string
-	// if label is missing - values will be rendered from name prop
-	name?: string
-}
-
-export type AutocompleteOption = RequireAtLeastOne<
-	AutocompleteOptionRaw,
-	'label' | 'name'
->
-
 interface AutocompleteP {
-	options: AutocompleteOption[]
+	options: MultiSelectOption[]
 	selectedId?: string
-	onSelect: (arg: AutocompleteOption) => void
-	// width?: string
-	// size?: 'small' | 'medium'
+	onSelect: (arg: MultiSelectOption) => void
 	disabled?: boolean
 	label?: string
 }
@@ -41,8 +27,6 @@ const RemultAutocomplete = ({
 	options,
 	selectedId,
 	onSelect,
-	// width,
-	// size = 'medium',
 	disabled,
 	label,
 }: AutocompleteP) => {
@@ -60,15 +44,13 @@ const RemultAutocomplete = ({
 	return (
 		<AutocompleteMUI
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			onChange={(_e: any, newValue: AutocompleteOption | null) =>
+			onChange={(_e: any, newValue: MultiSelectOption | null) =>
 				newValue && onSelect(newValue)
 			}
-			// size={size}
 			sx={{ mb: 1 }}
 			selectOnFocus={false}
 			options={sanitizedOptions}
 			value={selectedItem || null}
-			// sx={{ width: width || 300 }}
 			renderInput={(params) => <TextField {...params} label={label} />}
 			disabled={disabled}
 		/>
