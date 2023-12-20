@@ -69,15 +69,15 @@ Add an index.d.ts file to your project (make sure typescript sees this file thro
 
 ```ts
 declare module 'remult' {
-	export interface FieldOptions<entityType, valueType> {
-		required?: boolean
-		hideOnCreate?: boolean
-		select?: {
-			options: { id: string | number; label: string }[]
-			multiple?: boolean
-			type?: 'select' | 'checkbox' | 'radiobox'
-		}
-	}
+  export interface FieldOptions<entityType, valueType> {
+    required?: boolean
+    hideOnCreate?: boolean
+    select?: {
+      options: { id: string | number; label: string }[]
+      multiple?: boolean
+      type?: 'select' | 'checkbox' | 'radiobox'
+    }
+  }
 }
 ```
 
@@ -100,86 +100,86 @@ import { Allow, Entity, Fields, Relations, Validators, remult } from 'remult'
 
 @Entity<Organization>('organization')
 export class Organization {
-	@Fields.uuid()
-	id = ''
+  @Fields.uuid()
+  id = ''
 
-	@Fields.string()
-	name = ''
+  @Fields.string()
+  name = ''
 }
 
 @Entity<User>('users', { caption: 'User' })
 export class User {
-	@Fields.uuid()
-	id = ''
+  @Fields.uuid()
+  id = ''
 
-	@Fields.string({
-		validate: [Validators.required, Validators.uniqueOnBackend],
-		required: true,
-	})
-	email = ''
+  @Fields.string({
+    validate: [Validators.required, Validators.uniqueOnBackend],
+    required: true,
+  })
+  email = ''
 
-	@Fields.boolean({
-		includeInApi: false,
-	})
-	isDisabled = false
+  @Fields.boolean({
+    includeInApi: false,
+  })
+  isDisabled = false
 
-	// Relation - if shows in form - will be automatically loaded and displayed as select component
-	@Fields.string()
-	organizationId = ''
-	@Relations.toOne<User, Organization>(() => Organization, {
-		field: 'organizationId',
-	})
-	organization?: Organization
+  // Relation - if shows in form - will be automatically loaded and displayed as select component
+  @Fields.string()
+  organizationId = ''
+  @Relations.toOne<User, Organization>(() => Organization, {
+    field: 'organizationId',
+  })
+  organization?: Organization
 
-	@Fields.string<User>({
-		validate: (v) => {
-			if (v.firstName.length < 3) {
-				throw new Error('First name must be at least 3 characters long')
-			}
-		},
-	})
-	name = ''
+  @Fields.string<User>({
+    validate: (v) => {
+      if (v.firstName.length < 3) {
+        throw new Error('First name must be at least 3 characters long')
+      }
+    },
+  })
+  name = ''
 
-	// By default, this will render a list of checkboxes
-	@Fields.json<User>({
-		validate: (row) => {
-			if (row) {
-				throw new Error('Need to select at least 1')
-			}
-		},
-		select: {
-			options: ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'].map((d) => ({
-				id: d,
-				label: d.toUpperCase(),
-			})),
-			multiple: true,
-			// Add type to show this as a select component
-			// type: 'select'
-		},
-		caption: 'Available Days',
-	})
-	availableDays = []
+  // By default, this will render a list of checkboxes
+  @Fields.json<User>({
+    validate: (row) => {
+      if (row) {
+        throw new Error('Need to select at least 1')
+      }
+    },
+    select: {
+      options: ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'].map((d) => ({
+        id: d,
+        label: d.toUpperCase(),
+      })),
+      multiple: true,
+      // Add type to show this as a select component
+      // type: 'select'
+    },
+    caption: 'Available Days',
+  })
+  availableDays = []
 
-	// By default, this will render a radio group
-	@Fields.integer<User>({
-		select: {
-			options: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((d) => ({
-				id: d,
-				label: d.toString() + ':00 HR',
-			})),
-			// Add type to show this as a select component
-			// type: 'select',
-		},
-		caption: 'Working Hours Start',
-	})
-	workingHoursStart = 0
+  // By default, this will render a radio group
+  @Fields.integer<User>({
+    select: {
+      options: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((d) => ({
+        id: d,
+        label: d.toString() + ':00 HR',
+      })),
+      // Add type to show this as a select component
+      // type: 'select',
+    },
+    caption: 'Working Hours Start',
+  })
+  workingHoursStart = 0
 
-	// Hidden by default
-	@Fields.createdAt()
-	createdAt?: Date
+  // Hidden by default
+  @Fields.createdAt()
+  createdAt?: Date
 
-	// Hidden by default
-	@Fields.updatedAt()
-	updatedAt?: Date
+  // Hidden by default
+  @Fields.updatedAt()
+  updatedAt?: Date
 }
 ```
