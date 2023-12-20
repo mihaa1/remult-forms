@@ -35,7 +35,7 @@ npm add remult remult-uikit
 
 3. Create your remult entity
 
-```js
+```ts
 @Entity<User>('users', {
 	@Fields.uuid()
 	id = ''
@@ -53,7 +53,7 @@ npm add remult remult-uikit
 
 4. In your react code:
 
-```js
+```ts
 import { RemultForm } from 'remult-uikit'
 
 const createUser = () => <RemultForm entity={User} />
