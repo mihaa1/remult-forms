@@ -6,10 +6,7 @@
 	</a>
 </div>
 
-<br/>
-
 <hr/>
-<br/>
 
 # Remult-uikit
 
