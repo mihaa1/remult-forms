@@ -9,9 +9,13 @@ declare module 'remult' {
 	export interface FieldOptions<entityType, valueType> {
 		required?: boolean
 		hideOnCreate?: boolean
-		multiSelect?: {
+		select?: {
 			options: { id: string | number; label: string }[]
-			type?: 'select' | 'checkbox'
+			multiple?: boolean
+			// defaults:
+			// multiple: false -> checkbox
+			// multiple: true  -> radiobox
+			type?: 'select' | 'checkbox' | 'radiobox'
 		}
 	}
 }

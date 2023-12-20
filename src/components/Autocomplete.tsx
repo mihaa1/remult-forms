@@ -1,7 +1,7 @@
 import TextField from '@mui/material/TextField'
 import AutocompleteMUI from '@mui/material/Autocomplete'
 import { useMemo } from 'react'
-import { MultiSelectOption } from '../types'
+import { SelectOption, SingleSelectP } from '../types'
 
 // Generic component example
 // interface OptionWithId {
@@ -15,21 +15,13 @@ import { MultiSelectOption } from '../types'
 // }: AutocompleteP<T>) => {
 // END Generic component example
 
-interface AutocompleteP {
-	options: MultiSelectOption[]
-	selectedId?: string
-	onSelect: (arg: MultiSelectOption) => void
-	disabled?: boolean
-	label?: string
-}
-
 const RemultAutocomplete = ({
 	options,
-	selectedId,
+	selectedId: selected,
 	onSelect,
 	disabled,
 	label,
-}: AutocompleteP) => {
+}: SingleSelectP) => {
 	const sanitizedOptions = options.map((o) => ({
 		...o,
 		id: o.id,
@@ -37,15 +29,15 @@ const RemultAutocomplete = ({
 	}))
 
 	const selectedItem = useMemo(
-		() => sanitizedOptions.find((o) => o.id === selectedId),
-		[sanitizedOptions, selectedId]
+		() => sanitizedOptions.find((o) => o.id === selected),
+		[sanitizedOptions, selected]
 	)
 
 	return (
 		<AutocompleteMUI
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			onChange={(_e: any, newValue: MultiSelectOption | null) =>
-				newValue && onSelect(newValue)
+			onChange={(_e: any, newValue: SelectOption | null) =>
+				newValue && onSelect(newValue.id)
 			}
 			sx={{ mb: 1 }}
 			selectOnFocus={false}

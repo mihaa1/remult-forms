@@ -1,17 +1,6 @@
 import TextField from '@mui/material/TextField'
 import AutocompleteMUI from '@mui/material/Autocomplete'
-import { MultiSelectOption } from '../types'
-
-interface AutocompleteMultipleP {
-	options: MultiSelectOption[]
-	selected?: MultiSelectOption[]
-	onSelect: (arg: Pick<MultiSelectOption, 'id'>[]) => void
-	// width?: string
-	// size?: 'small' | 'medium'
-	disabled?: boolean
-	label?: string
-	isMultiple?: boolean
-}
+import { MultipleSelectP } from '../types'
 
 const RemultAutocompleteMultiple = ({
 	options,
@@ -19,7 +8,7 @@ const RemultAutocompleteMultiple = ({
 	onSelect,
 	disabled,
 	label,
-}: AutocompleteMultipleP) => {
+}: MultipleSelectP) => {
 	const sanitizedOptions = options.map((o) => ({
 		...o,
 		id: o.id,
@@ -33,7 +22,7 @@ const RemultAutocompleteMultiple = ({
 			onChange={(
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				_e: any,
-				newValue: MultiSelectOption[]
+				newValue
 			) => newValue && onSelect(newValue)}
 			selectOnFocus={false}
 			options={sanitizedOptions}

@@ -3,7 +3,7 @@ import { Role } from '../../server/consts'
 import { Organization } from './Organization.model'
 // import { AttributeXUser } from './Attribute-X-User'
 import { Location } from './Location.model'
-import { DAYS } from '../../types'
+import { DAYS, HourInDay } from '../../types'
 
 @Entity<User>('users', {
 	allowApiCrud: Allow.authenticated,
@@ -209,20 +209,27 @@ export class User {
 	// attributes?: AttributeXUser[]
 
 	@Fields.json({
-		multiSelect: {
+		select: {
 			options: DAYS.map((d) => ({ id: d, label: d.toUpperCase() })),
-			// type: 'checkbox',
+			multiple: true,
+			type: 'select',
 		},
 		caption: 'Available Days',
 	})
 	availableDays = []
 
-	/**
-	 * flows to set org id
-	 * 1. admin creates user - user gets admin's org id by default
-	 * 2. user creates org - org id is set on her
-	 * 3. invite flow - phase 2
-	 */
+	@Fields.integer({
+		select: {
+			options: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((d) => ({
+				id: d,
+				label: d.toString() + ':00 HR',
+			})),
+			type: 'select',
+		},
+		caption: 'Working Hours Start',
+	})
+	workingHoursStart: HourInDay = 0
+
 	@Fields.createdAt({
 		includeInApi: [Role.ADMIN, Role.SUPER_ADMIN],
 		allowApiUpdate: false,

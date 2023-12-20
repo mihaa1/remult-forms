@@ -10,7 +10,7 @@ import {
 import { remult } from 'remult'
 import type { FieldMetadata, FieldsMetadata } from 'remult'
 import { Box, Button, Typography } from '@mui/material'
-import type { ClassType, MultiSelectOption } from './types'
+import type { ClassType, ID, SelectOption } from './types'
 import { isHideField, isMetaActionBlocked } from './util'
 import { getRelationInfo } from 'remult/internals'
 import RemultTextField from './components/Textfield'
@@ -19,6 +19,7 @@ import RemultDatepicker from './components/Datepicker'
 import RemultAutocomplete from './components/Autocomplete'
 import RemultAutocompleteMultiple from './components/AutocompleteMultiple'
 import RemultCheckboxMultiple from './components/CheckboxMultiple'
+import RemultRadioGroup from './components/RadioGroup'
 
 const reducer = <T,>(state: T, action: any) => {
 	return {
@@ -115,15 +116,15 @@ export const RemultForm = <T,>({
 			[key]: new Date(newDate as any),
 		})
 
-	const onSelectAutocomplete = <T,>(
-		selected: MultiSelectOption,
+	const onSingleSelect = <T,>(
+		selected: string | number,
 		f: FieldMetadata<any, T>
 	) => {
-		dispatch({ [f.key]: { id: selected.id } })
+		dispatch({ [f.key]: selected })
 	}
 
 	const onMultiSelect = <T,>(
-		selected: Pick<MultiSelectOption, 'id'>[],
+		selected: Pick<SelectOption, 'id'>[],
 		f: FieldMetadata<any, T>
 	) => {
 		dispatch({ [f.key]: [...selected.map((item) => item.id)] })
@@ -187,41 +188,63 @@ export const RemultForm = <T,>({
 				return (
 					<RemultAutocomplete
 						key={f.key}
-						onSelect={(newVal) => onSelectAutocomplete(newVal, f)}
-						options={mapped}
 						label={f.key}
+						options={mapped}
 						// @ts-expect-error TODO: fix this
 						selectedId={state[f.options.field]}
+						onSelect={(newVal) => onSingleSelect(newVal, f)}
 					/>
 				)
-			} else if (f.options.multiSelect) {
-				if (
-					!f.options.multiSelect.type ||
-					f.options.multiSelect.type === 'select'
-				) {
-					return (
-						<RemultAutocompleteMultiple
-							isMultiple={!!f.options.multiSelect}
-							key={f.key}
-							onSelect={(newVal) => onMultiSelect(newVal, f)}
-							options={f.options.multiSelect.options}
-							label={f.options.caption || f.key}
-							selected={state[f.key]?.map((item: string) => ({
-								id: item,
-							}))}
-						/>
-					)
-				} else if (f.options.multiSelect.type === 'checkbox') {
-					return (
-						<RemultCheckboxMultiple
-							key={f.key}
-							options={f.options.multiSelect.options}
-							selected={state[f.key]?.map((item: string) => ({
-								id: item,
-							}))}
-							onSelect={(newVal) => onMultiSelect(newVal, f)}
-						/>
-					)
+			} else if (f.options.select) {
+				if (f.options.select.multiple) {
+					if (!f.options.select.type || f.options.select.type === 'checkbox') {
+						return (
+							<RemultCheckboxMultiple
+								row
+								key={f.key}
+								options={f.options.select.options}
+								selected={state[f.key]?.map((item: ID) => ({
+									id: item,
+								}))}
+								onSelect={(newVal) => onMultiSelect(newVal, f)}
+							/>
+						)
+					} else if (f.options.select.type === 'select') {
+						return (
+							<RemultAutocompleteMultiple
+								key={f.key}
+								label={f.options.caption || f.key}
+								options={f.options.select.options}
+								selected={state[f.key]?.map((item: ID) => ({
+									id: item,
+								}))}
+								onSelect={(newVal) => onMultiSelect(newVal, f)}
+							/>
+						)
+					}
+				} else {
+					if (!f.options.select.type || f.options.select.type === 'radiobox') {
+						return (
+							<RemultRadioGroup
+								row
+								key={f.key}
+								label={f.options.caption || f.key}
+								options={f.options.select.options}
+								selectedId={state[f.key]}
+								onSelect={(newVal) => onSingleSelect(newVal, f)}
+							/>
+						)
+					} else if (f.options.select.type === 'select') {
+						return (
+							<RemultAutocomplete
+								key={f.key}
+								label={f.options.caption || f.key}
+								options={f.options.select.options}
+								selectedId={state[f.key]}
+								onSelect={(newVal) => onSingleSelect(newVal, f)}
+							/>
+						)
+					}
 				}
 			} else if (
 				!f.inputType ||
@@ -247,9 +270,9 @@ export const RemultForm = <T,>({
 				return (
 					<RemultCheckbox
 						key={f.key}
-						checked={!!rawVal}
 						label={f.options.caption || f.key}
 						disabled={isMetaActionBlocked(f.options.allowApiUpdate)}
+						checked={!!rawVal}
 						onChange={(e) => onChangeCheckbox(e, f.key)}
 					/>
 				)

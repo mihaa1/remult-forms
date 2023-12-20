@@ -1,18 +1,18 @@
 import { useEffect, useState } from 'react'
 import RemultCheckbox from './Checkbox'
-import { MultiSelectOption } from '../types'
+import { MultipleSelectP } from '../types'
 
 interface RemultCheckboxMultipleP {
-	options: MultiSelectOption[]
-	selected?: MultiSelectOption[]
-	onSelect: (arg: Pick<MultiSelectOption, 'id'>[]) => void
+	row?: boolean
 }
 
 const RemultCheckboxMultiple = ({
 	options,
 	selected,
 	onSelect,
-}: RemultCheckboxMultipleP) => {
+	row,
+	disabled,
+}: MultipleSelectP & RemultCheckboxMultipleP) => {
 	const [selectedInner, setSelectedInner] = useState(
 		selected ? [...selected] : []
 	)
@@ -21,26 +21,31 @@ const RemultCheckboxMultiple = ({
 		setSelectedInner(selected ? [...selected] : [])
 	}, [selected])
 
-	return options.map((v) => {
-		return (
-			<RemultCheckbox
-				key={`checkbox_${v.id}`}
-				checked={selected ? !!selected.find((s) => s.id === v.id) : false}
-				onChange={(e) => {
-					console.log('e', e.target.checked)
-					let newVals
-					if (e.target.checked) {
-						newVals = [...selectedInner, v]
-					} else {
-						newVals = [...selectedInner.filter((s) => s.id !== v.id)]
-					}
-					setSelectedInner(newVals)
-					onSelect(newVals)
-				}}
-				label={v.label}
-			/>
-		)
-	})
+	return (
+		<div style={{ display: 'flex', flexDirection: row ? 'row' : 'column' }}>
+			{options.map((v) => {
+				return (
+					<RemultCheckbox
+						key={`checkbox_${v.id}`}
+						disabled={disabled}
+						checked={selected ? !!selected.find((s) => s.id === v.id) : false}
+						onChange={(e) => {
+							console.log('e', e.target.checked)
+							let newVals
+							if (e.target.checked) {
+								newVals = [...selectedInner, v]
+							} else {
+								newVals = [...selectedInner.filter((s) => s.id !== v.id)]
+							}
+							setSelectedInner(newVals)
+							onSelect(newVals)
+						}}
+						label={v.label}
+					/>
+				)
+			})}
+		</div>
+	)
 }
 
 export default RemultCheckboxMultiple
