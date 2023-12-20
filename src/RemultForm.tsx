@@ -89,6 +89,9 @@ export const RemultForm = <T extends { id: ID }>({
 	const loadRelations = async (fields: FieldsMetadata<T>) => {
 		const res: any = {}
 		for (const f of fields.toArray()) {
+			if (hidePartial?.indexOf(f.key as keyof T) !== -1) {
+				continue
+			}
 			const relationInfo = getRelationInfo(f.options)
 			if (relationInfo) {
 				const relatedEntities = await remult.repo(relationInfo.toType()).find()
@@ -174,16 +177,16 @@ export const RemultForm = <T extends { id: ID }>({
 			.toArray()
 			.slice()
 			.sort((a, b) => (a.key > b.key ? 1 : -1))
-			.sort((a: FieldMetadata<any, T>, b: FieldMetadata<any, T>) => {
-				// @ts-expect-error TODO: type error here
+			.sort((a, b) => {
+				// @ts-expect-error TODO: fix type error here
 				if (sort.indexOf(a.key) === -1) {
 					return 1
 				}
-				// @ts-expect-error TODO: type error here
+				// @ts-expect-error TODO: fix type error here
 				if (sort.indexOf(b.key) === -1) {
 					return -1
 				}
-				// @ts-expect-error TODO: type error here
+				// @ts-expect-error TODO: fix type error here
 				return sort.indexOf(a.key) - sort.indexOf(b.key)
 			})
 			.map((f) => {
