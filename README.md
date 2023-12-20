@@ -37,8 +37,8 @@ npm add remult remult-uikit
 
 ```ts
 @Entity<User>('users', {
-	@Fields.uuid()
-	id = ''
+  @Fields.uuid()
+  id = ''
 
 	@Fields.string({
 		validate: [Validators.required, Validators.uniqueOnBackend],
