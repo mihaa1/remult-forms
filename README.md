@@ -1,30 +1,60 @@
-# React + TypeScript + Vite
+# Remult UIKIT
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+remult-uikit is a React UI library for developers working with the [remult](https://github.com/remult/remult) framework, enabling developers to build full composable UI's from scratch in minutes, and minimal effort, or integrate components (forms, views) into your already existing apps.
+remult-uikit uses remult configurations across your frontend to ensure consistency.
 
-Currently, two official plugins are available:
+Building on top of remult, remult-uikit offers:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- better, consistent user experience on the frontend
+- consistency for data handling - display, validation
+- declarative way of building UI's
 
-## Expanding the ESLint configuration
+## Quick start
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+1.
 
-- Configure the top-level `parserOptions` property like this:
+```
+yarn add remult remult-uikit
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
+npm add remult remult-uikit
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+2. Install your preferred UI lib
+
+- currently supported: [Material-UI V5](#Material UI V5)
+
+3. Create your remult entity
+
+```js
+@Entity<User>('users', {
+	@Fields.uuid()
+	id = ''
+
+	@Fields.string({
+		validate: [Validators.required, Validators.uniqueOnBackend],
+	})
+	email = ''
+
+	@Fields.string()
+	name = ''
+})
+
+```
+
+4. In your react code:
+
+```js
+import { RemultForm } from 'remult-uikit'
+
+const createUser = () => <RemultForm entity={User} />
+```
+
+## Supported UI libraries
+
+#Material UI V5
+
+```
+yarn add @emotion/react @emotion/styled @mui/icons-material @mui/material @mui/system @mui/x-data-grid @mui/x-data-grid-generator @mui/x-date-pickers
+
+npm install @emotion/react @emotion/styled @mui/icons-material @mui/material @mui/system @mui/x-data-grid @mui/x-data-grid-generator @mui/x-date-pickers
+```
