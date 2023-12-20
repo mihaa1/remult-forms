@@ -53,7 +53,7 @@ interface RemultFormP<T> {
 	sort?: (keyof T)[]
 }
 
-export const RemultForm = <T,>({
+export const RemultForm = <T extends { id: ID }>({
 	entity,
 	item,
 	showId,
@@ -82,7 +82,7 @@ export const RemultForm = <T,>({
 	useEffect(() => {
 		dispatch(item ? { ...item } : remult.repo(entity).create())
 		loadRelations(repo.fields)
-		setIsEdit(!!item)
+		setIsEdit(!!item?.id)
 	}, [item, entity])
 
 	const loadRelations = async (fields: FieldsMetadata<T>) => {
