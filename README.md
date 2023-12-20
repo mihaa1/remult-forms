@@ -4,9 +4,6 @@
     <a href="https://raw.githubusercontent.com/remult/remult/master/LICENSE" rel="nofollow">
 		<img alt="GitHub license" src="https://img.shields.io/badge/license-MIT-blue.svg">
 	</a>
-	<a href="https://www.npmjs.com/package/remult-uikit" rel="nofollow">
-		<img alt="npm version" src="https://badge.fury.io/js/remult.svg">
-	</a>
 </div>
 
 <br/>
