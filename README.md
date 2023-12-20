@@ -8,12 +8,6 @@
 
 <br/>
 
-<div align="center">
-   |
-  <a href="#documentation">Documentation</a> |
-  <a href="#example-apps">Example Apps</a>
-</div>
-
 <hr/>
 <br/>
 
