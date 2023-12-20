@@ -21,6 +21,7 @@ const RemultAutocomplete = ({
 	onSelect,
 	disabled,
 	label,
+	error,
 }: SingleSelectP) => {
 	const sanitizedOptions = options.map((o) => ({
 		...o,
@@ -43,7 +44,14 @@ const RemultAutocomplete = ({
 			selectOnFocus={false}
 			options={sanitizedOptions}
 			value={selectedItem || null}
-			renderInput={(params) => <TextField {...params} label={label} />}
+			renderInput={(params) => (
+				<TextField
+					{...params}
+					label={label}
+					error={!!error}
+					helperText={error}
+				/>
+			)}
 			disabled={disabled}
 		/>
 	)

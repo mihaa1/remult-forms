@@ -8,6 +8,7 @@ const RemultAutocompleteMultiple = ({
 	onSelect,
 	disabled,
 	label,
+	error,
 }: MultipleSelectP) => {
 	const sanitizedOptions = options.map((o) => ({
 		...o,
@@ -30,7 +31,14 @@ const RemultAutocompleteMultiple = ({
 			getOptionLabel={(option) =>
 				option.label || option.name || String(option.id)
 			}
-			renderInput={(params) => <TextField {...params} label={label} />}
+			renderInput={(params) => (
+				<TextField
+					{...params}
+					label={label}
+					error={!!error}
+					helperText={error}
+				/>
+			)}
 			disabled={disabled}
 			isOptionEqualToValue={(option, value) => option.id === value.id}
 		/>

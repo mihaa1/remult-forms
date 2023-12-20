@@ -28,6 +28,7 @@ export interface SingleSelectP {
 	selectedId?: ID
 	disabled?: boolean
 	onSelect: (arg: string | number) => void
+	error?: string
 }
 
 export interface MultipleSelectP {
@@ -36,4 +37,5 @@ export interface MultipleSelectP {
 	onSelect: (arg: Pick<SelectOption, 'id'>[]) => void
 	disabled?: boolean
 	label?: string
+	error?: string
 }

@@ -7,9 +7,15 @@ interface RemultTextFieldP<T> {
 	val: string | number
 	field: FieldMetadata<any, T> // eslint-disable-line @typescript-eslint/no-explicit-any
 	onChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
+	error?: string
 }
 
-const RemultTextField = <T,>({ val, field, onChange }: RemultTextFieldP<T>) => {
+const RemultTextField = <T,>({
+	val,
+	field,
+	onChange,
+	error,
+}: RemultTextFieldP<T>) => {
 	return (
 		<TextField
 			sx={{ mb: 1 }}
@@ -20,6 +26,8 @@ const RemultTextField = <T,>({ val, field, onChange }: RemultTextFieldP<T>) => {
 			value={val || ''}
 			onChange={onChange}
 			required={field.options.required}
+			error={!!error}
+			helperText={error}
 		/>
 	)
 }

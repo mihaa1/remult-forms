@@ -199,7 +199,13 @@ export class User {
 	@Fields.string()
 	phone = ''
 
-	@Fields.string()
+	@Fields.string<User>({
+		validate: (v) => {
+			if (v.firstName.length < 3) {
+				throw new Error('First name must be at least 3 characters long')
+			}
+		},
+	})
 	firstName = ''
 
 	@Fields.string()
@@ -208,23 +214,33 @@ export class User {
 	// @Relations.toMany(() => AttributeXUser, 'userId')
 	// attributes?: AttributeXUser[]
 
-	@Fields.json({
+	@Fields.json<User>({
+		// validate: (row) => {
+		// 	if (row) {
+		// 		throw new Error('Need to select at least 1')
+		// 	}
+		// },
 		select: {
 			options: DAYS.map((d) => ({ id: d, label: d.toUpperCase() })),
 			multiple: true,
-			type: 'select',
+			// type: 'select',
 		},
 		caption: 'Available Days',
 	})
 	availableDays = []
 
-	@Fields.integer({
+	@Fields.integer<User>({
+		// validate: (row) => {
+		// 	if (row.workingHoursStart === 1) {
+		// 		throw new Error('Working hours start cannot be 1:00 HR')
+		// 	}
+		// },
 		select: {
 			options: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((d) => ({
 				id: d,
 				label: d.toString() + ':00 HR',
 			})),
-			type: 'select',
+			// type: 'select',
 		},
 		caption: 'Working Hours Start',
 	})

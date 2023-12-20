@@ -67,9 +67,10 @@ export const RemultForm = <T extends { id: ID }>({
 	sort = [],
 }: RemultFormP<T>): ReactNode => {
 	const [isEdit, setIsEdit] = useState(false)
-	const [relations, setRelations] = useState<
-		{ [k in keyof Partial<T>]: any[] } | Record<string, never>
-	>({})
+	const [errors, setErrors] = useState<{ [k in keyof T]?: string }>({})
+	const [relations, setRelations] = useState<{
+		[k in keyof Partial<T>]?: any[]
+	}>({})
 
 	const [state, dispatch] = useReducer(
 		reducer,
@@ -137,15 +138,24 @@ export const RemultForm = <T extends { id: ID }>({
 
 	const onSubmitInternal = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
+
+		setErrors({})
+
 		if (onSubmit) {
 			onSubmit(state)
 			return resetForm()
 		}
-		if (isEdit) {
-			await onEdit()
-		} else {
-			await onCreate()
-			resetForm()
+		try {
+			if (isEdit) {
+				await onEdit()
+			} else {
+				await onCreate()
+				resetForm()
+			}
+		} catch (e: any) {
+			if (e.modelState) {
+				setErrors({ ...e.modelState })
+			}
 		}
 	}
 
@@ -207,11 +217,13 @@ export const RemultForm = <T extends { id: ID }>({
 					return (
 						<RemultAutocomplete
 							key={f.key}
-							label={f.key}
+							label={f.caption || f.key}
 							options={mapped}
 							// @ts-expect-error TODO: fix this
 							selectedId={state[f.options.field]}
 							onSelect={(newVal) => onSingleSelect(newVal, f)}
+							// @ts-expect-error TODO: fix
+							error={errors[f.key]}
 						/>
 					)
 				} else if (f.options.select) {
@@ -224,23 +236,28 @@ export const RemultForm = <T extends { id: ID }>({
 								<RemultCheckboxMultiple
 									row
 									key={f.key}
+									label={f.caption || f.key}
 									options={f.options.select.options}
 									selected={state[f.key]?.map((item: ID) => ({
 										id: item,
 									}))}
 									onSelect={(newVal) => onMultiSelect(newVal, f)}
+									// @ts-expect-error TODO: fix
+									error={errors[f.key]}
 								/>
 							)
 						} else if (f.options.select.type === 'select') {
 							return (
 								<RemultAutocompleteMultiple
 									key={f.key}
-									label={f.options.caption || f.key}
+									label={f.caption || f.key}
 									options={f.options.select.options}
 									selected={state[f.key]?.map((item: ID) => ({
 										id: item,
 									}))}
 									onSelect={(newVal) => onMultiSelect(newVal, f)}
+									// @ts-expect-error TODO: fix
+									error={errors[f.key]}
 								/>
 							)
 						}
@@ -253,20 +270,24 @@ export const RemultForm = <T extends { id: ID }>({
 								<RemultRadioGroup
 									row
 									key={f.key}
-									label={f.options.caption || f.key}
+									label={f.caption || f.key}
 									options={f.options.select.options}
 									selectedId={state[f.key]}
 									onSelect={(newVal) => onSingleSelect(newVal, f)}
+									// @ts-expect-error TODO: fix
+									error={errors[f.key]}
 								/>
 							)
 						} else if (f.options.select.type === 'select') {
 							return (
 								<RemultAutocomplete
 									key={f.key}
-									label={f.options.caption || f.key}
+									label={f.caption || f.key}
 									options={f.options.select.options}
 									selectedId={state[f.key]}
 									onSelect={(newVal) => onSingleSelect(newVal, f)}
+									// @ts-expect-error TODO: fix
+									error={errors[f.key]}
 								/>
 							)
 						}
@@ -289,13 +310,15 @@ export const RemultForm = <T extends { id: ID }>({
 							}
 							field={f}
 							onChange={(e) => onChangeTextfield(e, f.key)}
+							// @ts-expect-error TODO: fix
+							error={errors[f.key]}
 						/>
 					)
 				} else if (f.inputType === 'checkbox') {
 					return (
 						<RemultCheckbox
 							key={f.key}
-							label={f.options.caption || f.key}
+							label={f.caption || f.key}
 							disabled={isMetaActionBlocked(f.options.allowApiUpdate)}
 							checked={!!rawVal}
 							onChange={(e) => onChangeCheckbox(e, f.key)}

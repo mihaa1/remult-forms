@@ -4,6 +4,7 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import FormControl from '@mui/material/FormControl'
 import FormLabel from '@mui/material/FormLabel'
 import { SingleSelectP } from '../types'
+import { FormHelperText } from '@mui/material'
 
 interface RemultRadioGroupP {
 	row?: boolean
@@ -16,11 +17,12 @@ const RemultRadioGroup = ({
 	disabled,
 	label,
 	row,
+	error,
 }: SingleSelectP & RemultRadioGroupP) => {
 	console.log('>>> selected', selected)
 	console.log('>>> options', options)
 	return (
-		<FormControl disabled={disabled}>
+		<FormControl disabled={disabled} error={!!error}>
 			<FormLabel>{label}</FormLabel>
 			<RadioGroup
 				row={row}
@@ -38,6 +40,7 @@ const RemultRadioGroup = ({
 					)
 				})}
 			</RadioGroup>
+			<FormHelperText>{error}</FormHelperText>
 		</FormControl>
 	)
 }

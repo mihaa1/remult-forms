@@ -11,11 +11,14 @@ import GridRoute from './pages/GridRoute/GridRoute'
 import { remult } from 'remult'
 import { User } from './shared/models/User.model'
 import { Organization } from './shared/models/Organization.model'
+import { ThemeProvider, createTheme } from '@mui/material/styles'
 
 function App() {
 	// const [count, setCount] = useState(0)
 	Object.assign(globalThis, { remult, User })
 	Object.assign(globalThis, { remult, Organization })
+	const theme = createTheme()
+
 	useEffect(() => {
 		remult.user = {
 			id: 'abc',
@@ -38,16 +41,18 @@ function App() {
 	}, [])
 
 	return (
-		<div style={{ width: '80%' }}>
-			<BrowserRouter>
-				<Router>
-					<Route path='form/:id?' element={<FormRoute />} />
-					<Route path='grid' element={<GridRoute />} />
-					<Route path='/' element={<Navigate to='/form' replace />} />
-					<Route path='*' element={<Navigate to='/' />} />
-				</Router>
-			</BrowserRouter>
-		</div>
+		<ThemeProvider theme={theme}>
+			<div style={{ width: '80%' }}>
+				<BrowserRouter>
+					<Router>
+						<Route path='form/:id?' element={<FormRoute />} />
+						<Route path='grid' element={<GridRoute />} />
+						<Route path='/' element={<Navigate to='/form' replace />} />
+						<Route path='*' element={<Navigate to='/' />} />
+					</Router>
+				</BrowserRouter>
+			</div>
+		</ThemeProvider>
 	)
 }
 
