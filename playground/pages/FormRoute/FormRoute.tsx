@@ -27,7 +27,8 @@ const FormRoute = () => {
 			// item={remult.repo(User).create()}
 			// onSubmit={(item) => console.log('onSubmit(): item', item)}
 			onDone={(item) => console.log('onDone(): item', item)}
-			// hidePartial={['role']}
+			// hidePartial={['organization']}
+			sort={['firstName', 'lastName']}
 		/>
 	)
 }
