@@ -2,8 +2,8 @@
   <h1>Remult-uikit</h1>
   <p>Consistent composabe UI components for <a href=https://github.com/remult/remult>Remult</a></p>
     <a href="https://raw.githubusercontent.com/remult/remult/master/LICENSE" rel="nofollow">
-		<img alt="GitHub license" src="https://img.shields.io/badge/license-MIT-blue.svg">
-	</a>
+    <img alt="GitHub license" src="https://img.shields.io/badge/license-MIT-blue.svg">
+  </a>
 </div>
 
 <hr/>
@@ -40,13 +40,13 @@ npm add remult remult-uikit
   @Fields.uuid()
   id = ''
 
-	@Fields.string({
-		validate: [Validators.required, Validators.uniqueOnBackend],
-	})
-	email = ''
+  @Fields.string({
+    validate: [Validators.required, Validators.uniqueOnBackend],
+  })
+  email = ''
 
-	@Fields.string()
-	name = ''
+  @Fields.string()
+  name = ''
 })
 
 ```
