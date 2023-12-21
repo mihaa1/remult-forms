@@ -39,3 +39,20 @@ export interface MultipleSelectP {
 	label?: string
 	error?: string
 }
+
+export interface EntityMetaDisplay<T> {
+	/** Model to generate form for */
+	entity: ClassType<T>
+	/** Show item id */
+	showId?: boolean
+	/** Show createdAt */
+	showCreatedAt?: boolean
+	/** Show updatedAt */
+	showUpdatedAt?: boolean
+	/** Show these fields in form from the provided entity. PROVIDE ONLY ONE OF showPartial OR hidePartial */
+	showPartial?: (keyof T)[]
+	/** Hide these fields in form from the provided entity. PROVIDE ONLY ONE OF hidePartial OR showPartial */
+	hidePartial?: (keyof T)[]
+	/** Order of field for dispaly */
+	sort?: (keyof T)[]
+}

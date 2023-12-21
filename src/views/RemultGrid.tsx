@@ -1,59 +1,87 @@
-import { DataGrid, GridToolbar } from '@mui/x-data-grid'
-import type { ClassType } from '../types'
+import { DataGrid, GridColDef, GridToolbar } from '@mui/x-data-grid'
+import type { EntityMetaDisplay } from '../types'
 import { useEffect, useState } from 'react'
-import { useDemoData } from '@mui/x-data-grid-generator'
-import { remult } from 'remult'
+import { FieldsMetadata, remult } from 'remult'
+import { getFieldType, isHideField, isMetaActionBlocked } from '../util'
+import { Typography } from '@mui/material'
 
-interface RemultTableP<T> {
-	/** Model to generate form for */
-	entity: ClassType<T>
-	/** Show item id */
-	showId?: boolean
-	/** Custom form title */
+interface RemultGridP {
+	/** Custom grid title */
 	title?: string
-	/** Trigger on form submit. This will pass the created/edited item and will NOT perform the action. */
-	onSubmit?: (item: T | undefined) => void
-	/** Trigger on action completed. When create/edit action is done this will be fired */
-	onDone?: (item: T[] | undefined) => void
 }
-const VISIBLE_FIELDS = ['name', 'rating', 'country', 'dateCreated', 'isAdmin']
+// const VISIBLE_FIELDS = ['name', 'rating', 'country', 'dateCreated', 'isAdmin']
 
 export const RemultGrid = <T,>({
 	entity,
-}: // showId,
-// title,
-// onSubmit,
-// onDone,
-RemultTableP<T>) => {
+	showId,
+	showCreatedAt,
+	showUpdatedAt,
+	title,
+	showPartial,
+	hidePartial,
+	sort = [],
+}: RemultGridP & EntityMetaDisplay<T>) => {
 	const repo = remult.repo(entity)
 	const [data, setData] = useState<T[]>()
-	const { data: exampleData } = useDemoData({
-		dataSet: 'Employee',
-		visibleFields: VISIBLE_FIELDS,
-		rowLength: 100,
-	})
+	const [columns, setColumns] = useState<GridColDef[]>([])
 
-	console.log('entity', entity)
-	console.log('exampleData', exampleData)
-	console.log('repo', repo)
 	useEffect(() => {
-		remult.repo(entity).find().then(setData)
-	}, [])
+		setColumns(getColumnsMetadata(repo.fields))
+	}, [repo.fields])
 
-	const transformToFields = () => {
-		return repo.fields.toArray().map((f) => {
-			return {
-				field: f.key,
-			}
-		})
+	useEffect(() => {
+		repo.find().then(setData)
+	}, [repo])
+
+	const getColumnsMetadata = (fields: FieldsMetadata<T>): GridColDef[] => {
+		return fields
+			.toArray()
+			.slice()
+			.sort((a, b) => (a.key > b.key ? 1 : -1))
+			.sort((a, b) => {
+				// @ts-expect-error TODO: fix type error here
+				if (sort.indexOf(a.key) === -1) {
+					return 1
+				}
+				// @ts-expect-error TODO: fix type error here
+				if (sort.indexOf(b.key) === -1) {
+					return -1
+				}
+				// @ts-expect-error TODO: fix type error here
+				return sort.indexOf(a.key) - sort.indexOf(b.key)
+			})
+			.map((f) => {
+				if (
+					isHideField(
+						f,
+						fields.toArray(),
+						true,
+						showId,
+						showCreatedAt,
+						showUpdatedAt,
+						showPartial,
+						hidePartial
+					)
+				) {
+					return
+				}
+				return {
+					field: f.key,
+					headerName: f.key,
+					width: 120,
+					editable: !isMetaActionBlocked(f.options.allowApiUpdate),
+					type: getFieldType(f) || 'string',
+				}
+			})
+			.filter((col) => !!col) as GridColDef[]
 	}
 
 	return (
 		<div style={{ height: '100%', width: '100%' }}>
+			<Typography>{title || repo.metadata.caption}</Typography>
 			{data && (
 				<DataGrid
-					columns={transformToFields()}
-					// @ts-expect-error TODO: fix this
+					columns={columns}
 					rows={data}
 					slots={{ toolbar: GridToolbar }}
 				/>

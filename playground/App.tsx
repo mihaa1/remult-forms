@@ -42,7 +42,7 @@ function App() {
 
 	return (
 		<ThemeProvider theme={theme}>
-			<div style={{ width: '80%' }}>
+			<div style={{ width: '100%' }}>
 				<BrowserRouter>
 					<Router>
 						<Route path='form/:id?' element={<FormRoute />} />

@@ -70,3 +70,25 @@ export const isMetaActionBlocked = (
 		(remult.user && !remult.isAllowed(metaAction))
 	)
 }
+
+export const getFieldType = <T>(f: FieldMetadata<T>) => {
+	// TODO: how to load relations in form/grid
+	// const relationInfo = getRelationInfo(f.options)
+	// if (relationInfo && relations[f.key]) {
+	// 	return 'select'
+	// }
+	if (f.options.select) {
+		if (f.options.select.multiple) {
+			return 'multiSelect'
+		}
+		return 'singleSelect'
+	} else if (!f.inputType || f.inputType === 'text') {
+		return 'string'
+	} else if (f.inputType === 'number') {
+		return 'number'
+	} else if (f.inputType === 'checkbox') {
+		return 'boolean'
+	} else if (f.inputType === 'date' || f.inputType === 'datetime-local') {
+		return 'date'
+	}
+}

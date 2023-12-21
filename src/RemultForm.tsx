@@ -10,8 +10,8 @@ import {
 import { remult } from 'remult'
 import type { FieldMetadata, FieldsMetadata } from 'remult'
 import { Box, Button, Typography } from '@mui/material'
-import type { ClassType, ID, SelectOption } from './types'
-import { isHideField, isMetaActionBlocked } from './util'
+import type { EntityMetaDisplay, ID, SelectOption } from './types'
+import { getFieldType, isHideField, isMetaActionBlocked } from './util'
 import { getRelationInfo } from 'remult/internals'
 import RemultTextField from './components/Textfield'
 import RemultCheckbox from './components/Checkbox'
@@ -29,28 +29,14 @@ const reducer = <T,>(state: T, action: any) => {
 }
 
 interface RemultFormP<T> {
-	/** Model to generate form for */
-	entity: ClassType<T>
 	/** Existing model instance if edit case. Empty for create */
 	item?: T
-	/** Show item id */
-	showId?: boolean
-	/** Show createdAt */
-	showCreatedAt?: boolean
-	/** Show updatedAt */
-	showUpdatedAt?: boolean
 	/** Custom form title */
 	title?: string
 	/** Trigger on form submit. This will pass the created/edited item and will NOT perform the action. */
 	onSubmit?: (item: T | undefined) => void
 	/** Trigger on action completed. When create/edit action is done this will be fired */
 	onDone?: (item: T[] | undefined) => void
-	/** Show these fields in form from the provided entity. PROVIDE ONLY ONE OF showPartial OR hidePartial */
-	showPartial?: (keyof T)[]
-	/** Hide these fields in form from the provided entity. PROVIDE ONLY ONE OF hidePartial OR showPartial */
-	hidePartial?: (keyof T)[]
-	/** Order of field for dispaly */
-	sort?: (keyof T)[]
 }
 
 export const RemultForm = <T extends { id: ID }>({
@@ -65,7 +51,7 @@ export const RemultForm = <T extends { id: ID }>({
 	showPartial,
 	hidePartial,
 	sort = [],
-}: RemultFormP<T>): ReactNode => {
+}: RemultFormP<T> & EntityMetaDisplay<T>): ReactNode => {
 	const [isEdit, setIsEdit] = useState(false)
 	const [errors, setErrors] = useState<{ [k in keyof T]?: string }>({})
 	const [relations, setRelations] = useState<{
@@ -84,7 +70,7 @@ export const RemultForm = <T extends { id: ID }>({
 		dispatch(item ? { ...item } : remult.repo(entity).create())
 		loadRelations(repo.fields)
 		setIsEdit(!!item?.id)
-	}, [item, entity])
+	}, [item, entity, repo.fields])
 
 	const loadRelations = async (fields: FieldsMetadata<T>) => {
 		const res: any = {}
@@ -204,7 +190,7 @@ export const RemultForm = <T extends { id: ID }>({
 				) {
 					return
 				}
-
+				const fieldType = getFieldType(f)
 				const rawVal = state[f.key as keyof typeof state]
 				const relationInfo = getRelationInfo(f.options)
 				// @ts-expect-error TODO: how to do keyof Partial<T>
@@ -229,77 +215,65 @@ export const RemultForm = <T extends { id: ID }>({
 							error={errors[f.key]}
 						/>
 					)
-				} else if (f.options.select) {
-					if (f.options.select.multiple) {
-						if (
-							!f.options.select.type ||
-							f.options.select.type === 'checkbox'
-						) {
-							return (
-								<RemultCheckboxMultiple
-									row
-									key={f.key}
-									label={f.caption || f.key}
-									options={f.options.select.options}
-									selected={state[f.key]?.map((item: ID) => ({
-										id: item,
-									}))}
-									onSelect={(newVal) => onMultiSelect(newVal, f)}
-									// @ts-expect-error TODO: fix
-									error={errors[f.key]}
-								/>
-							)
-						} else if (f.options.select.type === 'select') {
-							return (
-								<RemultAutocompleteMultiple
-									key={f.key}
-									label={f.caption || f.key}
-									options={f.options.select.options}
-									selected={state[f.key]?.map((item: ID) => ({
-										id: item,
-									}))}
-									onSelect={(newVal) => onMultiSelect(newVal, f)}
-									// @ts-expect-error TODO: fix
-									error={errors[f.key]}
-								/>
-							)
-						}
-					} else {
-						if (
-							!f.options.select.type ||
-							f.options.select.type === 'radiobox'
-						) {
-							return (
-								<RemultRadioGroup
-									row
-									key={f.key}
-									label={f.caption || f.key}
-									options={f.options.select.options}
-									selectedId={state[f.key]}
-									onSelect={(newVal) => onSingleSelect(newVal, f)}
-									// @ts-expect-error TODO: fix
-									error={errors[f.key]}
-								/>
-							)
-						} else if (f.options.select.type === 'select') {
-							return (
-								<RemultAutocomplete
-									key={f.key}
-									label={f.caption || f.key}
-									options={f.options.select.options}
-									selectedId={state[f.key]}
-									onSelect={(newVal) => onSingleSelect(newVal, f)}
-									// @ts-expect-error TODO: fix
-									error={errors[f.key]}
-								/>
-							)
-						}
+				} else if (fieldType === 'singleSelect') {
+					if (!f.options.select?.type || f.options.select.type === 'radiobox') {
+						return (
+							<RemultRadioGroup
+								row
+								key={f.key}
+								label={f.caption || f.key}
+								options={f.options.select?.options || []}
+								selectedId={state[f.key]}
+								onSelect={(newVal) => onSingleSelect(newVal, f)}
+								// @ts-expect-error TODO: fix
+								error={errors[f.key]}
+							/>
+						)
+					} else if (f.options.select.type === 'select') {
+						return (
+							<RemultAutocomplete
+								key={f.key}
+								label={f.caption || f.key}
+								options={f.options.select.options}
+								selectedId={state[f.key]}
+								onSelect={(newVal) => onSingleSelect(newVal, f)}
+								// @ts-expect-error TODO: fix
+								error={errors[f.key]}
+							/>
+						)
 					}
-				} else if (
-					!f.inputType ||
-					f.inputType === 'text' ||
-					f.inputType === 'number'
-				) {
+				} else if (fieldType === 'multiSelect') {
+					if (!f.options.select?.type || f.options.select.type === 'checkbox') {
+						return (
+							<RemultCheckboxMultiple
+								row
+								key={f.key}
+								label={f.caption || f.key}
+								options={f.options.select?.options || []}
+								selected={state[f.key]?.map((item: ID) => ({
+									id: item,
+								}))}
+								onSelect={(newVal) => onMultiSelect(newVal, f)}
+								// @ts-expect-error TODO: fix
+								error={errors[f.key]}
+							/>
+						)
+					} else if (f.options.select.type === 'select') {
+						return (
+							<RemultAutocompleteMultiple
+								key={f.key}
+								label={f.caption || f.key}
+								options={f.options.select.options}
+								selected={state[f.key]?.map((item: ID) => ({
+									id: item,
+								}))}
+								onSelect={(newVal) => onMultiSelect(newVal, f)}
+								// @ts-expect-error TODO: fix
+								error={errors[f.key]}
+							/>
+						)
+					}
+				} else if (fieldType === 'string' || fieldType === 'number') {
 					// if (f.valueType == String || f.valueType == Number) {
 					return (
 						<RemultTextField
@@ -317,7 +291,7 @@ export const RemultForm = <T extends { id: ID }>({
 							error={errors[f.key]}
 						/>
 					)
-				} else if (f.inputType === 'checkbox') {
+				} else if (fieldType === 'boolean') {
 					return (
 						<RemultCheckbox
 							key={f.key}
@@ -327,7 +301,7 @@ export const RemultForm = <T extends { id: ID }>({
 							onChange={(e) => onChangeCheckbox(e, f.key)}
 						/>
 					)
-				} else if (f.inputType === 'date' || f.inputType === 'datetime-local') {
+				} else if (fieldType === 'date') {
 					return (
 						<RemultDatepicker
 							key={f.key}
