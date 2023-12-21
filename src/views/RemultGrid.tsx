@@ -78,7 +78,7 @@ export const RemultGrid = <T,>({
 
 	return (
 		<div style={{ height: '100%', width: '100%' }}>
-			<Typography>{title || repo.metadata.caption}</Typography>
+			<Typography sx={{ mb: 1 }}>{title || repo.metadata.caption}</Typography>
 			{data && (
 				<DataGrid
 					columns={columns}

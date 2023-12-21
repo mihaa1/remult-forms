@@ -19,8 +19,6 @@ const RemultRadioGroup = ({
 	row,
 	error,
 }: SingleSelectP & RemultRadioGroupP) => {
-	console.log('>>> selected', selected)
-	console.log('>>> options', options)
 	return (
 		<FormControl disabled={disabled} error={!!error}>
 			<FormLabel>{label}</FormLabel>

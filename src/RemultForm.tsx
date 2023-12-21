@@ -319,7 +319,7 @@ export const RemultForm = <T extends { id: ID }>({
 			onSubmit={onSubmitInternal}
 			sx={{ display: 'flex', flexDirection: 'column' }}
 		>
-			<Typography>
+			<Typography sx={{ mb: 1 }}>
 				{title || `${isEdit ? 'Edit ' : 'Create'} ${repo.metadata.caption}`}
 			</Typography>
 			{renderForm(repo.fields)}
