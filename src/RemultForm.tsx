@@ -75,7 +75,7 @@ export const RemultForm = <T extends { id: ID }>({
 	const loadRelations = async (fields: FieldsMetadata<T>) => {
 		const res: any = {}
 		for (const f of fields.toArray()) {
-			if (hidePartial?.indexOf(f.key as keyof T) !== -1) {
+			if (hidePartial && hidePartial.indexOf(f.key as keyof T) !== -1) {
 				continue
 			}
 			const relationInfo = getRelationInfo(f.options)
