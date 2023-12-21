@@ -1,5 +1,5 @@
 import { Allow, Entity, Fields, Relations, Validators, remult } from 'remult'
-import { Role } from '../../server/consts'
+import { Role, WORKING_HOURS } from '../../server/consts'
 import { Organization } from './Organization.model'
 // import { AttributeXUser } from './Attribute-X-User'
 import { Location } from './Location.model'
@@ -236,7 +236,7 @@ export class User {
 		// 	}
 		// },
 		select: {
-			options: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((d) => ({
+			options: WORKING_HOURS.map((d) => ({
 				id: d,
 				label: d.toString() + ':00 HR',
 			})),

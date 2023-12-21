@@ -209,7 +209,7 @@ export const RemultForm = <T extends { id: ID }>({
 					// @ts-expect-error TODO: fix
 					const mapped = relations[f.key].map((r: any) => ({
 						id: r.id,
-						label: r.name,
+						label: r.name || r.id,
 					}))
 					return (
 						<RemultAutocomplete

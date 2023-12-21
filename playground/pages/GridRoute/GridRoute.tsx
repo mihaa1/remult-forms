@@ -6,7 +6,7 @@ const GridRoute = () => {
 		<RemultGrid
 			entity={User}
 			showId
-			sort={['id', 'email', 'firstName', 'lastName']}
+			sort={['id', 'email', 'workingHoursStart', 'firstName', 'lastName']}
 		/>
 	)
 }
