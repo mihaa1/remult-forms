@@ -11,6 +11,14 @@ import { RelationInfo, getRelationInfo } from 'remult/internals'
 interface RemultGridP {
 	/** Custom grid title */
 	title?: string
+	/** Native grid props. These are passed to the grid component as is*/
+	gridOptions?: {
+		editMode?: 'row' | 'cell'
+		checkboxSelection?: boolean
+		disableRowSelectionOnClick?: boolean
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		[key: string]: any
+	}
 }
 
 export const RemultGrid = <T,>({
@@ -22,6 +30,11 @@ export const RemultGrid = <T,>({
 	showPartial,
 	hidePartial,
 	sort = [],
+	gridOptions = {
+		editMode: 'row',
+		checkboxSelection: true,
+		disableRowSelectionOnClick: false,
+	},
 }: RemultGridP & EntityMetaDisplay<T>) => {
 	const repo = remult.repo(entity)
 	const [data, setData] = useState<T[]>()
@@ -129,13 +142,10 @@ export const RemultGrid = <T,>({
 			<Typography sx={{ mb: 1 }}>{title || repo.metadata.caption}</Typography>
 			{data && (
 				<DataGrid
+					{...gridOptions}
 					columns={getColumnsMetadata(repo.fields)}
 					rows={data}
 					slots={{ toolbar: GridToolbar }}
-					editMode='row'
-					// autoPageSize
-					checkboxSelection
-					disableRowSelectionOnClick
 					// loading
 					processRowUpdate={async (newRow) => {
 						return await repo.save(newRow)
