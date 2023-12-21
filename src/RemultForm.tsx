@@ -109,6 +109,14 @@ export const RemultForm = <T extends { id: ID }>({
 			[key]: new Date(newDate as any),
 		})
 
+	const onRelationSelect = <T,>(
+		selected: string | number,
+		f: FieldMetadata<any, T>
+	) => {
+		// @ts-expect-error TODO: same issue here with relation type. Need to fix
+		dispatch({ [f.options.field]: selected })
+	}
+
 	const onSingleSelect = <T,>(
 		selected: string | number,
 		f: FieldMetadata<any, T>
@@ -210,7 +218,7 @@ export const RemultForm = <T extends { id: ID }>({
 							options={mapped}
 							// @ts-expect-error TODO: fix this
 							selectedId={state[f.options.field]}
-							onSelect={(newVal) => onSingleSelect(newVal, f)}
+							onSelect={(newVal) => onRelationSelect(newVal, f)}
 							// @ts-expect-error TODO: fix
 							error={errors[f.key]}
 						/>
