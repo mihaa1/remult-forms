@@ -8,6 +8,7 @@
 
 <hr/>
 
+Demo: [code sandbox](https://codesandbox.io/p/devbox/j8zm2x?file=/db/users.json:6,23)
 # Remult-uikit
 
 remult-uikit is a React UI library for developers working with the [remult](https://github.com/remult/remult) framework, enabling developers to build full composable UI's from scratch in minutes, and minimal effort, or integrate components (forms, views) into your already existing apps.
