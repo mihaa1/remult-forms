@@ -2,6 +2,7 @@ import { TextField } from '@mui/material'
 import { ChangeEvent } from 'react'
 import { FieldMetadata } from 'remult'
 import { isMetaActionBlocked } from '../util'
+// import { UILibContext } from '../UILibContext'
 
 interface RemultTextFieldP<T> {
 	val: string | number
@@ -16,6 +17,8 @@ const RemultTextField = <T,>({
 	onChange,
 	error,
 }: RemultTextFieldP<T>) => {
+	// const uiLib = useContext(UILibContext)
+
 	return (
 		<TextField
 			sx={{ mb: 1 }}

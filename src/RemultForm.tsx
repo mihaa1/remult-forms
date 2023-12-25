@@ -20,6 +20,7 @@ import RemultAutocomplete from './components/Autocomplete'
 import RemultAutocompleteMultiple from './components/AutocompleteMultiple'
 import RemultCheckboxMultiple from './components/CheckboxMultiple'
 import RemultRadioGroup from './components/RadioGroup'
+import { UILibContext } from './UILibContext'
 
 const reducer = <T,>(state: T, action: any) => {
 	return {
@@ -37,6 +38,7 @@ interface RemultFormP<T> {
 	onSubmit?: (item: T | undefined) => void
 	/** Trigger on action completed. When create/edit action is done this will be fired */
 	onDone?: (item: T[] | undefined) => void
+	uiLib?: 'mui_v5' | 'joy_ui'
 }
 
 export const RemultForm = <T extends { id: ID }>({
@@ -51,6 +53,7 @@ export const RemultForm = <T extends { id: ID }>({
 	showPartial,
 	hidePartial,
 	sort = [],
+	uiLib = 'mui_v5',
 }: RemultFormP<T> & EntityMetaDisplay<T>): ReactNode => {
 	const [isEdit, setIsEdit] = useState(false)
 	const [errors, setErrors] = useState<{ [k in keyof T]?: string }>({})
@@ -322,18 +325,20 @@ export const RemultForm = <T extends { id: ID }>({
 	}
 
 	return (
-		<Box
-			component='form'
-			onSubmit={onSubmitInternal}
-			sx={{ display: 'flex', flexDirection: 'column' }}
-		>
-			<Typography sx={{ mb: 1 }}>
-				{title || `${isEdit ? 'Edit ' : 'Create'} ${repo.metadata.caption}`}
-			</Typography>
-			{renderForm(repo.fields)}
-			<Button type='submit' sx={{ m: 1 }} variant='contained'>
-				{`${isEdit ? 'Save' : 'Create'}`}
-			</Button>
-		</Box>
+		<UILibContext.Provider value={uiLib}>
+			<Box
+				component='form'
+				onSubmit={onSubmitInternal}
+				sx={{ display: 'flex', flexDirection: 'column' }}
+			>
+				<Typography sx={{ mb: 1 }}>
+					{title || `${isEdit ? 'Edit ' : 'Create'} ${repo.metadata.caption}`}
+				</Typography>
+				{renderForm(repo.fields)}
+				<Button type='submit' sx={{ m: 1 }} variant='contained'>
+					{`${isEdit ? 'Save' : 'Create'}`}
+				</Button>
+			</Box>
+		</UILibContext.Provider>
 	)
 }
