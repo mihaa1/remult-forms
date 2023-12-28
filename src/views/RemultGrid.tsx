@@ -58,14 +58,16 @@ export const RemultGrid = <T,>({
 	}, [repo])
 
 	useEffect(() => {
-		if (repo) {
-			loadRelations(repo.fields)
-		}
+		loadRelations(repo?.fields)
 	}, [repo?.fields])
 
 	const fetchData = async () => await repo?.find().then(setData)
 
-	const loadRelations = async (fields: FieldsMetadata<T>) => {
+	const loadRelations = async (fields: FieldsMetadata<T> | undefined) => {
+		if (!fields) {
+			return
+		}
+
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const res: any = {}
 		for (const f of fields.toArray()) {
