@@ -9,9 +9,12 @@ import { ReactNode, useEffect, useState } from 'react'
 import { remult } from 'remult'
 import type { FieldMetadata, FieldsMetadata, FindOptions } from 'remult'
 import { getFieldType, isHideField, isMetaActionBlocked } from '../util'
-import { Button, Dialog, DialogTitle, Typography } from '@mui/material'
+import { Button, LinearProgress, Typography } from '@mui/material'
 import { RelationInfo, getRelationInfo } from 'remult/internals'
 import { Box } from '@mui/system'
+import AddRowDialog from '../components/grid/AddRowDialog'
+import useToggle from '../hooks/useToggle'
+import DeleteRowDialog from '../components/grid/DeleteRowDialog'
 
 interface RemultGridP {
 	/** Custom grid title */
@@ -59,14 +62,17 @@ export const RemultGrid = <T,>({
 
 	const [rowCountState, setRowCountState] = useState(0)
 	const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([])
-	const [confirmationDialog, setShowConfirmation] = useState({
-		show: false,
-		title: '',
-		text: '',
-	})
 	const [gridOptionsMerged, setGridOptionsMerged] = useState({
 		...GRID_OPTIONS_DEFAULTS,
 	})
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const showDeleteRowDialogToggle: any = useToggle({
+		isOpen: false,
+		title: '',
+		text: '',
+	})
+	const showAddRowDialogToggle = useToggle()
 
 	useEffect(() => {
 		fetchData(options)
@@ -83,7 +89,10 @@ export const RemultGrid = <T,>({
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const fetchData = async (findOptions: FindOptions<any>) => {
 		const count = await repo?.count()
-		const data = await repo?.find(findOptions)
+		const data = await repo?.find({
+			...findOptions,
+			page: (findOptions.page || 0) + 1,
+		})
 		setData(data)
 		setRowCountState(count || 0)
 	}
@@ -180,13 +189,6 @@ export const RemultGrid = <T,>({
 			.filter((col) => !!col) as GridColDef[]
 	}
 
-	const onDelete = () =>
-		setShowConfirmation({
-			show: true,
-			title: 'Are you sure you want to delete these items?',
-			text: 'This action cannot be undone.',
-		})
-
 	const onDeleteConfirm = async () => {
 		// @ts-expect-error // [ ] TODO: fix type error here
 		const deletePromises = selectedRows.map((id) => repo.delete(id))
@@ -196,7 +198,7 @@ export const RemultGrid = <T,>({
 	}
 
 	const resetConfirm = () =>
-		setShowConfirmation({ show: false, title: '', text: '' })
+		showDeleteRowDialogToggle.close({ title: '', text: '' })
 
 	const toggleOrderBy = (key: string) => {
 		let dir = options.orderBy?.[key]
@@ -210,54 +212,53 @@ export const RemultGrid = <T,>({
 		setOptions({ ...options, orderBy: { [key]: dir } })
 	}
 
+	const renderActions = () => {
+		return (
+			<Box sx={{ mb: 1 }}>
+				<Button
+					onClick={showAddRowDialogToggle.show}
+					variant='contained'
+					size='small'
+				>
+					Add +
+				</Button>
+				{selectedRows?.length ? (
+					<Button
+						sx={{ ml: 1, bgcolor: 'error.main' }}
+						variant='contained'
+						size='small'
+						onClick={showDeleteRowDialogToggle.show}
+					>
+						Delete
+					</Button>
+				) : (
+					<></>
+				)}
+			</Box>
+		)
+	}
+
 	return (
 		<div style={{ height: '100%', width: '100%' }}>
-			<Dialog open={confirmationDialog.show}>
-				<Box
-					sx={{
-						pb: 2,
-					}}
-				>
-					<DialogTitle>{confirmationDialog.title}</DialogTitle>
-					<Box
-						sx={{
-							display: 'flex',
-							flexDirection: 'column',
-							justifyContent: 'center',
-							alignItems: 'center',
-						}}
-					>
-						<Typography sx={{ mb: 3 }}>{confirmationDialog.text}</Typography>
-						<Box>
-							<Button sx={{ mr: 3 }} onClick={resetConfirm}>
-								Dismiss
-							</Button>
-							<Button
-								sx={{ bgcolor: 'error.main' }}
-								variant='contained'
-								onClick={onDeleteConfirm}
-							>
-								Delete
-							</Button>
-						</Box>
-					</Box>
-				</Box>
-			</Dialog>
+			{<AddRowDialog repo={repo} toggle={showAddRowDialogToggle} />}
+			{
+				<DeleteRowDialog
+					toggle={showDeleteRowDialogToggle}
+					onDeleteConfirm={onDeleteConfirm}
+				/>
+			}
 			<Typography sx={{ mb: 1 }}>{title || repo?.metadata.caption}</Typography>
 			{data && (
 				<>
-					{selectedRows?.length ? (
-						<Button variant='contained' onClick={onDelete}>
-							Delete
-						</Button>
-					) : (
-						<></>
-					)}
+					{renderActions()}
 					<DataGrid
 						{...gridOptionsMerged}
 						columns={getColumnsMetadata(repo?.fields)}
 						rows={data}
-						slots={{ toolbar: GridToolbar }}
+						slots={{
+							toolbar: GridToolbar,
+							loadingOverlay: LinearProgress,
+						}}
 						// loading
 						processRowUpdate={async (newRow) => await repo?.save(newRow)}
 						onProcessRowUpdateError={(e) => {
@@ -276,7 +277,6 @@ export const RemultGrid = <T,>({
 							page: options.page || 0,
 						}}
 						onSortModelChange={(model) => {
-							console.log('model', model)
 							toggleOrderBy(model[0].field)
 						}}
 					/>
