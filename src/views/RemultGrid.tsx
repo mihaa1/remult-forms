@@ -70,7 +70,7 @@ export const RemultGrid = <T,>({
 
 	useEffect(() => {
 		fetchData(options)
-	}, [repo])
+	}, [repo, options])
 
 	useEffect(() => {
 		loadRelations(repo?.fields)
@@ -198,6 +198,18 @@ export const RemultGrid = <T,>({
 	const resetConfirm = () =>
 		setShowConfirmation({ show: false, title: '', text: '' })
 
+	const toggleOrderBy = (key: string) => {
+		let dir = options.orderBy?.[key]
+		if (dir === undefined) {
+			dir = 'asc'
+		} else if (dir === 'asc') {
+			dir = 'desc'
+		} else {
+			dir = undefined
+		}
+		setOptions({ ...options, orderBy: { [key]: dir } })
+	}
+
 	return (
 		<div style={{ height: '100%', width: '100%' }}>
 			<Dialog open={confirmationDialog.show}>
@@ -254,7 +266,7 @@ export const RemultGrid = <T,>({
 						onRowSelectionModelChange={(selected) => setSelectedRows(selected)}
 						onPaginationModelChange={(model) => {
 							setOptions({ limit: model.pageSize, page: model.page })
-							fetchData({ limit: model.pageSize, page: model.page })
+							// fetchData({ limit: model.pageSize, page: model.page })
 						}}
 						paginationMode='server'
 						rowCount={rowCountState}
@@ -262,6 +274,10 @@ export const RemultGrid = <T,>({
 						paginationModel={{
 							pageSize: options.limit || 0,
 							page: options.page || 0,
+						}}
+						onSortModelChange={(model) => {
+							console.log('model', model)
+							toggleOrderBy(model[0].field)
 						}}
 					/>
 				</>
