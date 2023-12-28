@@ -1,3 +1,5 @@
+import { Repository } from 'remult'
+
 export type ClassType<T> = {
 	new (...args: any[]): T // eslint-disable-line @typescript-eslint/no-explicit-any
 }
@@ -42,7 +44,8 @@ export interface MultipleSelectP {
 
 export interface EntityMetaDisplay<T> {
 	/** Model to generate form for */
-	entity: ClassType<T>
+	entity?: ClassType<T>
+	repo?: Repository<T>
 	/** Show item id */
 	showId?: boolean
 	/** Show createdAt */

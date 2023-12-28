@@ -1,7 +1,7 @@
 import { DataGrid, GridToolbar } from '@mui/x-data-grid'
 import type { GridColDef, GridRowSelectionModel } from '@mui/x-data-grid'
 import type { EntityMetaDisplay } from '../types'
-import { useEffect, useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import { remult } from 'remult'
 import type { FieldMetadata, FieldsMetadata } from 'remult'
 import { getFieldType, isHideField, isMetaActionBlocked } from '../util'
@@ -24,6 +24,7 @@ interface RemultGridP {
 
 export const RemultGrid = <T,>({
 	entity,
+	repo: repoExternal,
 	showId,
 	showCreatedAt,
 	showUpdatedAt,
@@ -34,10 +35,11 @@ export const RemultGrid = <T,>({
 	gridOptions = {
 		editMode: 'row',
 		checkboxSelection: true,
-		disableRowSelectionOnClick: false,
+		disableRowSelectionOnClick: true,
 	},
-}: RemultGridP & EntityMetaDisplay<T>) => {
-	const repo = remult.repo(entity)
+}: RemultGridP & EntityMetaDisplay<T>): ReactNode => {
+	const repo = entity ? remult.repo(entity) : repoExternal
+
 	const [data, setData] = useState<T[]>()
 	const [relations, setRelations] = useState<{
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -52,15 +54,15 @@ export const RemultGrid = <T,>({
 	})
 
 	useEffect(() => {
-		fetchDate()
+		fetchData()
 	}, [repo])
 
 	useEffect(() => {
-		loadRelations(repo.fields)
-	}, [repo.fields])
+		loadRelations(repo!.fields)
+	}, [repo!.fields])
 
-	const fetchDate = async () => {
-		await repo.find().then(setData)
+	const fetchData = async () => {
+		await repo!.find().then(setData)
 	}
 
 	const loadRelations = async (fields: FieldsMetadata<T>) => {
@@ -160,7 +162,7 @@ export const RemultGrid = <T,>({
 		// @ts-expect-error // [ ] TODO: fix type error here
 		const deletePromises = selectedRows.map((id) => repo.delete(id))
 		await Promise.all(deletePromises)
-		await fetchDate()
+		await fetchData()
 		resetConfirm()
 	}
 
@@ -200,7 +202,7 @@ export const RemultGrid = <T,>({
 					</Box>
 				</Box>
 			</Dialog>
-			<Typography sx={{ mb: 1 }}>{title || repo.metadata.caption}</Typography>
+			<Typography sx={{ mb: 1 }}>{title || repo!.metadata.caption}</Typography>
 			{data && (
 				<>
 					{selectedRows?.length ? (
@@ -212,11 +214,11 @@ export const RemultGrid = <T,>({
 					)}
 					<DataGrid
 						{...gridOptions}
-						columns={getColumnsMetadata(repo.fields)}
+						columns={getColumnsMetadata(repo!.fields)}
 						rows={data}
 						slots={{ toolbar: GridToolbar }}
 						// loading
-						processRowUpdate={async (newRow) => await repo.save(newRow)}
+						processRowUpdate={async (newRow) => await repo!.save(newRow)}
 						onProcessRowUpdateError={(e) => {
 							console.error('e', e)
 						}}

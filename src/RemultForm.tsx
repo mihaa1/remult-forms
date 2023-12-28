@@ -43,6 +43,7 @@ interface RemultFormP<T> {
 
 export const RemultForm = <T extends { id: ID }>({
 	entity,
+	repo: repoExternal,
 	item,
 	showId,
 	showCreatedAt,
@@ -76,13 +77,13 @@ export const RemultForm = <T extends { id: ID }>({
 		{}
 	)
 
-	const repo = remult.repo(entity)
+	const repo = entity ? remult.repo(entity) : repoExternal
 
 	useEffect(() => {
-		dispatch(item ? { ...item } : remult.repo(entity).create())
-		loadRelations(repo.fields)
+		dispatch(item ? { ...item } : repo!.create())
+		loadRelations(repo!.fields)
 		setIsEdit(!!item?.id)
-	}, [item, entity, repo.fields])
+	}, [item, entity, repo!.fields])
 
 	const loadRelations = async (fields: FieldsMetadata<T>) => {
 		const res: any = {}
@@ -143,7 +144,7 @@ export const RemultForm = <T extends { id: ID }>({
 		dispatch({ [f.key]: [...selected.map((item) => item.id)] })
 	}
 
-	const resetForm = () => dispatch(remult.repo(entity).create())
+	const resetForm = () => dispatch(repo!.create())
 
 	const onSubmitInternal = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
@@ -169,12 +170,12 @@ export const RemultForm = <T extends { id: ID }>({
 	}
 
 	const onEdit = async () => {
-		const res = await repo.save(state)
+		const res = await repo!.save(state)
 		onDone && onDone(res)
 	}
 
 	const onCreate = async () => {
-		const res = await repo.insert(state)
+		const res = await repo!.insert(state)
 		onDone && onDone(res)
 	}
 
@@ -341,9 +342,9 @@ export const RemultForm = <T extends { id: ID }>({
 				sx={{ display: 'flex', flexDirection: 'column' }}
 			>
 				<Typography sx={{ mb: 1 }}>
-					{title || `${isEdit ? 'Edit ' : 'Create'} ${repo.metadata.caption}`}
+					{title || `${isEdit ? 'Edit ' : 'Create'} ${repo!.metadata.caption}`}
 				</Typography>
-				{renderForm(repo.fields)}
+				{renderForm(repo!.fields)}
 				<Button type='submit' sx={{ m: 1 }} variant='contained'>
 					{`${isEdit ? 'Save' : 'Create'}`}
 				</Button>
