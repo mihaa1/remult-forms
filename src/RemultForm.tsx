@@ -50,9 +50,18 @@ export const RemultForm = <T extends { id: ID }>({
 	title,
 	onSubmit,
 	onDone,
+	// [ ] think of doing only sort = []
 	showPartial,
 	hidePartial,
 	sort = [],
+	// [ ] options per form instance - checkbox in 1 vs select in other
+	// [ ] extra field not inside entity
+	// grid
+	// [ ] table level action
+	// Example: print 3 user's details. Send these 3 users an email
+	// same on row level
+	// Options: text, visibleCondition, onClick, icon
+	// [ ] custom field
 	uiLib = 'mui_v5',
 }: RemultFormP<T> & EntityMetaDisplay<T>): ReactNode => {
 	const [isEdit, setIsEdit] = useState(false)

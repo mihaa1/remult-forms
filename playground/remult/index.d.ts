@@ -6,8 +6,8 @@ declare module 'remult' {
 		organizationId: string
 		internal?: boolean
 	}
-	export interface FieldOptions<entityType, valueType> {
-		required?: boolean
+	export interface FieldOptions {
+		// required?: boolean
 		hideOnCreate?: boolean
 		select?: {
 			options: { id: string | number; label: string }[]

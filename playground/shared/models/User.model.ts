@@ -135,7 +135,7 @@ export class User {
 
 	@Fields.string({
 		validate: [Validators.required, Validators.uniqueOnBackend],
-		required: true,
+		// required: true,
 		allowNull: true,
 		saving: (row) => (row.email = row.email.toLowerCase()),
 	})

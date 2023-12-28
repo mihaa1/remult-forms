@@ -1,12 +1,13 @@
 import { DataGrid, GridToolbar } from '@mui/x-data-grid'
-import type { GridColDef } from '@mui/x-data-grid'
+import type { GridColDef, GridRowSelectionModel } from '@mui/x-data-grid'
 import type { EntityMetaDisplay } from '../types'
 import { useEffect, useState } from 'react'
 import { remult } from 'remult'
 import type { FieldMetadata, FieldsMetadata } from 'remult'
 import { getFieldType, isHideField, isMetaActionBlocked } from '../util'
-import { Typography } from '@mui/material'
+import { Button, Dialog, DialogTitle, Typography } from '@mui/material'
 import { RelationInfo, getRelationInfo } from 'remult/internals'
+import { Box } from '@mui/system'
 
 interface RemultGridP {
 	/** Custom grid title */
@@ -43,13 +44,24 @@ export const RemultGrid = <T,>({
 		[k in keyof Partial<T>]?: any[]
 	}>({})
 
+	const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([])
+	const [confirmationDialog, setShowConfirmation] = useState({
+		show: false,
+		title: '',
+		text: '',
+	})
+
 	useEffect(() => {
-		repo.find().then(setData)
+		fetchDate()
 	}, [repo])
 
 	useEffect(() => {
 		loadRelations(repo.fields)
 	}, [repo.fields])
+
+	const fetchDate = async () => {
+		await repo.find().then(setData)
+	}
 
 	const loadRelations = async (fields: FieldsMetadata<T>) => {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -137,23 +149,80 @@ export const RemultGrid = <T,>({
 			.filter((col) => !!col) as GridColDef[]
 	}
 
+	const onDelete = () =>
+		setShowConfirmation({
+			show: true,
+			title: 'Are you sure you want to delete these items?',
+			text: 'This action cannot be undone.',
+		})
+
+	const onDeleteConfirm = async () => {
+		// @ts-expect-error // [ ] TODO: fix type error here
+		const deletePromises = selectedRows.map((id) => repo.delete(id))
+		await Promise.all(deletePromises)
+		await fetchDate()
+		resetConfirm()
+	}
+
+	const resetConfirm = () =>
+		setShowConfirmation({ show: false, title: '', text: '' })
+
 	return (
 		<div style={{ height: '100%', width: '100%' }}>
+			<Dialog open={confirmationDialog.show}>
+				<Box
+					sx={{
+						pb: 2,
+					}}
+				>
+					<DialogTitle>{confirmationDialog.title}</DialogTitle>
+					<Box
+						sx={{
+							display: 'flex',
+							flexDirection: 'column',
+							justifyContent: 'center',
+							alignItems: 'center',
+						}}
+					>
+						<Typography sx={{ mb: 3 }}>{confirmationDialog.text}</Typography>
+						<Box>
+							<Button sx={{ mr: 3 }} onClick={resetConfirm}>
+								Dismiss
+							</Button>
+							<Button
+								sx={{ bgcolor: 'error.main' }}
+								variant='contained'
+								onClick={onDeleteConfirm}
+							>
+								Delete
+							</Button>
+						</Box>
+					</Box>
+				</Box>
+			</Dialog>
 			<Typography sx={{ mb: 1 }}>{title || repo.metadata.caption}</Typography>
 			{data && (
-				<DataGrid
-					{...gridOptions}
-					columns={getColumnsMetadata(repo.fields)}
-					rows={data}
-					slots={{ toolbar: GridToolbar }}
-					// loading
-					processRowUpdate={async (newRow) => {
-						return await repo.save(newRow)
-					}}
-					onProcessRowUpdateError={(e) => {
-						console.error('e', e)
-					}}
-				/>
+				<>
+					{selectedRows?.length ? (
+						<Button variant='contained' onClick={onDelete}>
+							Delete
+						</Button>
+					) : (
+						<></>
+					)}
+					<DataGrid
+						{...gridOptions}
+						columns={getColumnsMetadata(repo.fields)}
+						rows={data}
+						slots={{ toolbar: GridToolbar }}
+						// loading
+						processRowUpdate={async (newRow) => await repo.save(newRow)}
+						onProcessRowUpdateError={(e) => {
+							console.error('e', e)
+						}}
+						onRowSelectionModelChange={(selected) => setSelectedRows(selected)}
+					/>
+				</>
 			)}
 		</div>
 	)
