@@ -5,11 +5,11 @@ const useToggle = (initialState = { isOpen: false } as any) => {
 	// const [isOpen, setIsOpen] = useState<boolean>(initialState.isOpen)
 	const [payload, setPayload] = useState<any>({ ...initialState })
 
-	const close = (payload: any) => {
+	const close = (payload?: any) => {
 		// setIsOpen(false)
 		setPayload({ ...payload, isOpen: false })
 	}
-	const show = (payload: any) => {
+	const show = (payload?: any) => {
 		// setIsOpen(true)
 		setPayload({ ...payload, isOpen: true })
 	}

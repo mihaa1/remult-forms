@@ -8,9 +8,10 @@ import { ModalToggle } from '../../hooks/useToggle'
 interface AddRowDialogP<T> {
 	repo?: Repository<T>
 	toggle: ModalToggle
+	onAddRow: () => void
 }
 
-const AddRowDialog = <T,>({ repo, toggle }: AddRowDialogP<T>) => {
+const AddRowDialog = <T,>({ repo, toggle, onAddRow }: AddRowDialogP<T>) => {
 	return (
 		<Dialog open={toggle.isOpen}>
 			<DialogTitle>Create {repo?.metadata.caption}</DialogTitle>
@@ -21,7 +22,7 @@ const AddRowDialog = <T,>({ repo, toggle }: AddRowDialogP<T>) => {
 				>
 					<Close />
 				</IconButton>
-				<RemultForm title=' ' repo={repo} />
+				<RemultForm title=' ' repo={repo} onDone={onAddRow} />
 			</Box>
 		</Dialog>
 	)

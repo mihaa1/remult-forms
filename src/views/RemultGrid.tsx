@@ -240,7 +240,16 @@ export const RemultGrid = <T,>({
 
 	return (
 		<div style={{ height: '100%', width: '100%' }}>
-			{<AddRowDialog repo={repo} toggle={showAddRowDialogToggle} />}
+			{
+				<AddRowDialog
+					repo={repo}
+					toggle={showAddRowDialogToggle}
+					onAddRow={() => {
+						fetchData(options)
+						showAddRowDialogToggle.close()
+					}}
+				/>
+			}
 			{
 				<DeleteRowDialog
 					toggle={showDeleteRowDialogToggle}
