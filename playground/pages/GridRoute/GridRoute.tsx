@@ -7,6 +7,7 @@ const GridRoute = () => {
 			entity={User}
 			showId
 			sort={['id', 'email', 'workingHoursStart', 'firstName', 'lastName']}
+			// gridOptions={{ checkboxSelection: false }}
 		/>
 	)
 }

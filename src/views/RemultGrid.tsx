@@ -1,9 +1,13 @@
 import { DataGrid, GridToolbar } from '@mui/x-data-grid'
-import type { GridColDef, GridRowSelectionModel } from '@mui/x-data-grid'
+import type {
+	GridColDef,
+	GridEditMode,
+	GridRowSelectionModel,
+} from '@mui/x-data-grid'
 import type { EntityMetaDisplay } from '../types'
 import { ReactNode, useEffect, useState } from 'react'
 import { remult } from 'remult'
-import type { FieldMetadata, FieldsMetadata } from 'remult'
+import type { FieldMetadata, FieldsMetadata, FindOptions } from 'remult'
 import { getFieldType, isHideField, isMetaActionBlocked } from '../util'
 import { Button, Dialog, DialogTitle, Typography } from '@mui/material'
 import { RelationInfo, getRelationInfo } from 'remult/internals'
@@ -21,6 +25,11 @@ interface RemultGridP {
 		[key: string]: any
 	}
 }
+const GRID_OPTIONS_DEFAULTS = {
+	editMode: 'row' as GridEditMode,
+	checkboxSelection: true,
+	disableRowSelectionOnClick: true,
+}
 
 export const RemultGrid = <T,>({
 	entity,
@@ -32,11 +41,7 @@ export const RemultGrid = <T,>({
 	showPartial,
 	hidePartial,
 	sort = [],
-	gridOptions = {
-		editMode: 'row',
-		checkboxSelection: true,
-		disableRowSelectionOnClick: true,
-	},
+	gridOptions,
 }: RemultGridP & EntityMetaDisplay<T>): ReactNode => {
 	const repo = entity ? remult.repo(entity) : repoExternal
 
@@ -46,22 +51,42 @@ export const RemultGrid = <T,>({
 		[k in keyof Partial<T>]?: any[]
 	}>({})
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const [options, setOptions] = useState<FindOptions<any>>({
+		limit: 10,
+		page: 0,
+	})
+
+	const [rowCountState, setRowCountState] = useState(0)
 	const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([])
 	const [confirmationDialog, setShowConfirmation] = useState({
 		show: false,
 		title: '',
 		text: '',
 	})
+	const [gridOptionsMerged, setGridOptionsMerged] = useState({
+		...GRID_OPTIONS_DEFAULTS,
+	})
 
 	useEffect(() => {
-		fetchData()
+		fetchData(options)
 	}, [repo])
 
 	useEffect(() => {
 		loadRelations(repo?.fields)
 	}, [repo?.fields])
 
-	const fetchData = async () => await repo?.find().then(setData)
+	useEffect(() => {
+		setGridOptionsMerged({ ...GRID_OPTIONS_DEFAULTS, ...gridOptions })
+	}, [gridOptions])
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const fetchData = async (findOptions: FindOptions<any>) => {
+		const count = await repo?.count()
+		const data = await repo?.find(findOptions)
+		setData(data)
+		setRowCountState(count || 0)
+	}
 
 	const loadRelations = async (fields: FieldsMetadata<T> | undefined) => {
 		if (!fields) {
@@ -166,7 +191,7 @@ export const RemultGrid = <T,>({
 		// @ts-expect-error // [ ] TODO: fix type error here
 		const deletePromises = selectedRows.map((id) => repo.delete(id))
 		await Promise.all(deletePromises)
-		await fetchData()
+		await fetchData(options)
 		resetConfirm()
 	}
 
@@ -217,7 +242,7 @@ export const RemultGrid = <T,>({
 						<></>
 					)}
 					<DataGrid
-						{...gridOptions}
+						{...gridOptionsMerged}
 						columns={getColumnsMetadata(repo?.fields)}
 						rows={data}
 						slots={{ toolbar: GridToolbar }}
@@ -227,6 +252,17 @@ export const RemultGrid = <T,>({
 							console.error('e', e)
 						}}
 						onRowSelectionModelChange={(selected) => setSelectedRows(selected)}
+						onPaginationModelChange={(model) => {
+							setOptions({ limit: model.pageSize, page: model.page })
+							fetchData({ limit: model.pageSize, page: model.page })
+						}}
+						paginationMode='server'
+						rowCount={rowCountState}
+						pageSizeOptions={[5, 10, 20]}
+						paginationModel={{
+							pageSize: options.limit || 0,
+							page: options.page || 0,
+						}}
 					/>
 				</>
 			)}
