@@ -58,12 +58,12 @@ export const RemultGrid = <T,>({
 	}, [repo])
 
 	useEffect(() => {
-		loadRelations(repo!.fields)
-	}, [repo!.fields])
+		if (repo) {
+			loadRelations(repo.fields)
+		}
+	}, [repo?.fields])
 
-	const fetchData = async () => {
-		await repo!.find().then(setData)
-	}
+	const fetchData = async () => await repo?.find().then(setData)
 
 	const loadRelations = async (fields: FieldsMetadata<T>) => {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -105,9 +105,11 @@ export const RemultGrid = <T,>({
 		}
 	}
 
-	const getColumnsMetadata = (fields: FieldsMetadata<T>): GridColDef[] => {
+	const getColumnsMetadata = (
+		fields: FieldsMetadata<T> | undefined
+	): GridColDef[] => {
 		return fields
-			.toArray()
+			?.toArray()
 			.slice()
 			.sort((a, b) => (a.key > b.key ? 1 : -1))
 			.sort((a, b) => {
@@ -202,7 +204,7 @@ export const RemultGrid = <T,>({
 					</Box>
 				</Box>
 			</Dialog>
-			<Typography sx={{ mb: 1 }}>{title || repo!.metadata.caption}</Typography>
+			<Typography sx={{ mb: 1 }}>{title || repo?.metadata.caption}</Typography>
 			{data && (
 				<>
 					{selectedRows?.length ? (
@@ -214,11 +216,11 @@ export const RemultGrid = <T,>({
 					)}
 					<DataGrid
 						{...gridOptions}
-						columns={getColumnsMetadata(repo!.fields)}
+						columns={getColumnsMetadata(repo?.fields)}
 						rows={data}
 						slots={{ toolbar: GridToolbar }}
 						// loading
-						processRowUpdate={async (newRow) => await repo!.save(newRow)}
+						processRowUpdate={async (newRow) => await repo?.save(newRow)}
 						onProcessRowUpdateError={(e) => {
 							console.error('e', e)
 						}}
