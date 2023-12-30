@@ -41,9 +41,7 @@ export const RemultGrid = <T,>({
 	showCreatedAt,
 	showUpdatedAt,
 	title,
-	showPartial,
-	hidePartial,
-	sort = [],
+	fieldsToShow = [],
 	gridOptions,
 }: RemultGridP & EntityMetaDisplay<T>): ReactNode => {
 	const repo = entity ? remult.repo(entity) : repoExternal
@@ -105,7 +103,10 @@ export const RemultGrid = <T,>({
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const res: any = {}
 		for (const f of fields.toArray()) {
-			if (hidePartial && hidePartial.indexOf(f.key as keyof T) !== -1) {
+			if (
+				fieldsToShow.length &&
+				fieldsToShow.indexOf(f.key as keyof T) === -1
+			) {
 				continue
 			}
 			const relationInfo = getRelationInfo(f.options)
@@ -150,15 +151,15 @@ export const RemultGrid = <T,>({
 			.sort((a, b) => (a.key > b.key ? 1 : -1))
 			.sort((a, b) => {
 				// @ts-expect-error TODO: fix type error here
-				if (sort.indexOf(a.key) === -1) {
+				if (fieldsToShow.indexOf(a.key) === -1) {
 					return 1
 				}
 				// @ts-expect-error TODO: fix type error here
-				if (sort.indexOf(b.key) === -1) {
+				if (fieldsToShow.indexOf(b.key) === -1) {
 					return -1
 				}
 				// @ts-expect-error TODO: fix type error here
-				return sort.indexOf(a.key) - sort.indexOf(b.key)
+				return fieldsToShow.indexOf(a.key) - fieldsToShow.indexOf(b.key)
 			})
 			.map((f) => {
 				if (
@@ -168,9 +169,7 @@ export const RemultGrid = <T,>({
 						true,
 						showId,
 						showCreatedAt,
-						showUpdatedAt,
-						showPartial,
-						hidePartial
+						showUpdatedAt
 					)
 				) {
 					return

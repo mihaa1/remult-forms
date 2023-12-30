@@ -6,7 +6,13 @@ const GridRoute = () => {
 		<RemultGrid
 			entity={User}
 			showId
-			sort={['id', 'email', 'workingHoursStart', 'firstName', 'lastName']}
+			fieldsToShow={[
+				'id',
+				'email',
+				'workingHoursStart',
+				'firstName',
+				'lastName',
+			]}
 			// gridOptions={{ checkboxSelection: false }}
 		/>
 	)

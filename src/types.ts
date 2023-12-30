@@ -52,10 +52,6 @@ export interface EntityMetaDisplay<T> {
 	showCreatedAt?: boolean
 	/** Show updatedAt */
 	showUpdatedAt?: boolean
-	/** Show these fields in form from the provided entity. PROVIDE ONLY ONE OF showPartial OR hidePartial */
-	showPartial?: (keyof T)[]
-	/** Hide these fields in form from the provided entity. PROVIDE ONLY ONE OF hidePartial OR showPartial */
-	hidePartial?: (keyof T)[]
-	/** Order of field for dispaly */
-	sort?: (keyof T)[]
+	/** Fields for display & sort */
+	fieldsToShow?: (keyof T)[]
 }

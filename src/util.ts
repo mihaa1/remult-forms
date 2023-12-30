@@ -8,17 +8,17 @@ import { getRelationInfo } from 'remult/internals'
 
 export const isHideField = <T>(
 	f: FieldMetadata<T>,
-	fields: FieldMetadata<T>[],
+	entityFields: FieldMetadata<T>[],
 	isEdit: boolean,
 	showId: boolean | undefined,
 	showCreatedAt: boolean | undefined,
 	showUpdatedAt: boolean | undefined,
-	showOnly?: (keyof T)[],
-	hideOnly?: (keyof T)[]
+	fieldsToShow?: (keyof T)[]
 ) => {
 	if (
-		(showOnly && showOnly.length > 0 && !showOnly.includes(f.key as keyof T)) ||
-		(hideOnly && hideOnly.length > 0 && hideOnly.includes(f.key as keyof T)) ||
+		(fieldsToShow &&
+			fieldsToShow.length > 0 &&
+			!fieldsToShow.includes(f.key as keyof T)) ||
 		f.options.hideOnCreate ||
 		isMetaActionBlocked(f.options.includeInApi)
 	) {
@@ -37,7 +37,7 @@ export const isHideField = <T>(
 		// TODO: remove this - we no longer auto hide relation field
 		return false
 	} else {
-		for (const otherField of fields) {
+		for (const otherField of entityFields) {
 			// Check related field of relation - when defined using options.field
 			// TODO: support fields - that use as relation 2 columns
 			const relationInfo = getRelationInfo(otherField.options)

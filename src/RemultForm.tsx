@@ -51,10 +51,7 @@ export const RemultForm = <T extends { id: ID }>({
 	title,
 	onSubmit,
 	onDone,
-	// [ ] think of doing only sort = []
-	showPartial,
-	hidePartial,
-	sort = [],
+	fieldsToShow = [],
 	// [ ] options per form instance - checkbox in 1 vs select in other
 	// [ ] extra field not inside entity
 	// grid
@@ -90,7 +87,10 @@ export const RemultForm = <T extends { id: ID }>({
 	const loadRelations = async (fields: FieldsMetadata<T>) => {
 		const res: any = {}
 		for (const f of fields.toArray()) {
-			if (hidePartial && hidePartial.indexOf(f.key as keyof T) !== -1) {
+			if (
+				fieldsToShow.length &&
+				fieldsToShow.indexOf(f.key as keyof T) === -1
+			) {
 				continue
 			}
 			const relationInfo = getRelationInfo(f.options)
@@ -188,15 +188,15 @@ export const RemultForm = <T extends { id: ID }>({
 			.sort((a, b) => (a.key > b.key ? 1 : -1))
 			.sort((a, b) => {
 				// @ts-expect-error TODO: fix type error here
-				if (sort.indexOf(a.key) === -1) {
+				if (fieldsToShow.indexOf(a.key) === -1) {
 					return 1
 				}
 				// @ts-expect-error TODO: fix type error here
-				if (sort.indexOf(b.key) === -1) {
+				if (fieldsToShow.indexOf(b.key) === -1) {
 					return -1
 				}
 				// @ts-expect-error TODO: fix type error here
-				return sort.indexOf(a.key) - sort.indexOf(b.key)
+				return fieldsToShow.indexOf(a.key) - fieldsToShow.indexOf(b.key)
 			})
 			.map((f) => {
 				if (
@@ -207,8 +207,7 @@ export const RemultForm = <T extends { id: ID }>({
 						showId,
 						showCreatedAt,
 						showUpdatedAt,
-						showPartial,
-						hidePartial
+						fieldsToShow
 					)
 				) {
 					return

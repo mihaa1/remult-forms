@@ -27,9 +27,8 @@ const FormRoute = () => {
 			// uiLib='joy_ui'
 			// item={remult.repo(User).create()}
 			// onSubmit={(item) => console.log('onSubmit(): item', item)}
+			fieldsToShow={['firstName', 'lastName', 'organization']}
 			onDone={(item) => console.log('onDone(): item', item)}
-			// hidePartial={['organization']}
-			sort={['firstName', 'lastName']}
 		/>
 	)
 }
