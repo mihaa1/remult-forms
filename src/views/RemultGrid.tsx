@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { DataGrid, GridToolbar } from '@mui/x-data-grid'
 import type {
 	GridColDef,
 	GridEditMode,
 	GridRowSelectionModel,
 } from '@mui/x-data-grid'
-import type { EntityMetaDisplay } from '../types'
+import type { EntityMetaDisplay, UI_LIB } from '../types'
 import { ReactNode, useEffect, useState } from 'react'
 import { remult } from 'remult'
 import type { FieldMetadata, FieldsMetadata, FindOptions } from 'remult'
@@ -15,6 +16,9 @@ import { Box } from '@mui/system'
 import AddRowDialog from '../components/grid/AddRowDialog'
 import useToggle from '../hooks/useToggle'
 import DeleteRowDialog from '../components/grid/DeleteRowDialog'
+import utils from '../utils'
+import { MuiFilterOperator } from '../utils/mui_v5.util'
+import { UILibContext } from '../UILibContext'
 
 interface RemultGridP {
 	/** Custom grid title */
@@ -27,6 +31,7 @@ interface RemultGridP {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		[key: string]: any
 	}
+	uiLib?: UI_LIB
 }
 const GRID_OPTIONS_DEFAULTS = {
 	editMode: 'row' as GridEditMode,
@@ -43,6 +48,7 @@ export const RemultGrid = <T,>({
 	title,
 	fieldsToShow = [],
 	gridOptions,
+	uiLib = 'mui_v5',
 }: RemultGridP & EntityMetaDisplay<T>): ReactNode => {
 	const repo = entity ? remult.repo(entity) : repoExternal
 
@@ -86,7 +92,7 @@ export const RemultGrid = <T,>({
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const fetchData = async (findOptions: FindOptions<any>) => {
-		const count = await repo?.count()
+		const count = await repo?.count(findOptions.where)
 		const data = await repo?.find({
 			...findOptions,
 			page: (findOptions.page || 0) + 1,
@@ -238,58 +244,95 @@ export const RemultGrid = <T,>({
 	}
 
 	return (
-		<div style={{ height: '100%', width: '100%' }}>
-			{
-				<AddRowDialog
-					repo={repo}
-					toggle={showAddRowDialogToggle}
-					onAddRow={() => {
-						fetchData(options)
-						showAddRowDialogToggle.close()
-					}}
-				/>
-			}
-			{
-				<DeleteRowDialog
-					toggle={showDeleteRowDialogToggle}
-					onDeleteConfirm={onDeleteConfirm}
-				/>
-			}
-			<Typography sx={{ mb: 1 }}>{title || repo?.metadata.caption}</Typography>
-			{data && (
-				<>
-					{renderActions()}
-					<DataGrid
-						{...gridOptionsMerged}
-						columns={getColumnsMetadata(repo?.fields)}
-						rows={data}
-						slots={{
-							toolbar: GridToolbar,
-							loadingOverlay: LinearProgress,
-						}}
-						// loading
-						processRowUpdate={async (newRow) => await repo?.save(newRow)}
-						onProcessRowUpdateError={(e) => {
-							console.error('e', e)
-						}}
-						onRowSelectionModelChange={(selected) => setSelectedRows(selected)}
-						onPaginationModelChange={(model) => {
-							setOptions({ limit: model.pageSize, page: model.page })
-							// fetchData({ limit: model.pageSize, page: model.page })
-						}}
-						paginationMode='server'
-						rowCount={rowCountState}
-						pageSizeOptions={[5, 10, 20]}
-						paginationModel={{
-							pageSize: options.limit || 0,
-							page: options.page || 0,
-						}}
-						onSortModelChange={(model) => {
-							toggleOrderBy(model[0].field)
+		<UILibContext.Provider value={uiLib}>
+			<div style={{ height: '100%', width: '100%' }}>
+				{
+					<AddRowDialog
+						repo={repo}
+						toggle={showAddRowDialogToggle}
+						onAddRow={() => {
+							fetchData(options)
+							showAddRowDialogToggle.close()
 						}}
 					/>
-				</>
-			)}
-		</div>
+				}
+				{
+					<DeleteRowDialog
+						toggle={showDeleteRowDialogToggle}
+						onDeleteConfirm={onDeleteConfirm}
+					/>
+				}
+				<Typography sx={{ mb: 1 }}>
+					{title || repo?.metadata.caption}
+				</Typography>
+				{data && (
+					<>
+						{renderActions()}
+						<DataGrid
+							{...gridOptionsMerged}
+							columns={getColumnsMetadata(repo?.fields)}
+							rows={data}
+							slots={{
+								toolbar: GridToolbar,
+								loadingOverlay: LinearProgress,
+							}}
+							// loading
+							processRowUpdate={async (newRow) => await repo?.save(newRow)}
+							onProcessRowUpdateError={(e) => {
+								console.error('e', e)
+							}}
+							onRowSelectionModelChange={(selected) =>
+								setSelectedRows(selected)
+							}
+							onPaginationModelChange={(model) => {
+								setOptions({
+									...options,
+									limit: model.pageSize,
+									page: model.page,
+								})
+								// fetchData({ limit: model.pageSize, page: model.page })
+							}}
+							paginationMode='server'
+							rowCount={rowCountState}
+							pageSizeOptions={[5, 10, 20]}
+							paginationModel={{
+								pageSize: options.limit || 0,
+								page: options.page || 0,
+							}}
+							onSortModelChange={(model) => {
+								toggleOrderBy(model[0].field)
+							}}
+							filterMode='server'
+							onFilterModelChange={(model) => {
+								if (
+									model.items[0].value === undefined ||
+									(Array.isArray(model.items[0].value) &&
+										!model.items[0].value.length)
+								) {
+									return setOptions({
+										limit: options.limit,
+										page: options.page,
+									})
+								}
+								setOptions({
+									...options,
+									where: {
+										[model.items[0].field]: {
+											[utils(uiLib)!.getOperator(
+												model.items[0].operator as MuiFilterOperator
+											)]:
+												model.items[0].operator === 'equals' ||
+												model.items[0].operator === 'is'
+													? [model.items[0].value]
+													: model.items[0].value,
+										},
+									},
+								})
+							}}
+						/>
+					</>
+				)}
+			</div>
+		</UILibContext.Provider>
 	)
 }

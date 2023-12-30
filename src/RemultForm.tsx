@@ -10,7 +10,7 @@ import {
 import { remult } from 'remult'
 import type { FieldMetadata, FieldsMetadata } from 'remult'
 import { Box, Button, Typography } from '@mui/material'
-import type { EntityMetaDisplay, ID, SelectOption } from './types'
+import type { EntityMetaDisplay, ID, SelectOption, UI_LIB } from './types'
 import { getFieldType, isHideField, isMetaActionBlocked } from './util'
 import { getRelationInfo } from 'remult/internals'
 import RemultTextField from './components/Textfield'
@@ -38,7 +38,7 @@ interface RemultFormP<T> {
 	onSubmit?: (item: T | undefined) => void
 	/** Trigger on action completed. When create/edit action is done this will be fired */
 	onDone?: (item: T[] | undefined) => void
-	uiLib?: 'mui_v5' | 'joy_ui'
+	uiLib?: UI_LIB
 }
 
 export const RemultForm = <T extends { id: ID }>({

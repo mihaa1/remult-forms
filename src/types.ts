@@ -55,3 +55,5 @@ export interface EntityMetaDisplay<T> {
 	/** Fields for display & sort */
 	fieldsToShow?: (keyof T)[]
 }
+
+export type UI_LIB = 'mui_v5' | 'joy_ui'
