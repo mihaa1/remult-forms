@@ -23,7 +23,7 @@ import { UILibContext } from '../UILibContext'
 interface RemultGridP {
 	/** Custom grid title */
 	title?: string
-	/** Native grid props. These are passed to the grid component as is*/
+	/** Native grid props. These are passed to the grid component as is */
 	gridOptions?: {
 		editMode?: 'row' | 'cell'
 		checkboxSelection?: boolean

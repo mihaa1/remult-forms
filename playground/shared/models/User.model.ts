@@ -113,7 +113,6 @@ import { DAYS, HourInDay } from '../../types'
 	// 		//     )}
 	// 		// 	`
 	// 		// );
-	// 		// TODO: this is a hack because the unique constraint
 	// 		// on the field doesn't work with the prefilter defined for admin.
 	// 		// See bug 1 in todo.txt
 	// 		// I tried to return here {organizationId: remult.user.organizationId}

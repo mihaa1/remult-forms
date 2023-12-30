@@ -72,7 +72,6 @@ export const isMetaActionBlocked = (
 }
 
 export const getFieldType = <T>(f: FieldMetadata<T>) => {
-	// TODO: how to load relations in form/grid
 	const relationInfo = getRelationInfo(f.options)
 	if (relationInfo && relationInfo.type === 'toOne') {
 		return 'singleSelect'
