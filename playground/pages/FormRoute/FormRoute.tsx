@@ -11,13 +11,7 @@ const FormRoute = () => {
 		if (!id) {
 			return
 		}
-		remult
-			.repo(User)
-			.findId(id, { include: { organization: true } })
-			.then(setUser)
-			.catch((e) => {
-				console.log('e', e)
-			})
+		remult.repo(User).findId(id).then(setUser).catch(console.log)
 	}, [id])
 
 	return (
@@ -27,7 +21,8 @@ const FormRoute = () => {
 			// uiLib='joy_ui'
 			// item={remult.repo(User).create()}
 			// onSubmit={(item) => console.log('onSubmit(): item', item)}
-			fieldsToShow={['firstName', 'lastName', 'organization']}
+			showId
+			fieldsToShow={['email', 'firstName', 'lastName', 'organization']}
 			onDone={(item) => console.log('onDone(): item', item)}
 		/>
 	)

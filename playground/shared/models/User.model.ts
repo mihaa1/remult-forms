@@ -133,6 +133,7 @@ export class User {
 	id = ''
 
 	@Fields.string({
+		caption: 'email',
 		validate: [Validators.required, Validators.uniqueOnBackend],
 		// required: true,
 		allowNull: true,
@@ -161,6 +162,7 @@ export class User {
 	organizationId = ''
 	@Relations.toOne<User, Organization>(() => Organization, {
 		field: 'organizationId',
+		// defaultIncluded: true,
 	})
 	organization?: Organization
 
@@ -209,6 +211,9 @@ export class User {
 
 	@Fields.string()
 	lastName = ''
+
+	@Fields.integer()
+	age = 99
 
 	// @Relations.toMany(() => AttributeXUser, 'userId')
 	// attributes?: AttributeXUser[]

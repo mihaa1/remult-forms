@@ -1,7 +1,9 @@
 import {
 	AllowedForInstance,
 	FieldMetadata,
+	FieldsMetadata,
 	RelationOptions,
+	Validators,
 	remult,
 } from 'remult'
 import { getRelationInfo } from 'remult/internals'
@@ -13,17 +15,18 @@ export const isHideField = <T>(
 	showId: boolean | undefined,
 	showCreatedAt: boolean | undefined,
 	showUpdatedAt: boolean | undefined,
-	fieldsToShow?: (keyof T)[]
+	fieldsToShow: (keyof T)[]
 ) => {
 	if (
-		(fieldsToShow &&
-			fieldsToShow.length > 0 &&
-			!fieldsToShow.includes(f.key as keyof T)) ||
-		f.options.hideOnCreate ||
+		(fieldsToShow?.length &&
+			!fieldsToShow.includes(f.key as keyof T) &&
+			f.key !== 'id') ||
+		(f.options.hideOnCreate && !isEdit) ||
 		isMetaActionBlocked(f.options.includeInApi)
 	) {
 		return true
 	}
+
 	if (f.key === 'id' || f.key === 'createdAt' || f.key === 'updatedAt') {
 		return (
 			!isEdit ||
@@ -32,6 +35,7 @@ export const isHideField = <T>(
 			(!showUpdatedAt && f.key === 'updatedAt')
 		)
 	}
+
 	const relationInfo = getRelationInfo(f.options)
 	if (relationInfo) {
 		// TODO: remove this - we no longer auto hide relation field
@@ -89,4 +93,38 @@ export const getFieldType = <T>(f: FieldMetadata<T>) => {
 	} else if (f.inputType === 'date' || f.inputType === 'datetime-local') {
 		return 'date'
 	}
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const isRequired = <T>(field: FieldMetadata<any, T>) => {
+	return (
+		field.options.validate &&
+		(field.options.validate === Validators.required ||
+			(field.options.validate?.length &&
+				typeof field.options.validate === 'object' &&
+				field.options.validate.find((v) => v === Validators.required)))
+	)
+}
+
+export const loadRelations = async <T>(
+	fields: FieldsMetadata<T> | undefined,
+	fieldsToShow: (keyof T)[]
+) => {
+	if (!fields) {
+		return
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const res: any = {}
+	for (const f of fields.toArray()) {
+		if (fieldsToShow.length && fieldsToShow.indexOf(f.key as keyof T) === -1) {
+			continue
+		}
+		const relationInfo = getRelationInfo(f.options)
+		if (relationInfo) {
+			const relatedEntities = await remult.repo(relationInfo.toType()).find()
+			res[f.key] = relatedEntities
+		}
+	}
+	return res
 }

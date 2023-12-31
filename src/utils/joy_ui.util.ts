@@ -8,6 +8,7 @@ export type MuiFilterOperator =
 	| 'isNotEmpty'
 	| 'isAnyOf'
 	| 'is'
+	| 'not'
 
 export const getOperator = (muiOperator: MuiFilterOperator) => {
 	switch (muiOperator) {

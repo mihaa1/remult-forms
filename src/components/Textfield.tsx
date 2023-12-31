@@ -1,7 +1,7 @@
 import { TextField } from '@mui/material'
 import { ChangeEvent } from 'react'
-import { FieldMetadata, Validators } from 'remult'
-import { isMetaActionBlocked } from '../util'
+import { FieldMetadata } from 'remult'
+import { isMetaActionBlocked, isRequired } from '../util'
 // import { UILibContext } from '../UILibContext'
 
 interface RemultTextFieldP<T> {
@@ -18,16 +18,6 @@ const RemultTextField = <T,>({
 	error,
 }: RemultTextFieldP<T>) => {
 	// const uiLib = useContext(UILibContext)
-
-	const isRequired = (field: FieldMetadata<any, T>) => {
-		return (
-			field.options.validate &&
-			(field.options.validate === Validators.required ||
-				(field.options.validate?.length &&
-					typeof field.options.validate === 'object' &&
-					field.options.validate.find((v) => v === Validators.required)))
-		)
-	}
 
 	return (
 		<TextField

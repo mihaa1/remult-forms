@@ -11,7 +11,12 @@ import { remult } from 'remult'
 import type { FieldMetadata, FieldsMetadata } from 'remult'
 import { Box, Button, Typography } from '@mui/material'
 import type { EntityMetaDisplay, ID, SelectOption, UI_LIB } from './types'
-import { getFieldType, isHideField, isMetaActionBlocked } from './util'
+import {
+	getFieldType,
+	isHideField,
+	isMetaActionBlocked,
+	loadRelations,
+} from './util'
 import { getRelationInfo } from 'remult/internals'
 import RemultTextField from './components/Textfield'
 import RemultCheckbox from './components/Checkbox'
@@ -62,6 +67,8 @@ export const RemultForm = <T extends { id: ID }>({
 	// [ ] custom field
 	uiLib = 'mui_v5',
 }: RemultFormP<T> & EntityMetaDisplay<T>): ReactNode => {
+	const repo = entity ? remult.repo(entity) : repoExternal
+
 	const [isEdit, setIsEdit] = useState(false)
 	const [errors, setErrors] = useState<{ [k in keyof T]?: string }>({})
 	const [relations, setRelations] = useState<{
@@ -70,37 +77,28 @@ export const RemultForm = <T extends { id: ID }>({
 
 	const [state, dispatch] = useReducer(
 		reducer,
-		// item ? { ...item } : remult.repo(entity).create()
+		// item ? { ...item } : repo!.create()
 		{}
 	)
 
-	const repo = entity ? remult.repo(entity) : repoExternal
-
 	useEffect(() => {
 		dispatch(item ? { ...item } : repo?.create())
-		if (repo) {
-			loadRelations(repo.fields)
-		}
-		setIsEdit(!!item?.id)
-	}, [item, entity, repo?.fields])
+	}, [item])
 
-	const loadRelations = async (fields: FieldsMetadata<T>) => {
-		const res: any = {}
-		for (const f of fields.toArray()) {
-			if (
-				fieldsToShow.length &&
-				fieldsToShow.indexOf(f.key as keyof T) === -1
-			) {
-				continue
-			}
-			const relationInfo = getRelationInfo(f.options)
-			if (relationInfo) {
-				const relatedEntities = await remult.repo(relationInfo.toType()).find()
-				res[f.key] = relatedEntities
-			}
-		}
-		setRelations({ ...res })
-	}
+	useEffect(() => {
+		loadRelations(repo?.fields, fieldsToShow)
+			.then(setRelations)
+			.catch((e) => console.error('Error loading relations', e))
+		// IMPORTANT: dont add fieldsToShow to dep array. This will cause infinite loop
+		// when fieldsToShow is not provided from outside.
+		// As this is an optional prop - the default value has different ref every render and
+		// useEffect breaks...
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [repo?.fields])
+
+	useEffect(() => {
+		setIsEdit(!!item?.id)
+	}, [item?.id])
 
 	const onChangeTextfield = (
 		e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -152,7 +150,6 @@ export const RemultForm = <T extends { id: ID }>({
 		e.preventDefault()
 
 		setErrors({})
-
 		if (onSubmit) {
 			onSubmit(state)
 			return resetForm()
@@ -177,162 +174,197 @@ export const RemultForm = <T extends { id: ID }>({
 	}
 
 	const onCreate = async () => {
-		const res = await repo?.insert(state)
-		onDone && onDone(res)
+		try {
+			const res = await repo?.insert(state)
+			onDone && onDone(res)
+		} catch (e) {
+			console.error('Error creating item', e)
+			throw e
+		}
 	}
 
 	const renderForm = <T,>(fields: FieldsMetadata<T>) => {
-		return fields
-			.toArray()
-			.slice()
-			.sort((a, b) => (a.key > b.key ? 1 : -1))
-			.sort((a, b) => {
-				// @ts-expect-error TODO: fix type error here
-				if (fieldsToShow.indexOf(a.key) === -1) {
-					return 1
-				}
-				// @ts-expect-error TODO: fix type error here
-				if (fieldsToShow.indexOf(b.key) === -1) {
-					return -1
-				}
-				// @ts-expect-error TODO: fix type error here
-				return fieldsToShow.indexOf(a.key) - fieldsToShow.indexOf(b.key)
-			})
-			.map((f) => {
-				if (
-					isHideField(
-						f,
-						fields.toArray(),
-						isEdit,
-						showId,
-						showCreatedAt,
-						showUpdatedAt,
-						fieldsToShow
-					)
-				) {
-					return
-				}
-				const fieldType = getFieldType(f)
-				const rawVal = state[f.key as keyof typeof state]
-				const relationInfo = getRelationInfo(f.options)
-				// @ts-expect-error TODO: how to do keyof Partial<T>
-				// Thought of using PropertyKey as suggested here:
-				// https://stackoverflow.com/a/71531880/5248229
-				// but this created other issues
-				if (relationInfo && relations[f.key]) {
-					// @ts-expect-error TODO: fix
-					const mapped = relations[f.key].map((r: any) => ({
-						id: r.id,
-						label: r.name || r.id,
-					}))
-					return (
-						<RemultAutocomplete
-							key={f.key}
-							label={f.caption || f.key}
-							options={mapped}
-							// @ts-expect-error TODO: fix this
-							selectedId={state[f.options.field]}
-							onSelect={(newVal) => onRelationSelect(newVal, f)}
-							// @ts-expect-error TODO: fix
-							error={errors[f.key]}
-						/>
-					)
-				} else if (fieldType === 'singleSelect') {
-					if (!f.options.select?.type || f.options.select.type === 'radiobox') {
-						return (
-							<RemultRadioGroup
-								row
-								key={f.key}
-								label={f.caption || f.key}
-								options={f.options.select?.options || []}
-								selectedId={state[f.key]}
-								onSelect={(newVal) => onSingleSelect(newVal, f)}
-								// @ts-expect-error TODO: fix
-								error={errors[f.key]}
-							/>
+		return (
+			fields
+				.toArray()
+				.slice()
+				// .sort((a, b) => (a.key > b.key ? 1 : -1))
+				// .sort((a, b) => {
+				// 	// @ts-expect-error TODO: fix type error here
+				// 	if (fieldsToShow.indexOf(a.key) === -1) {
+				// 		return 1
+				// 	}
+				// 	// @ts-expect-error TODO: fix type error here
+				// 	if (fieldsToShow.indexOf(b.key) === -1) {
+				// 		return -1
+				// 	}
+				// 	// @ts-expect-error TODO: fix type error here
+				// 	return fieldsToShow.indexOf(a.key) - fieldsToShow.indexOf(b.key)
+				// })
+				.sort((a, b) => {
+					if (showId && a.key === 'id') {
+						return -1
+					}
+					if (showId && b.key === 'id') {
+						return 1
+					}
+					if (fieldsToShow?.length) {
+						// @ts-expect-error TODO: fix type error here
+						if (fieldsToShow.indexOf(a.key) === -1) {
+							return 1
+						}
+						// @ts-expect-error TODO: fix type error here
+						if (fieldsToShow.indexOf(b.key) === -1) {
+							return -1
+						}
+						// @ts-expect-error TODO: fix type error here
+						return fieldsToShow.indexOf(a.key) - fieldsToShow.indexOf(b.key)
+					} else {
+						return a.key > b.key ? 1 : -1
+					}
+				})
+				.map((f) => {
+					if (
+						isHideField(
+							f,
+							fields.toArray(),
+							isEdit,
+							showId,
+							showCreatedAt,
+							showUpdatedAt,
+							fieldsToShow
 						)
-					} else if (f.options.select.type === 'select') {
+					) {
+						return
+					}
+					const fieldType = getFieldType(f)
+					const rawVal = state[f.key as keyof typeof state]
+					const relationInfo = getRelationInfo(f.options)
+					// @ts-expect-error TODO: how to do keyof Partial<T>
+					// Thought of using PropertyKey as suggested here:
+					// https://stackoverflow.com/a/71531880/5248229
+					// but this created other issues
+					if (relationInfo && relations[f.key]) {
+						// @ts-expect-error TODO: fix
+						const mapped = relations[f.key].map((r: any) => ({
+							id: r.id,
+							label: r.name || r.id,
+						}))
 						return (
 							<RemultAutocomplete
 								key={f.key}
 								label={f.caption || f.key}
-								options={f.options.select.options}
-								selectedId={state[f.key]}
-								onSelect={(newVal) => onSingleSelect(newVal, f)}
+								options={mapped}
+								// @ts-expect-error TODO: fix this
+								selectedId={state[f.options.field]}
+								onSelect={(newVal) => onRelationSelect(newVal, f)}
 								// @ts-expect-error TODO: fix
 								error={errors[f.key]}
+							/>
+						)
+					} else if (fieldType === 'singleSelect') {
+						if (
+							!f.options.select?.type ||
+							f.options.select.type === 'radiobox'
+						) {
+							return (
+								<RemultRadioGroup
+									row
+									key={f.key}
+									label={f.caption || f.key}
+									options={f.options.select?.options || []}
+									selectedId={state[f.key]}
+									onSelect={(newVal) => onSingleSelect(newVal, f)}
+									// @ts-expect-error TODO: fix
+									error={errors[f.key]}
+								/>
+							)
+						} else if (f.options.select.type === 'select') {
+							return (
+								<RemultAutocomplete
+									key={f.key}
+									label={f.caption || f.key}
+									options={f.options.select.options}
+									selectedId={state[f.key]}
+									onSelect={(newVal) => onSingleSelect(newVal, f)}
+									// @ts-expect-error TODO: fix
+									error={errors[f.key]}
+								/>
+							)
+						}
+					} else if (fieldType === 'multiSelect') {
+						if (
+							!f.options.select?.type ||
+							f.options.select.type === 'checkbox'
+						) {
+							return (
+								<RemultCheckboxMultiple
+									row
+									key={f.key}
+									label={f.caption || f.key}
+									options={f.options.select?.options || []}
+									selected={state[f.key]?.map((item: ID) => ({
+										id: item,
+									}))}
+									onSelect={(newVal) => onMultiSelect(newVal, f)}
+									// @ts-expect-error TODO: fix
+									error={errors[f.key]}
+								/>
+							)
+						} else if (f.options.select.type === 'select') {
+							return (
+								<RemultAutocompleteMultiple
+									key={f.key}
+									label={f.caption || f.key}
+									options={f.options.select.options}
+									selected={state[f.key]?.map((item: ID) => ({
+										id: item,
+									}))}
+									onSelect={(newVal) => onMultiSelect(newVal, f)}
+									// @ts-expect-error TODO: fix
+									error={errors[f.key]}
+								/>
+							)
+						}
+					} else if (fieldType === 'string' || fieldType === 'number') {
+						// if (f.valueType == String || f.valueType == Number) {
+						return (
+							<RemultTextField
+								key={f.key}
+								// val={state[f.key as keyof typeof state]}
+								val={
+									(rawVal &&
+										f.valueConverter.toInput &&
+										f.valueConverter.toInput(rawVal)) ||
+									rawVal
+								}
+								field={f}
+								onChange={(e) => onChangeTextfield(e, f.key)}
+								// @ts-expect-error TODO: fix
+								error={errors[f.key]}
+							/>
+						)
+					} else if (fieldType === 'boolean') {
+						return (
+							<RemultCheckbox
+								key={f.key}
+								label={f.caption || f.key}
+								disabled={isMetaActionBlocked(f.options.allowApiUpdate)}
+								checked={!!rawVal}
+								onChange={(e) => onChangeCheckbox(e, f.key)}
+							/>
+						)
+					} else if (fieldType === 'date') {
+						return (
+							<RemultDatepicker
+								key={f.key}
+								field={f}
+								onChange={(newDate) => onChangeDate(newDate, f.key)}
 							/>
 						)
 					}
-				} else if (fieldType === 'multiSelect') {
-					if (!f.options.select?.type || f.options.select.type === 'checkbox') {
-						return (
-							<RemultCheckboxMultiple
-								row
-								key={f.key}
-								label={f.caption || f.key}
-								options={f.options.select?.options || []}
-								selected={state[f.key]?.map((item: ID) => ({
-									id: item,
-								}))}
-								onSelect={(newVal) => onMultiSelect(newVal, f)}
-								// @ts-expect-error TODO: fix
-								error={errors[f.key]}
-							/>
-						)
-					} else if (f.options.select.type === 'select') {
-						return (
-							<RemultAutocompleteMultiple
-								key={f.key}
-								label={f.caption || f.key}
-								options={f.options.select.options}
-								selected={state[f.key]?.map((item: ID) => ({
-									id: item,
-								}))}
-								onSelect={(newVal) => onMultiSelect(newVal, f)}
-								// @ts-expect-error TODO: fix
-								error={errors[f.key]}
-							/>
-						)
-					}
-				} else if (fieldType === 'string' || fieldType === 'number') {
-					// if (f.valueType == String || f.valueType == Number) {
-					return (
-						<RemultTextField
-							key={f.key}
-							// val={state[f.key as keyof typeof state]}
-							val={
-								(rawVal &&
-									f.valueConverter.toInput &&
-									f.valueConverter.toInput(rawVal)) ||
-								rawVal
-							}
-							field={f}
-							onChange={(e) => onChangeTextfield(e, f.key)}
-							// @ts-expect-error TODO: fix
-							error={errors[f.key]}
-						/>
-					)
-				} else if (fieldType === 'boolean') {
-					return (
-						<RemultCheckbox
-							key={f.key}
-							label={f.caption || f.key}
-							disabled={isMetaActionBlocked(f.options.allowApiUpdate)}
-							checked={!!rawVal}
-							onChange={(e) => onChangeCheckbox(e, f.key)}
-						/>
-					)
-				} else if (fieldType === 'date') {
-					return (
-						<RemultDatepicker
-							key={f.key}
-							field={f}
-							onChange={(newDate) => onChangeDate(newDate, f.key)}
-						/>
-					)
-				}
-			})
+				})
+		)
 	}
 
 	return (
