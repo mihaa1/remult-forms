@@ -13,7 +13,7 @@ import {
 	createRow,
 } from 'material-react-table'
 import { EntityMetaDisplay, UI_LIB } from '../types'
-import { FieldMetadata, FieldsMetadata, FindOptions, remult } from 'remult'
+import { FieldMetadata, remult } from 'remult'
 import { RelationInfo, getRelationInfo } from 'remult/internals'
 import {
 	getFieldType,
@@ -75,7 +75,7 @@ export const RemultGrid = <T extends MRT_RowData>({
 	//data and fetching state
 	const [data, setData] = useState<T[]>([])
 	const [isError, setIsError] = useState(false)
-	const [isLoading, setIsLoading] = useState(false)
+	// const [isLoading, setIsLoading] = useState(false)
 	const [isRefetching, setIsRefetching] = useState(false)
 	const [rowCount, setRowCount] = useState(0)
 
@@ -236,6 +236,7 @@ export const RemultGrid = <T extends MRT_RowData>({
 								if (!relatedEntities) {
 									return <></>
 								}
+								// @ts-expect-error TODO: kill me...
 								const selectedRelationId = row.original[f.options.field]
 								const selected = relatedEntities.find(
 									(re) => re.id === selectedRelationId
@@ -252,6 +253,7 @@ export const RemultGrid = <T extends MRT_RowData>({
 									console.log(f.key, 'newVal', newVal)
 									console.log('table', table)
 									console.log('table.getState()', table.getState())
+									// @ts-expect-error TODO: kill me...
 									const key = relationInfo ? f.options.field : f.key
 									if (table.getState().creatingRow) {
 										console.log('newVal', newVal)
@@ -268,6 +270,7 @@ export const RemultGrid = <T extends MRT_RowData>({
 									}
 								}}
 								selectedId={
+									// @ts-expect-error TODO: kill me...
 									row.original[relationInfo ? f.options.field : f.key]
 								}
 							/>
@@ -359,6 +362,7 @@ export const RemultGrid = <T extends MRT_RowData>({
 		console.log('xxx table.getState()', table.getState())
 		setValidationErrors({})
 		try {
+			// @ts-expect-error TODO: fix type error here
 			await repo?.insert(values)
 			table.setCreatingRow(null)
 			await fetchData()
@@ -376,6 +380,7 @@ export const RemultGrid = <T extends MRT_RowData>({
 	}) => {
 		setValidationErrors({})
 		try {
+			// @ts-expect-error TODO: fix type error here
 			await repo?.save(values)
 			table.setEditingRow(null) // exit editing mode
 		} catch (e: any) {
@@ -412,7 +417,7 @@ export const RemultGrid = <T extends MRT_RowData>({
 		state: {
 			columnFilters,
 			// globalFilter, // TODO: search with global filter on all text fields
-			isLoading,
+			// isLoading,
 			pagination,
 			// showAlertBanner: isError,
 			showProgressBars: isRefetching,
