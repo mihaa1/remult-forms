@@ -112,7 +112,7 @@ export const RemultGrid = <T,>({
 		loadRelations(repo?.fields, fieldsToShow)
 			.then(setRelations)
 			.catch((e) => console.error('Error loading relations', e))
-	}, [repo, fieldsToShow])
+	}, [repo])
 
 	useEffect(() => {
 		setGridOptionsMerged({ ...GRID_OPTIONS_DEFAULTS, ...gridOptions })

@@ -115,7 +115,7 @@ export const RemultGrid = <T extends MRT_RowData>({
 		loadRelations(repo?.fields, fieldsToShow)
 			.then(setRelations)
 			.catch((e) => console.error('Error loading relations', e))
-	}, [repo?.fields, fieldsToShow])
+	}, [repo?.fields])
 
 	const buildOptions = () => {
 		const where: any = {}
@@ -299,7 +299,6 @@ export const RemultGrid = <T extends MRT_RowData>({
 	}, [
 		repo,
 		repo?.fields,
-		fieldsToShow,
 		showCreatedAt,
 		showId,
 		showUpdatedAt,
