@@ -17,23 +17,23 @@ export const isHideField = <T>(
 	showUpdatedAt: boolean | undefined,
 	fieldsToShow: (keyof T)[]
 ) => {
-	if (
-		(fieldsToShow?.length &&
-			!fieldsToShow.includes(f.key as keyof T) &&
-			f.key !== 'id') ||
-		(f.options.hideOnCreate && !isEdit) ||
-		isMetaActionBlocked(f.options.includeInApi)
-	) {
-		return true
-	}
-
 	if (f.key === 'id' || f.key === 'createdAt' || f.key === 'updatedAt') {
+		if (fieldsToShow?.length && fieldsToShow.includes(f.key as keyof T)) {
+			return false
+		}
 		return (
 			!isEdit ||
 			(!showId && f.key === 'id') ||
 			(!showCreatedAt && f.key === 'createdAt') ||
 			(!showUpdatedAt && f.key === 'updatedAt')
 		)
+	}
+	if (
+		(fieldsToShow?.length && !fieldsToShow.includes(f.key as keyof T)) ||
+		(f.options.hideOnCreate && !isEdit) ||
+		isMetaActionBlocked(f.options.includeInApi)
+	) {
+		return true
 	}
 
 	const relationInfo = getRelationInfo(f.options)

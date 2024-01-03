@@ -145,157 +145,139 @@ export const RemultGrid = <T extends MRT_RowData>({
 	}
 
 	const columns = useMemo<MRT_ColumnDef<T>[]>(() => {
-		return (
-			repo?.fields
-				?.toArray()
-				.slice()
-				// .sort((a, b) => (a.key > b.key ? 1 : -1))
-				// .sort((a, b) => {
-				// 	if (fieldsToShow.indexOf(a.key) === -1) {
-				// 		return 1
-				// 	}
-				// 	if (fieldsToShow.indexOf(b.key) === -1) {
-				// 		return -1
-				// 	}
-				// 	return fieldsToShow.indexOf(a.key) - fieldsToShow.indexOf(b.key)
-				// })
-				.sort((a, b) => {
-					if (showId && a.key === 'id') {
-						return -1
-					}
-					if (showId && b.key === 'id') {
+		return repo?.fields
+			?.toArray()
+			.slice()
+			.sort((a, b) => {
+				if (fieldsToShow?.length) {
+					if (fieldsToShow.indexOf(a.key) === -1) {
 						return 1
 					}
-					if (fieldsToShow?.length) {
-						if (fieldsToShow.indexOf(a.key) === -1) {
-							return 1
-						}
-						if (fieldsToShow.indexOf(b.key) === -1) {
-							return -1
-						}
-						return fieldsToShow.indexOf(a.key) - fieldsToShow.indexOf(b.key)
-					} else {
-						return a.key > b.key ? 1 : -1
+					if (fieldsToShow.indexOf(b.key) === -1) {
+						return -1
 					}
-				})
-				.map((f: FieldMetadata<any, T>) => {
-					if (
-						isHideField(
-							f,
-							repo.fields.toArray(),
-							true,
-							showId,
-							showCreatedAt,
-							showUpdatedAt,
-							fieldsToShow
-						)
-					) {
-						return
-					}
-					// const relationInfo = getRelationInfo(f.options)
-					const relationInfo = getRelationInfo(f.options)
+					return fieldsToShow.indexOf(a.key) - fieldsToShow.indexOf(b.key)
+				} else {
+					return 0
+				}
+			})
+			.map((f: FieldMetadata<any, T>) => {
+				if (
+					isHideField(
+						f,
+						repo.fields.toArray(),
+						true,
+						showId,
+						showCreatedAt,
+						showUpdatedAt,
+						fieldsToShow
+					)
+				) {
+					return
+				}
+				// const relationInfo = getRelationInfo(f.options)
+				const relationInfo = getRelationInfo(f.options)
 
-					const res: MRT_ColumnDef<T> = {
-						// accessorKey: relationInfo ? f.options.field : f.key,
-						accessorKey: f.key,
-						header: f.caption || f.key,
-						enableEditing: !isMetaActionBlocked(f.options.allowApiUpdate),
-						// filterVariant: f.inputType || 'text',
-						// type: getFieldType(f),
-						// muiEditTextFieldProps: {
-						// 	type: f.inputType || 'text',
-						// 	// type: 'text',
-						// 	required: !!isRequired(f),
-						// 	// error: true,
-						// 	error: !!validationErrors[f.key],
-						// 	helperText: validationErrors[f.key],
-						// 	// //remove any previous validation errors when user focuses on the input
-						// 	// onFocus: () =>
-						// 	//   setValidationErrors({
-						// 	//     ...validationErrors,
-						// 	//     firstName: undefined,
-						// 	//   }),
-						// 	// optionally add validation checking for onBlur or onChange
-						// },
-					}
-					if (getFieldType(f) === 'boolean') {
-						res.Cell = res.Edit = ({ cell }) => (
-							<RemultCheckbox
-								checked={cell.getValue<boolean>()}
-								onChange={async (e) => {
-									// @ts-expect-error TODO: what do u want from me...
-									await repo.update(cell.row.id, { [f.key]: e.target.checked })
-									await fetchData()
-								}}
-							/>
-						)
-					} else if (getFieldType(f) === 'singleSelect') {
-						res.Cell = ({ cell, row }) => {
-							if (relationInfo) {
-								const relatedEntities = relations[f.key]
-								if (!relatedEntities) {
-									return <></>
-								}
-								// @ts-expect-error TODO: kill me...
-								const selectedRelationId = row.original[f.options.field]
-								const selected = relatedEntities.find(
-									(re) => re.id === selectedRelationId
-								)
-								return <Box>{selected?.name || selectedRelationId}</Box>
-							} else {
-								return <Box>{cell.getValue<string>()}</Box>
+				const res: MRT_ColumnDef<T> = {
+					// accessorKey: relationInfo ? f.options.field : f.key,
+					accessorKey: f.key,
+					header: f.caption || f.key,
+					enableEditing: !isMetaActionBlocked(f.options.allowApiUpdate),
+					// filterVariant: f.inputType || 'text',
+					// type: getFieldType(f),
+					// muiEditTextFieldProps: {
+					// 	type: f.inputType || 'text',
+					// 	// type: 'text',
+					// 	required: !!isRequired(f),
+					// 	// error: true,
+					// 	error: !!validationErrors[f.key],
+					// 	helperText: validationErrors[f.key],
+					// 	// //remove any previous validation errors when user focuses on the input
+					// 	// onFocus: () =>
+					// 	//   setValidationErrors({
+					// 	//     ...validationErrors,
+					// 	//     firstName: undefined,
+					// 	//   }),
+					// 	// optionally add validation checking for onBlur or onChange
+					// },
+				}
+				if (getFieldType(f) === 'boolean') {
+					res.Cell = res.Edit = ({ cell }) => (
+						<RemultCheckbox
+							checked={cell.getValue<boolean>()}
+							onChange={async (e) => {
+								// @ts-expect-error TODO: what do u want from me...
+								await repo.update(cell.row.id, { [f.key]: e.target.checked })
+								await fetchData()
+							}}
+						/>
+					)
+				} else if (getFieldType(f) === 'singleSelect') {
+					res.Cell = ({ cell, row }) => {
+						if (relationInfo) {
+							const relatedEntities = relations[f.key]
+							if (!relatedEntities) {
+								return <></>
 							}
-						}
-						res.Edit = ({ row, table }) => (
-							<RemultAutocomplete
-								options={getValueOptions(f, relationInfo) || []}
-								onSelect={async (newVal) => {
-									console.log(f.key, 'newVal', newVal)
-									console.log('table', table)
-									console.log('table.getState()', table.getState())
-									// @ts-expect-error TODO: kill me...
-									const key = relationInfo ? f.options.field : f.key
-									if (table.getState().creatingRow) {
-										console.log('newVal', newVal)
-										console.log('key', key)
-										console.log('relationInfo', relationInfo)
-										// table.setCreatingRow({
-										// 	...table.getState().creatingRow,
-										// 	[key]: relationInfo ? { id: newVal } : newVal,
-										// })
-									} else {
-										// @ts-expect-error TODO: kill me...
-										await repo.update(row.id, { [key]: newVal })
-										await fetchData()
-									}
-								}}
-								selectedId={
-									// @ts-expect-error TODO: kill me...
-									row.original[relationInfo ? f.options.field : f.key]
-								}
-							/>
-						)
-					} else {
-						res.muiEditTextFieldProps = {
-							type: f.inputType || 'text',
-							// type: 'text',
-							required: !!isRequired(f),
-							// error: true,
-							error: !!validationErrors[f.key],
-							helperText: validationErrors[f.key],
-							// //remove any previous validation errors when user focuses on the input
-							// onFocus: () =>
-							//   setValidationErrors({
-							//     ...validationErrors,
-							//     firstName: undefined,
-							//   }),
-							// optionally add validation checking for onBlur or onChange
+							// @ts-expect-error TODO: kill me...
+							const selectedRelationId = row.original[f.options.field]
+							const selected = relatedEntities.find(
+								(re) => re.id === selectedRelationId
+							)
+							return <Box>{selected?.name || selectedRelationId}</Box>
+						} else {
+							return <Box>{cell.getValue<string>()}</Box>
 						}
 					}
-					return res
-				})
-				.filter((col) => !!col) as MRT_ColumnDef<T>[]
-		)
+					res.Edit = ({ row, table }) => (
+						<RemultAutocomplete
+							options={getValueOptions(f, relationInfo) || []}
+							onSelect={async (newVal) => {
+								console.log(f.key, 'newVal', newVal)
+								console.log('table', table)
+								console.log('table.getState()', table.getState())
+								// @ts-expect-error TODO: kill me...
+								const key = relationInfo ? f.options.field : f.key
+								if (table.getState().creatingRow) {
+									console.log('newVal', newVal)
+									console.log('key', key)
+									console.log('relationInfo', relationInfo)
+									// table.setCreatingRow({
+									// 	...table.getState().creatingRow,
+									// 	[key]: relationInfo ? { id: newVal } : newVal,
+									// })
+								} else {
+									// @ts-expect-error TODO: kill me...
+									await repo.update(row.id, { [key]: newVal })
+									await fetchData()
+								}
+							}}
+							selectedId={
+								// @ts-expect-error TODO: kill me...
+								row.original[relationInfo ? f.options.field : f.key]
+							}
+						/>
+					)
+				} else {
+					res.muiEditTextFieldProps = {
+						type: f.inputType || 'text',
+						// type: 'text',
+						required: !!isRequired(f),
+						// error: true,
+						error: !!validationErrors[f.key],
+						helperText: validationErrors[f.key],
+						// //remove any previous validation errors when user focuses on the input
+						// onFocus: () =>
+						//   setValidationErrors({
+						//     ...validationErrors,
+						//     firstName: undefined,
+						//   }),
+						// optionally add validation checking for onBlur or onChange
+					}
+				}
+				return res
+			})
+			.filter((col) => !!col) as MRT_ColumnDef<T>[]
 	}, [
 		repo,
 		repo?.fields,

@@ -99,6 +99,10 @@ export const RemultGrid = <T,>({
 
 	useEffect(() => {
 		fetchData(options)
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [options])
+
+	useEffect(() => {
 		return repo
 			?.liveQuery({
 				...options,
@@ -153,73 +157,56 @@ export const RemultGrid = <T,>({
 	}
 
 	const columns = (fields: FieldsMetadata<T> | undefined): GridColDef[] => {
-		return (
-			fields
-				?.toArray()
-				.slice()
-				// .sort((a, b) => {
-				// 	if (showId && a.key === 'id') {
-				// 		return -1
-				// 	}
-				// 	if (showId && b.key === 'id') {
-				// 		return 1
-				// 	}
-				// 	return a.key > b.key ? 1 : -1
-				// })
-				.sort((a, b) => {
-					if (showId && a.key === 'id') {
-						return -1
-					}
-					if (showId && b.key === 'id') {
+		return fields
+			?.toArray()
+			.slice()
+			.sort((a, b) => {
+				if (fieldsToShow?.length) {
+					// @ts-expect-error TODO: fix type error here
+					if (fieldsToShow.indexOf(a.key) === -1) {
 						return 1
 					}
-					if (fieldsToShow?.length) {
-						// @ts-expect-error TODO: fix type error here
-						if (fieldsToShow.indexOf(a.key) === -1) {
-							return 1
-						}
-						// @ts-expect-error TODO: fix type error here
-						if (fieldsToShow.indexOf(b.key) === -1) {
-							return -1
-						}
-						// @ts-expect-error TODO: fix type error here
-						return fieldsToShow.indexOf(a.key) - fieldsToShow.indexOf(b.key)
-					} else {
-						return a.key > b.key ? 1 : -1
+					// @ts-expect-error TODO: fix type error here
+					if (fieldsToShow.indexOf(b.key) === -1) {
+						return -1
 					}
-				})
-				.map((f) => {
-					if (
-						isHideField(
-							f,
-							fields.toArray(),
-							true,
-							showId,
-							showCreatedAt,
-							showUpdatedAt,
-							fieldsToShow
-						)
-					) {
-						return
-					}
-					const relationInfo = getRelationInfo(f.options)
-					return {
-						// @ts-expect-error TODO: fix type error here
-						field: relationInfo ? f.options.field : f.key,
-						headerName: f.caption || f.key,
-						width: 120,
-						editable: !isMetaActionBlocked(f.options.allowApiUpdate),
-						type: getFieldType(f),
-						valueOptions: getValueOptions(f, relationInfo),
-						// preProcessEditCellProps: (params: GridPreProcessEditCellProps) => {
-						// 	console.log('>>> params', params)
-						// 	// const hasError = params.props.value.length < 3;
-						// 	return { ...params.props, error: true }
-						// },
-					}
-				})
-				.filter((col) => !!col) as GridColDef[]
-		)
+					// @ts-expect-error TODO: fix type error here
+					return fieldsToShow.indexOf(a.key) - fieldsToShow.indexOf(b.key)
+				} else {
+					return 0
+				}
+			})
+			.map((f) => {
+				if (
+					isHideField(
+						f,
+						fields.toArray(),
+						true,
+						showId,
+						showCreatedAt,
+						showUpdatedAt,
+						fieldsToShow
+					)
+				) {
+					return
+				}
+				const relationInfo = getRelationInfo(f.options)
+				return {
+					// @ts-expect-error TODO: fix type error here
+					field: relationInfo ? f.options.field : f.key,
+					headerName: f.caption || f.key,
+					width: f.key === 'id' ? 300 : 200,
+					editable: !isMetaActionBlocked(f.options.allowApiUpdate),
+					type: getFieldType(f),
+					valueOptions: getValueOptions(f, relationInfo),
+					// preProcessEditCellProps: (params: GridPreProcessEditCellProps) => {
+					// 	console.log('>>> params', params)
+					// 	// const hasError = params.props.value.length < 3;
+					// 	return { ...params.props, error: true }
+					// },
+				}
+			})
+			.filter((col) => !!col) as GridColDef[]
 	}
 
 	const onDeleteConfirm = async () => {
@@ -345,7 +332,7 @@ export const RemultGrid = <T,>({
 								page: options.page || 0,
 							}}
 							onSortModelChange={(model) => {
-								toggleOrderBy(model[0].field)
+								toggleOrderBy(model[0]?.field)
 							}}
 							filterMode='server'
 							onFilterModelChange={(model) => {
