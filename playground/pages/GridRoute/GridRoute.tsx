@@ -5,6 +5,21 @@ import { RemultGrid } from '../../../src/views/RemultGrid'
 const GridRoute = () => {
 	return (
 		<>
+			<RemultGrid
+				entity={User}
+				showId
+				fieldsToShow={[
+					'id',
+					'email',
+					'workingHoursStart',
+					'organization',
+					'isDisabled',
+					'age',
+					'firstName',
+					'lastName',
+				]}
+				// gridOptions={{ checkboxSelection: false }}
+			/>
 			<RemultGridMRT
 				entity={User}
 				showId
@@ -19,21 +34,6 @@ const GridRoute = () => {
 					'lastName',
 				]}
 				uiLib='mrt'
-				// gridOptions={{ checkboxSelection: false }}
-			/>
-			<RemultGrid
-				entity={User}
-				showId
-				fieldsToShow={[
-					'id',
-					'email',
-					'workingHoursStart',
-					'organization',
-					'isDisabled',
-					'age',
-					'firstName',
-					'lastName',
-				]}
 				// gridOptions={{ checkboxSelection: false }}
 			/>
 		</>

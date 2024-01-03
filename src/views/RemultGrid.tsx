@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { DataGrid, GridToolbar } from '@mui/x-data-grid'
+import { DataGrid } from '@mui/x-data-grid'
 import type {
 	GridColDef,
 	GridEditMode,
@@ -20,19 +20,19 @@ import {
 import {
 	Alert,
 	AlertProps,
-	Button,
 	LinearProgress,
 	Snackbar,
 	Typography,
 } from '@mui/material'
 import { RelationInfo, getRelationInfo } from 'remult/internals'
-import { Box } from '@mui/system'
 import AddRowDialog from '../components/grid/AddRowDialog'
 import useToggle from '../hooks/useToggle'
 import DeleteRowDialog from '../components/grid/DeleteRowDialog'
 import utils from '../utils'
 import { MuiFilterOperator } from '../utils/mui_v5.util'
 import { UILibContext } from '../UILibContext'
+import CustomToolbar from '../components/grid/CustomToolbar'
+
 // TODO: there is an option to enter edit mode with 1 click.
 // See here: https://mui.com/x/react-data-grid/recipes-editing/#single-click-editing
 interface RemultGridP {
@@ -232,32 +232,6 @@ export const RemultGrid = <T,>({
 		setOptions({ ...options, orderBy: { [key]: dir } })
 	}
 
-	const renderActions = () => {
-		return (
-			<Box sx={{ mb: 1 }}>
-				<Button
-					onClick={showAddRowDialogToggle.show}
-					variant='contained'
-					size='small'
-				>
-					Add +
-				</Button>
-				{selectedRows?.length ? (
-					<Button
-						sx={{ ml: 1, bgcolor: 'error.main' }}
-						variant='contained'
-						size='small'
-						onClick={showDeleteRowDialogToggle.show}
-					>
-						Delete
-					</Button>
-				) : (
-					<></>
-				)}
-			</Box>
-		)
-	}
-
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const onEdit = async (newRow: GridRowModel, _oldRow: GridRowModel) => {
 		const res = await repo?.save(newRow as T)
@@ -303,14 +277,22 @@ export const RemultGrid = <T,>({
 				</Typography>
 				{data && (
 					<>
-						{renderActions()}
 						<DataGrid
 							{...gridOptionsMerged}
 							columns={columns(repo?.fields)}
 							rows={data as GridValidRowModel[]}
 							slots={{
-								toolbar: GridToolbar,
+								toolbar: CustomToolbar,
 								loadingOverlay: LinearProgress,
+							}}
+							slotProps={{
+								toolbar: {
+									onAdd: showAddRowDialogToggle.show,
+									onDelete: (selectedRows: string[]) => {
+										setSelectedRows(selectedRows)
+										showDeleteRowDialogToggle.show()
+									},
+								},
 							}}
 							// loading
 							// processRowUpdate={async (newRow) => await repo?.save(newRow)}
