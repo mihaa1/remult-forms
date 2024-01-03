@@ -75,7 +75,7 @@ export const RemultGrid = <T,>({
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const [options, setOptions] = useState<FindOptions<any>>({
-		limit: 5,
+		limit: 10,
 		page: 0,
 	})
 
