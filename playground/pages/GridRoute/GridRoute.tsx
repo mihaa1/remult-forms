@@ -20,7 +20,7 @@ const GridRoute = () => {
 				// ]}
 				// gridOptions={{ checkboxSelection: false }}
 			/>
-			{/* <RemultGridMRT
+			<RemultGridMRT
 				entity={User}
 				showId
 				fieldsToShow={[
@@ -35,7 +35,7 @@ const GridRoute = () => {
 				]}
 				uiLib='mrt'
 				// gridOptions={{ checkboxSelection: false }}
-			/> */}
+			/>
 		</>
 	)
 }
