@@ -15,13 +15,7 @@ import {
 import { EntityMetaDisplay, UI_LIB } from '../types'
 import { FieldMetadata, remult } from 'remult'
 import { RelationInfo, getRelationInfo } from 'remult/internals'
-import {
-	getFieldType,
-	isHideField,
-	isMetaActionBlocked,
-	isRequired,
-	loadRelations,
-} from '../util'
+import { getFieldType, isHideField, isRequired, loadRelations } from '../util'
 import UTILS from '../utils'
 import { IconButton, Tooltip, Box, Button } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
@@ -182,7 +176,11 @@ export const RemultGrid = <T extends MRT_RowData>({
 					// accessorKey: relationInfo ? f.options.field : f.key,
 					accessorKey: f.key,
 					header: f.caption || f.key,
-					enableEditing: !isMetaActionBlocked(f.options.allowApiUpdate),
+					// enableEditing: !isMetaActionBlocked(f.options.allowApiUpdate),
+					enableEditing: remult.isAllowedForInstance(
+						undefined,
+						f.options.allowApiUpdate
+					),
 					// filterVariant: f.inputType || 'text',
 					// type: getFieldType(f),
 					// muiEditTextFieldProps: {

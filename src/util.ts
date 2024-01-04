@@ -56,24 +56,24 @@ export const isHideField = <T>(
 	}
 }
 
-export const isMetaActionBlocked = (
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	metaAction: AllowedForInstance<any> | undefined
-) => {
-	if (
-		metaAction === undefined ||
-		metaAction === true ||
-		(typeof metaAction === 'function' && metaAction() === true)
-	) {
-		return false
-	}
-	return (
-		metaAction === false ||
-		(typeof metaAction === 'function' && metaAction() === false) ||
-		(!remult.user && !!metaAction) ||
-		(remult.user && !remult.isAllowed(metaAction))
-	)
-}
+// export const isMetaActionBlocked = (
+// 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// 	metaAction: AllowedForInstance<any> | undefined
+// ) => {
+// 	if (
+// 		metaAction === undefined ||
+// 		metaAction === true ||
+// 		(typeof metaAction === 'function' && metaAction() === true)
+// 	) {
+// 		return false
+// 	}
+// 	return (
+// 		metaAction === false ||
+// 		(typeof metaAction === 'function' && metaAction() === false) ||
+// 		(!remult.user && !!metaAction) ||
+// 		(remult.user && !remult.isAllowed(metaAction))
+// 	)
+// }
 
 export const getFieldType = <T>(f: FieldMetadata<T>) => {
 	const relationInfo = getRelationInfo(f.options)
