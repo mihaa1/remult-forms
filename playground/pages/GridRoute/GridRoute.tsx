@@ -1,11 +1,11 @@
 import { User } from '../../shared/models/User.model'
-import { RemultGrid as RemultGridMRT } from '../../../src/views/RemultGrid-MRT'
-import { RemultGrid } from '../../../src/views/RemultGrid'
+import { RemultGridMUI } from '../../../index'
+import { RemultGridMRT } from '../../../index'
 
 const GridRoute = () => {
 	return (
 		<>
-			<RemultGrid
+			<RemultGridMUI
 				entity={User}
 				showId
 				// fieldsToShow={[
@@ -33,7 +33,6 @@ const GridRoute = () => {
 					'age',
 					'lastName',
 				]}
-				uiLib='mrt'
 				// gridOptions={{ checkboxSelection: false }}
 			/>
 		</>

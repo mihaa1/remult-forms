@@ -51,10 +51,9 @@ interface RemultGridP {
 	// 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	// 	[key: string]: any
 	// }
-	uiLib?: UI_LIB
 }
 
-export const RemultGrid = <T extends MRT_RowData>({
+export const RemultGridMRT = <T extends MRT_RowData>({
 	entity,
 	repo: repoExternal,
 	showId,
@@ -62,9 +61,9 @@ export const RemultGrid = <T extends MRT_RowData>({
 	showUpdatedAt,
 	// title,
 	fieldsToShow = [],
-	// gridOptions,
-	uiLib = 'mui_v5',
-}: RemultGridP & EntityMetaDisplay<T>) => {
+}: // gridOptions,
+RemultGridP & EntityMetaDisplay<T>) => {
+	const uiLib: UI_LIB = 'mrt'
 	const repo = entity ? remult.repo(entity) : repoExternal
 	//data and fetching state
 	const [data, setData] = useState<T[]>([])
@@ -176,7 +175,6 @@ export const RemultGrid = <T extends MRT_RowData>({
 					// accessorKey: relationInfo ? f.options.field : f.key,
 					accessorKey: f.key,
 					header: f.caption || f.key,
-					// enableEditing: !isMetaActionBlocked(f.options.allowApiUpdate),
 					enableEditing: remult.isAllowedForInstance(
 						undefined,
 						f.options.allowApiUpdate

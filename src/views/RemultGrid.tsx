@@ -41,7 +41,6 @@ interface RemultGridP {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		[key: string]: any
 	}
-	uiLib?: UI_LIB
 }
 const GRID_OPTIONS_DEFAULTS = {
 	editMode: 'row' as GridEditMode,
@@ -49,7 +48,7 @@ const GRID_OPTIONS_DEFAULTS = {
 	disableRowSelectionOnClick: true,
 }
 
-export const RemultGrid = <T,>({
+export const RemultGridMUI = <T,>({
 	entity,
 	repo: repoExternal,
 	showId,
@@ -58,8 +57,8 @@ export const RemultGrid = <T,>({
 	title,
 	fieldsToShow = [],
 	gridOptions,
-	uiLib = 'mui_v5',
 }: RemultGridP & EntityMetaDisplay<T>): ReactNode => {
+	const uiLib: UI_LIB = 'mui_v5'
 	const repo = entity ? remult.repo(entity) : repoExternal
 
 	const [data, setData] = useState<T[]>()
