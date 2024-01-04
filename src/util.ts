@@ -1,5 +1,4 @@
 import {
-	AllowedForInstance,
 	FieldMetadata,
 	FieldsMetadata,
 	RelationOptions,
