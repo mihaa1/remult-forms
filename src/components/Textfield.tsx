@@ -1,7 +1,7 @@
 import { TextField } from '@mui/material'
 import { ChangeEvent } from 'react'
 import { FieldMetadata } from 'remult'
-import { isMetaActionBlocked, isRequired } from '../util'
+import { isRequired } from '../util'
 // import { UILibContext } from '../UILibContext'
 
 interface RemultTextFieldP<T> {
@@ -9,6 +9,7 @@ interface RemultTextFieldP<T> {
 	field: FieldMetadata<any, T> // eslint-disable-line @typescript-eslint/no-explicit-any
 	onChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
 	error?: string
+	disabled?: boolean
 }
 
 const RemultTextField = <T,>({
@@ -16,6 +17,7 @@ const RemultTextField = <T,>({
 	field,
 	onChange,
 	error,
+	disabled,
 }: RemultTextFieldP<T>) => {
 	// const uiLib = useContext(UILibContext)
 
@@ -24,8 +26,7 @@ const RemultTextField = <T,>({
 			sx={{ mb: 1 }}
 			type={field.inputType || 'text'}
 			label={field.caption || field.key}
-			disabled={isMetaActionBlocked(field.options.allowApiUpdate)}
-			// value={internalItem[field.key as keyof typeof internalItem]}
+			disabled={disabled}
 			value={val || ''}
 			onChange={onChange}
 			required={!!isRequired(field)}

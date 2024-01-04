@@ -144,25 +144,18 @@ export class User {
 	@Fields.boolean()
 	isDisabled = false
 
-	/**
-	 * Synthetic users are users which were created without an email e.g.
-	 * from upload users list.
-	 * These users are treated the same for schedules.
-	 */
 	@Fields.boolean({
-		includeInApi: false,
+		// includeInApi: false,
+		allowApiUpdate: false,
 	})
 	isSynthetic = false
 
-	@Fields.string({
-		// only SUPER_ADMIN can directly update org id.
-		// in all other cases this field is updated through creating org
-		// allowApiUpdate: [Role.SUPER_ADMIN],
-	})
+	@Fields.string()
 	organizationId = ''
 	@Relations.toOne<User, Organization>(() => Organization, {
 		field: 'organizationId',
 		// defaultIncluded: true,
+		// allowApiUpdate: false,
 	})
 	organization?: Organization
 
@@ -170,9 +163,6 @@ export class User {
 		allowApiUpdate: [Role.SUPER_ADMIN, Role.ADMIN],
 		saving: (user, fieldRef) => {
 			if (user.locationId !== fieldRef.originalValue && !user.location) {
-				// if no user.location - it means the remult couldn't find
-				// a location using the provided locationId, and the location
-				// for the update was invalid
 				throw new Error('Invalid location')
 			}
 		},
@@ -185,6 +175,7 @@ export class User {
 
 	@Fields.object({
 		allowApiUpdate: [Role.SUPER_ADMIN, Role.ADMIN],
+		// allowApiUpdate: false,
 		validate: (user) => {
 			if (user.role !== Role.ADMIN && user.role !== Role.USER) {
 				console.warn(
@@ -197,10 +188,13 @@ export class User {
 	})
 	role = Role.USER
 
-	@Fields.string()
+	@Fields.string({
+		allowApiUpdate: false,
+	})
 	phone = ''
 
 	@Fields.string<User>({
+		allowApiUpdate: true,
 		validate: (v) => {
 			if (v.firstName.length < 3) {
 				throw new Error('First name must be at least 3 characters long')
@@ -219,6 +213,7 @@ export class User {
 	// attributes?: AttributeXUser[]
 
 	@Fields.json<User>({
+		allowApiUpdate: false,
 		// validate: (row) => {
 		// 	if (row) {
 		// 		throw new Error('Need to select at least 1')
@@ -239,12 +234,13 @@ export class User {
 		// 		throw new Error('Working hours start cannot be 1:00 HR')
 		// 	}
 		// },
+		allowApiUpdate: false,
 		select: {
 			options: WORKING_HOURS.map((d) => ({
 				id: d,
 				label: d.toString() + ':00 HR',
 			})),
-			// type: 'select',
+			type: 'select',
 		},
 		caption: 'Working Hours Start',
 	})

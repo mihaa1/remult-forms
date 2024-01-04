@@ -11,12 +11,7 @@ import { remult } from 'remult'
 import type { FieldMetadata, FieldsMetadata } from 'remult'
 import { Box, Button, Typography } from '@mui/material'
 import type { EntityMetaDisplay, ID, SelectOption, UI_LIB } from './types'
-import {
-	getFieldType,
-	isHideField,
-	isMetaActionBlocked,
-	loadRelations,
-} from './util'
+import { getFieldType, isHideField, loadRelations } from './util'
 import { getRelationInfo } from 'remult/internals'
 import RemultTextField from './components/Textfield'
 import RemultCheckbox from './components/Checkbox'
@@ -220,6 +215,8 @@ export const RemultForm = <T extends { id: ID }>({
 				const fieldType = getFieldType(f)
 				const rawVal = state[f.key as keyof typeof state]
 				const relationInfo = getRelationInfo(f.options)
+				const isDisabled =
+					remult.isAllowedForInstance(state, f.options.allowApiUpdate) === false
 				// @ts-expect-error TODO: how to do keyof Partial<T>
 				// Thought of using PropertyKey as suggested here:
 				// https://stackoverflow.com/a/71531880/5248229
@@ -240,6 +237,7 @@ export const RemultForm = <T extends { id: ID }>({
 							onSelect={(newVal) => onRelationSelect(newVal, f)}
 							// @ts-expect-error TODO: fix
 							error={errors[f.key]}
+							disabled={isDisabled}
 						/>
 					)
 				} else if (fieldType === 'singleSelect') {
@@ -266,6 +264,7 @@ export const RemultForm = <T extends { id: ID }>({
 								onSelect={(newVal) => onSingleSelect(newVal, f)}
 								// @ts-expect-error TODO: fix
 								error={errors[f.key]}
+								disabled={isDisabled}
 							/>
 						)
 					}
@@ -283,6 +282,7 @@ export const RemultForm = <T extends { id: ID }>({
 								onSelect={(newVal) => onMultiSelect(newVal, f)}
 								// @ts-expect-error TODO: fix
 								error={errors[f.key]}
+								disabled={isDisabled}
 							/>
 						)
 					} else if (f.options.select.type === 'select') {
@@ -297,6 +297,7 @@ export const RemultForm = <T extends { id: ID }>({
 								onSelect={(newVal) => onMultiSelect(newVal, f)}
 								// @ts-expect-error TODO: fix
 								error={errors[f.key]}
+								disabled={isDisabled}
 							/>
 						)
 					}
@@ -305,13 +306,13 @@ export const RemultForm = <T extends { id: ID }>({
 					return (
 						<RemultTextField
 							key={f.key}
-							// val={state[f.key as keyof typeof state]}
 							val={
 								(rawVal &&
 									f.valueConverter.toInput &&
 									f.valueConverter.toInput(rawVal)) ||
 								rawVal
 							}
+							disabled={isDisabled}
 							field={f}
 							onChange={(e) => onChangeTextfield(e, f.key)}
 							// @ts-expect-error TODO: fix
@@ -323,7 +324,7 @@ export const RemultForm = <T extends { id: ID }>({
 						<RemultCheckbox
 							key={f.key}
 							label={f.caption || f.key}
-							disabled={isMetaActionBlocked(f.options.allowApiUpdate)}
+							disabled={isDisabled}
 							checked={!!rawVal}
 							onChange={(e) => onChangeCheckbox(e, f.key)}
 						/>
