@@ -335,6 +335,7 @@ export const RemultForm = <T extends { id: ID }>({
 							key={f.key}
 							field={f}
 							onChange={(newDate) => onChangeDate(newDate, f.key)}
+							disabled={isDisabled}
 						/>
 					)
 				}

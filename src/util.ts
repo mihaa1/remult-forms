@@ -31,7 +31,7 @@ export const isHideField = <T>(
 	if (
 		(fieldsToShow?.length && !fieldsToShow.includes(f.key as keyof T)) ||
 		(f.options.hideOnCreate && !isEdit) ||
-		isMetaActionBlocked(f.options.includeInApi)
+		remult.isAllowedForInstance(undefined, f.options.includeInApi) === false
 	) {
 		return true
 	}

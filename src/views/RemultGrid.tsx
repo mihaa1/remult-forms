@@ -11,12 +11,7 @@ import type { EntityMetaDisplay, UI_LIB } from '../types'
 import { ReactNode, useCallback, useEffect, useState } from 'react'
 import { remult } from 'remult'
 import type { FieldMetadata, FieldsMetadata, FindOptions } from 'remult'
-import {
-	getFieldType,
-	isHideField,
-	isMetaActionBlocked,
-	loadRelations,
-} from '../util'
+import { getFieldType, isHideField, loadRelations } from '../util'
 import {
 	Alert,
 	AlertProps,
@@ -196,7 +191,7 @@ export const RemultGrid = <T,>({
 					field: relationInfo ? f.options.field : f.key,
 					headerName: f.caption || f.key,
 					width: f.key === 'id' ? 300 : 200,
-					editable: !isMetaActionBlocked(f.options.allowApiUpdate),
+					editable: true,
 					type: getFieldType(f),
 					valueOptions: getValueOptions(f, relationInfo),
 					// preProcessEditCellProps: (params: GridPreProcessEditCellProps) => {
@@ -281,6 +276,13 @@ export const RemultGrid = <T,>({
 							{...gridOptionsMerged}
 							columns={columns(repo?.fields)}
 							rows={data as GridValidRowModel[]}
+							isCellEditable={(params) =>
+								remult.isAllowedForInstance(
+									params.row,
+									repo?.fields[params.colDef.field as keyof T].options
+										.allowApiUpdate
+								) !== false
+							}
 							slots={{
 								toolbar: CustomToolbar,
 								loadingOverlay: LinearProgress,

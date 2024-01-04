@@ -190,11 +190,13 @@ export class User {
 
 	@Fields.string({
 		allowApiUpdate: false,
+		includeInApi: false,
 	})
 	phone = ''
 
 	@Fields.string<User>({
-		allowApiUpdate: true,
+		allowApiUpdate: false,
+		includeInApi: true,
 		validate: (v) => {
 			if (v.firstName.length < 3) {
 				throw new Error('First name must be at least 3 characters long')
@@ -208,6 +210,11 @@ export class User {
 
 	@Fields.integer()
 	age = 99
+
+	@Fields.dateOnly({
+		allowApiUpdate: false,
+	})
+	birthday?: Date
 
 	// @Relations.toMany(() => AttributeXUser, 'userId')
 	// attributes?: AttributeXUser[]

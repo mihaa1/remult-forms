@@ -8,19 +8,19 @@ const GridRoute = () => {
 			<RemultGrid
 				entity={User}
 				showId
-				fieldsToShow={[
-					'id',
-					'email',
-					'workingHoursStart',
-					'organization',
-					'isDisabled',
-					'age',
-					'firstName',
-					'lastName',
-				]}
+				// fieldsToShow={[
+				// 	'id',
+				// 	'email',
+				// 	'workingHoursStart',
+				// 	'organization',
+				// 	'isDisabled',
+				// 	'age',
+				// 	'firstName',
+				// 	'lastName',
+				// ]}
 				// gridOptions={{ checkboxSelection: false }}
 			/>
-			<RemultGridMRT
+			{/* <RemultGridMRT
 				entity={User}
 				showId
 				fieldsToShow={[
@@ -35,7 +35,7 @@ const GridRoute = () => {
 				]}
 				uiLib='mrt'
 				// gridOptions={{ checkboxSelection: false }}
-			/>
+			/> */}
 		</>
 	)
 }
