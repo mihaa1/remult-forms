@@ -1,4 +1,6 @@
-console.log('this is baddddddd')
-export * from './src/RemultForm'
-export * from './src/views/RemultGrid-MUI'
-export * from './src/views/RemultGrid-MRT'
+export { default as RemultFormMUI } from './src/RemultFormMUI/RemultFormMUI'
+export * from './src/RemultFormMUI/RemultFormMUI'
+export { default as RemultGridMUI } from './src/RemultGridMUI/RemultGridMUI'
+export * from './src/RemultGridMUI/RemultGridMUI'
+export { default as RemultGridMRT } from './src/RemultGridMRT/RemultGridMRT'
+export * from './src/RemultGridMRT/RemultGridMRT'

@@ -1,5 +1,5 @@
 import { User } from '../../shared/models/User.model'
-import { RemultForm } from '../../../index'
+import { RemultFormMUI } from '../../../index'
 import { remult } from 'remult'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
@@ -15,7 +15,7 @@ const FormRoute = () => {
 	}, [id])
 
 	return (
-		<RemultForm
+		<RemultFormMUI
 			entity={User}
 			item={user}
 			// uiLib='joy_ui'

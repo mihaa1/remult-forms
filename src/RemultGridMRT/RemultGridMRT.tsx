@@ -53,7 +53,7 @@ interface RemultGridP {
 	// }
 }
 
-export const RemultGridMRT = <T extends MRT_RowData>({
+const RemultGridMRT = <T extends MRT_RowData>({
 	entity,
 	repo: repoExternal,
 	showId,
@@ -489,3 +489,4 @@ RemultGridP & EntityMetaDisplay<T>) => {
 		</div>
 	)
 }
+export default RemultGridMRT

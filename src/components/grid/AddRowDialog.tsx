@@ -1,5 +1,5 @@
 import { Dialog, DialogTitle, IconButton } from '@mui/material'
-import { RemultForm } from '../../RemultFormMUI/RemultFormMUI'
+import RemultFormMUI from '../../RemultFormMUI'
 import { Repository } from 'remult'
 import { Box } from '@mui/system'
 import { Close } from '@mui/icons-material'
@@ -23,7 +23,7 @@ const AddRowDialog = <T,>({ repo, toggle, onAddRow }: AddRowDialogP<T>) => {
 					<Close />
 				</IconButton>
 				{/* @ts-expect-error dunno what to do with this */}
-				<RemultForm title=' ' repo={repo} onDone={onAddRow} />
+				<RemultFormMUI title=' ' repo={repo} onDone={onAddRow} />
 			</Box>
 		</Dialog>
 	)

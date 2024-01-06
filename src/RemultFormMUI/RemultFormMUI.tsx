@@ -41,7 +41,7 @@ interface RemultFormP<T> {
 	uiLib?: UI_LIB
 }
 
-export const RemultForm = <T extends { id: ID }>({
+const RemultFormMUI = <T extends { id: ID }>({
 	entity,
 	repo: repoExternal,
 	item,
@@ -360,3 +360,4 @@ export const RemultForm = <T extends { id: ID }>({
 		</UILibContext.Provider>
 	)
 }
+export default RemultFormMUI

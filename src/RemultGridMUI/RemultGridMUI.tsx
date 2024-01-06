@@ -48,7 +48,7 @@ const GRID_OPTIONS_DEFAULTS = {
 	disableRowSelectionOnClick: true,
 }
 
-export const RemultGridMUI = <T,>({
+const RemultGridMUI = <T,>({
 	entity,
 	repo: repoExternal,
 	showId,
@@ -351,3 +351,4 @@ export const RemultGridMUI = <T,>({
 		</UILibContext.Provider>
 	)
 }
+export default RemultGridMUI
