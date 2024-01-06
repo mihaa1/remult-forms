@@ -1,5 +1,5 @@
 import { Dialog, DialogTitle, IconButton } from '@mui/material'
-import { RemultForm } from '../../RemultForm'
+import { RemultForm } from '../../RemultFormMUI/RemultFormMUI'
 import { Repository } from 'remult'
 import { Box } from '@mui/system'
 import { Close } from '@mui/icons-material'
