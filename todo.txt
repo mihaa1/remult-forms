@@ -1,0 +1,19 @@
+* sort - DONE
+* bug - sort and change tab - error - DONE
+* links - show selected - DONE
+* column width - make bigger - DONE
+* Add button - move to inside table toolbar - DONE
+
+internal - DONE
+* meta actions fixes - allowApiUpdate, includeInApi etc.
+use repo.metadata.apiUpdateAllowed and stuff
+Example:
+isHide
+remult.isAllowedForInstance(row, includeInApi)
+
+Next:
+* rtl...
+* check column sort - ???
+
+Nice to have:
+* grid - validation on field instead of global
