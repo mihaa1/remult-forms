@@ -13,7 +13,7 @@
 		"lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
 		"preview": "vite preview",
 		"publishme": "rm -rf dist && yarn build:n:copy && yarn version --patch && yarn publish dist/src && git push && git push --tags",
-		"copy:files": "cp package.json dist && cp README.md dist",
+		"copy:files": "cp package.json dist/src && cp README.md dist/src",
 		"prepare": "relative-deps"
 	},
 	"repository": {
