@@ -1,6 +1,6 @@
 import { User } from '../../shared/models/User.model'
-import { RemultGridMUI } from '../../../index'
-import { RemultGridMRT } from '../../../index'
+import RemultGridMUI from '../../../src/RemultFormMUI'
+import RemultGridMRT from '../../../src/RemultGridMRT'
 
 const GridRoute = () => {
 	return (

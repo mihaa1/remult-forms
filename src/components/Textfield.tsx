@@ -1,7 +1,7 @@
 import { TextField } from '@mui/material'
 import { ChangeEvent } from 'react'
 import { FieldMetadata } from 'remult'
-import { isRequired } from '../util'
+import { isRequired } from '../utils/general'
 // import { UILibContext } from '../UILibContext'
 
 interface RemultTextFieldP<T> {

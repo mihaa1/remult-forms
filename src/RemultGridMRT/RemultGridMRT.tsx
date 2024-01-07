@@ -15,7 +15,12 @@ import {
 import { EntityMetaDisplay, UI_LIB } from '../types'
 import { FieldMetadata, remult } from 'remult'
 import { RelationInfo, getRelationInfo } from 'remult/internals'
-import { getFieldType, isHideField, isRequired, loadRelations } from '../util'
+import {
+	getFieldType,
+	isHideField,
+	isRequired,
+	loadRelations,
+} from '../utils/general'
 import UTILS from '../utils'
 import { IconButton, Tooltip, Box, Button } from '@mui/material'
 import { Edit as EditIcon } from '@mui/icons-material'

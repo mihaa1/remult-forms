@@ -11,7 +11,7 @@ import type { EntityMetaDisplay, UI_LIB } from '../types'
 import { ReactNode, useCallback, useEffect, useState } from 'react'
 import { remult } from 'remult'
 import type { FieldMetadata, FieldsMetadata, FindOptions } from 'remult'
-import { getFieldType, isHideField, loadRelations } from '../util'
+import { getFieldType, isHideField, loadRelations } from '../utils/general'
 import {
 	Alert,
 	AlertProps,

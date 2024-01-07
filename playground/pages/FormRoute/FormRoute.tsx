@@ -1,5 +1,5 @@
 import { User } from '../../shared/models/User.model'
-import { RemultFormMUI } from '../../../index'
+import RemultFormMUI from '../../../src/RemultFormMUI'
 import { remult } from 'remult'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
