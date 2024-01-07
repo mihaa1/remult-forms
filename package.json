@@ -12,9 +12,8 @@
 		"build:watch": "tsc --watch",
 		"lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
 		"preview": "vite preview",
-		"publishme": "",
-		"copy:files": "cp package.json dist/src && cp README.md dist/src",
-		"prepare": "relative-deps"
+		"publishme": "rm -rf dist && yarn build && yarn version --patch && yarn copy:files && tsx publish.ts && git push && git push --tags",
+		"copy:files": "cp package.json dist/src && cp README.md dist/src"
 	},
 	"repository": {
 		"type": "git",
@@ -52,7 +51,6 @@
 		"typescript": "^5.2.2",
 		"vite": "^5.0.8"
 	},
-	"relativeDependencies": {},
 	"module": "./index.js",
 	"types": "./index.d.ts"
 }
