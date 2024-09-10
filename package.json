@@ -1,6 +1,6 @@
 {
 	"name": "remult-uikit",
-	"version": "0.0.84",
+	"version": "0.0.85",
 	"type": "module",
 	"scripts": {
 		"dev:playground": "vite",
