@@ -1,6 +1,6 @@
 {
 	"name": "remult-uikit",
-	"version": "0.0.87",
+	"version": "0.0.88",
 	"type": "module",
 	"scripts": {
 		"dev:playground": "vite",
@@ -12,7 +12,7 @@
 		"build:watch": "tsc --watch",
 		"lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
 		"preview": "vite preview",
-		"publishme": "rm -rf dist && yarn build && yarn version --patch && yarn copy:files && yarn publish dist/src && git push && git push --tags",
+		"publishme": "rm -rf dist && yarn build && yarn version --patch && yarn copy:files && yarn publish dist/src --non-interactive && git push && git push --tags",
 		"copy:files": "cp package.json dist/src && cp README.md dist/src"
 	},
 	"repository": {
