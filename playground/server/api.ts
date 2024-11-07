@@ -1,7 +1,7 @@
 import { remultExpress } from 'remult/remult-express'
-import { User } from '../shared/models/User.model'
-import { Organization } from '../shared/models/Organization.model'
-import { Location } from '../shared/models/Location.model'
+import { User } from '../shared/models/User'
+import { Organization } from '../shared/models/Organization'
+import { Location } from '../shared/models/Location'
 
 export const api = remultExpress({
 	getUser: async () => {

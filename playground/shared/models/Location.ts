@@ -1,32 +1,14 @@
 import { Allow, Entity, Fields, Relations, Validators, remult } from 'remult'
-import { Organization } from './Organization.model'
+import { Organization } from './Organization'
 import {
-	Role,
 	SHIFT_LENGTH_DEFAULT,
 	SHIFT_PERSON_COUNT_DEFAULT,
 } from '../../server/consts'
-import { HourInDay } from '../../types'
+import type { HourInDay, WeekStart } from '../utils/types'
 
 @Entity<Location>('location', {
 	allowApiCrud: Allow.authenticated,
-	allowApiInsert: [Role.SUPER_ADMIN, Role.ADMIN],
-	allowApiUpdate: [Role.SUPER_ADMIN, Role.ADMIN],
-	allowApiDelete: [Role.SUPER_ADMIN, Role.ADMIN],
 	defaultOrderBy: { name: 'asc' },
-	// backendPrefilter: () => {
-	// 	if (!remult.user?.organizationId) {
-	// 		return { id: '' }
-	// 	}
-	// 	if (remult.isAllowed(Role.SUPER_ADMIN)) {
-	// 		return {}
-	// 	}
-	// 	return { organizationId: remult.user?.organizationId }
-	// },
-	// saving: (row) => {
-	// 	if (!remult.user?.internal) {
-	// 		row.organizationId = remult.user!.organizationId
-	// 	}
-	// },
 })
 export class Location {
 	@Fields.cuid()
@@ -54,6 +36,15 @@ export class Location {
 	@Fields.integer()
 	workingHoursEnd: HourInDay = 0
 
+	@Fields.string()
+	firstDayOfWeek: WeekStart = 'mon'
+
+	@Fields.string({
+		validate: Validators.required,
+	})
+	timezone = 'Asia/Jerusalem'
+
+	/******************** meta fields ********************/
 	@Fields.createdAt({
 		includeInApi: false,
 		allowApiUpdate: false,

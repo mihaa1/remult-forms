@@ -1,4 +1,4 @@
-import { User } from '../../shared/models/User.model'
+import { User } from '../../shared/models/User'
 import RemultFormMUI from '../../../src/RemultFormMUI'
 import { remult } from 'remult'
 import { useEffect, useState } from 'react'
@@ -7,11 +7,16 @@ import { useParams } from 'react-router-dom'
 const FormRoute = () => {
 	const { id } = useParams()
 	const [user, setUser] = useState<User>()
+
 	useEffect(() => {
 		if (!id) {
 			return
 		}
-		remult.repo(User).findId(id).then(setUser).catch(console.log)
+		remult
+			.repo(User)
+			.findId(id)
+			.then((u) => setUser(u!))
+			.catch(console.log)
 	}, [id])
 
 	return (

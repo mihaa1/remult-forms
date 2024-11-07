@@ -15,7 +15,7 @@ import { getFieldType, isHideField, loadRelations } from '../utils/general'
 import { getRelationInfo } from 'remult/internals'
 import RemultTextField from '../components/Textfield'
 import RemultCheckbox from '../components/Checkbox'
-import RemultDatepicker from '../components/Datepicker'
+// import RemultDatepicker from '../components/Datepicker'
 import RemultAutocomplete from '../components/Autocomplete'
 import RemultAutocompleteMultiple from '../components/AutocompleteMultiple'
 import RemultCheckboxMultiple from '../components/CheckboxMultiple'
@@ -23,6 +23,7 @@ import RemultRadioGroup from '../components/RadioGroup'
 import { UILibContext } from '../UILibContext'
 
 const reducer = <T,>(state: T, action: any) => {
+	console.log('reducer', state, action)
 	return {
 		...state,
 		...action,
@@ -78,7 +79,7 @@ const RemultFormMUI = <T extends { id: ID }>({
 
 	useEffect(() => {
 		dispatch(item ? { ...item } : repo?.create())
-	}, [item])
+	}, [item, repo])
 
 	useEffect(() => {
 		loadRelations(repo?.fields, fieldsToShow)
@@ -112,15 +113,16 @@ const RemultFormMUI = <T extends { id: ID }>({
 			[key]: e.target.checked,
 		})
 
-	const onChangeDate = (newDate: unknown, key: string) =>
-		dispatch({
-			[key]: new Date(newDate as any),
-		})
+	// const onChangeDate = (newDate: unknown, key: string) =>
+	// 	dispatch({
+	// 		[key]: new Date(newDate as any),
+	// 	})
 
 	const onRelationSelect = <T,>(
 		selected: string | number,
 		f: FieldMetadata<any, T>
 	) => {
+		console.log('selected', selected)
 		// @ts-expect-error TODO: same issue here with relation type. Need to fix
 		dispatch({ [f.options.field]: selected })
 	}
@@ -129,6 +131,7 @@ const RemultFormMUI = <T extends { id: ID }>({
 		selected: string | number,
 		f: FieldMetadata<any, T>
 	) => {
+		console.log('selected', selected)
 		dispatch({ [f.key]: selected })
 	}
 
@@ -143,7 +146,6 @@ const RemultFormMUI = <T extends { id: ID }>({
 
 	const onSubmitInternal = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
-
 		setErrors({})
 		if (onSubmit) {
 			onSubmit(state)
@@ -164,6 +166,7 @@ const RemultFormMUI = <T extends { id: ID }>({
 	}
 
 	const onEdit = async () => {
+		console.log('onEdit', state)
 		const res = await repo?.save(state)
 		onDone && onDone(res)
 	}
@@ -235,7 +238,6 @@ const RemultFormMUI = <T extends { id: ID }>({
 							// @ts-expect-error TODO: fix this
 							selectedId={state[f.options.field]}
 							onSelect={(newVal) => onRelationSelect(newVal, f)}
-							// @ts-expect-error TODO: fix
 							error={errors[f.key]}
 							disabled={isDisabled}
 						/>
@@ -250,7 +252,6 @@ const RemultFormMUI = <T extends { id: ID }>({
 								options={f.options.select?.options || []}
 								selectedId={state[f.key]}
 								onSelect={(newVal) => onSingleSelect(newVal, f)}
-								// @ts-expect-error TODO: fix
 								error={errors[f.key]}
 							/>
 						)
@@ -262,7 +263,6 @@ const RemultFormMUI = <T extends { id: ID }>({
 								options={f.options.select.options}
 								selectedId={state[f.key]}
 								onSelect={(newVal) => onSingleSelect(newVal, f)}
-								// @ts-expect-error TODO: fix
 								error={errors[f.key]}
 								disabled={isDisabled}
 							/>
@@ -280,7 +280,6 @@ const RemultFormMUI = <T extends { id: ID }>({
 									id: item,
 								}))}
 								onSelect={(newVal) => onMultiSelect(newVal, f)}
-								// @ts-expect-error TODO: fix
 								error={errors[f.key]}
 								disabled={isDisabled}
 							/>
@@ -295,7 +294,6 @@ const RemultFormMUI = <T extends { id: ID }>({
 									id: item,
 								}))}
 								onSelect={(newVal) => onMultiSelect(newVal, f)}
-								// @ts-expect-error TODO: fix
 								error={errors[f.key]}
 								disabled={isDisabled}
 							/>
@@ -330,14 +328,16 @@ const RemultFormMUI = <T extends { id: ID }>({
 						/>
 					)
 				} else if (fieldType === 'date') {
-					return (
-						<RemultDatepicker
-							key={f.key}
-							field={f}
-							onChange={(newDate) => onChangeDate(newDate, f.key)}
-							disabled={isDisabled}
-						/>
-					)
+					console.log('NOT IMPLEMENTED YET')
+					return <div></div>
+					// return (
+					// 	<RemultDatepicker
+					// 		key={f.key}
+					// 		field={f}
+					// 		onChange={(newDate) => onChangeDate(newDate, f.key)}
+					// 		disabled={isDisabled}
+					// 	/>
+					// )
 				}
 			})
 	}

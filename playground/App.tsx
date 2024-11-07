@@ -9,8 +9,8 @@ import {
 import FormRoute from './pages/FormRoute/FormRoute'
 import GridRoute from './pages/GridRoute/GridRoute'
 import { remult } from 'remult'
-import { User } from './shared/models/User.model'
-import { Organization } from './shared/models/Organization.model'
+import { User } from './shared/models/User'
+import { Organization } from './shared/models/Organization'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 
 function App() {
