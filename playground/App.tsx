@@ -12,7 +12,7 @@ import { remult } from 'remult'
 import { User } from './shared/models/User'
 import { Organization } from './shared/models/Organization'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
-
+console.log('123')
 function App() {
 	// const [count, setCount] = useState(0)
 	Object.assign(globalThis, { remult, User })
