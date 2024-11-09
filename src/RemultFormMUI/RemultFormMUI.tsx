@@ -11,7 +11,12 @@ import { remult } from 'remult'
 import type { FieldMetadata, FieldsMetadata } from 'remult'
 import { Box, Button, Typography } from '@mui/material'
 import type { EntityMetaDisplay, ID, SelectOption, UI_LIB } from '../types'
-import { getFieldType, isHideField, loadRelations } from '../utils/general'
+import {
+	getFieldType,
+	getSelectOptions,
+	isHideField,
+	loadRelations,
+} from '../utils/general'
 import { getRelationInfo } from 'remult/internals'
 import RemultTextField from '../components/Textfield'
 import RemultCheckbox from '../components/Checkbox'
@@ -166,7 +171,6 @@ const RemultFormMUI = <T extends { id: ID }>({
 	}
 
 	const onEdit = async () => {
-		console.log('onEdit', state)
 		const res = await repo?.save(state)
 		onDone && onDone(res)
 	}
@@ -243,13 +247,14 @@ const RemultFormMUI = <T extends { id: ID }>({
 						/>
 					)
 				} else if (fieldType === 'singleSelect') {
+					const options = getSelectOptions(f)
 					if (!f.options.select?.type || f.options.select.type === 'radiobox') {
 						return (
 							<RemultRadioGroup
 								row
 								key={f.key}
 								label={f.caption || f.key}
-								options={f.options.select?.options || []}
+								options={options}
 								selectedId={state[f.key]}
 								onSelect={(newVal) => onSingleSelect(newVal, f)}
 								error={errors[f.key]}
@@ -260,7 +265,7 @@ const RemultFormMUI = <T extends { id: ID }>({
 							<RemultAutocomplete
 								key={f.key}
 								label={f.caption || f.key}
-								options={f.options.select.options}
+								options={options}
 								selectedId={state[f.key]}
 								onSelect={(newVal) => onSingleSelect(newVal, f)}
 								error={errors[f.key]}

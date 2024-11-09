@@ -2,7 +2,11 @@ import { Allow, Entity, Fields, Relations, Validators, remult } from 'remult'
 import { Organization } from './Organization'
 import { Role } from '../../server/consts'
 import { DAYS } from '../utils/types'
-
+enum Priority {
+	Low = 'low',
+	Medium = 'medium',
+	High = 'high',
+}
 @Entity<User>('users', {
 	allowApiCrud: Allow.authenticated,
 })
@@ -40,8 +44,11 @@ export class User {
 	@Fields.json<User>()
 	locationIds: string[] = []
 
-	@Fields.object<User>()
+	@Fields.enum(() => Role)
 	role = Role.USER
+
+	@Fields.enum(() => Priority)
+	priority = Priority.Low
 
 	@Fields.string()
 	phone = ''
@@ -52,8 +59,23 @@ export class User {
 	@Fields.string()
 	lastName = ''
 
-	@Fields.json()
+	@Fields.json({
+		select: {
+			options: DAYS.map((d) => ({ id: d, label: d.toUpperCase() })),
+			multiple: true,
+			// type: 'select',
+		},
+	})
 	availableDays = DAYS
+
+	@Fields.json({
+		select: {
+			options: DAYS.map((d) => ({ id: d, label: d.toUpperCase() })),
+			// multiple: true,
+			type: 'select',
+		},
+	})
+	availableDays1 = DAYS
 
 	/******************** meta fields ********************/
 	@Fields.createdAt({

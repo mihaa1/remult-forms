@@ -83,7 +83,12 @@ export const getFieldType = <T>(f: FieldMetadata<T>) => {
 			return 'multiSelect'
 		}
 		return 'singleSelect'
-	} else if (!f.inputType || f.inputType === 'text') {
+	} else if (f.inputType === 'text') {
+		return 'string'
+	} else if (!f.inputType) {
+		if (f.options?.valueType && Object.keys(f.options.valueType).length) {
+			return 'singleSelect'
+		}
 		return 'string'
 	} else if (f.inputType === 'number') {
 		return 'number'
@@ -126,4 +131,16 @@ export const loadRelations = async <T>(
 		}
 	}
 	return res
+}
+
+export const getSelectOptions = <T>(f: FieldMetadata<T>) => {
+	if (f.options.select?.options) {
+		return f.options.select.options
+	} else if (f.options.valueType) {
+		return Object.keys(f.options.valueType).map((key) => ({
+			id: f.options.valueType[key],
+			label: f.options.valueType[key],
+		}))
+	}
+	return []
 }

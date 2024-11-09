@@ -12,7 +12,7 @@ declare module 'remult' {
 		select?: {
 			options: { id: string | number; label: string }[]
 			multiple?: boolean
-			// defaults:
+			// defaults when not setting type:
 			// multiple: false -> checkbox
 			// multiple: true  -> radiobox
 			type?: 'select' | 'checkbox' | 'radiobox'
