@@ -38,7 +38,7 @@ interface RemultFormP<T> {
 	/** Existing model instance if edit case. Empty for create */
 	item?: T
 	/** Custom form title */
-	title?: string
+	title?: string | React.ReactNode
 	/** Trigger on form submit. This will pass the created/edited item and will NOT perform the action. */
 	onSubmit?: (item: T | undefined) => void
 	/** Trigger on action completed. When create/edit action is done this will be fired */
