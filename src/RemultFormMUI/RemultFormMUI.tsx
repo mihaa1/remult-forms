@@ -353,9 +353,7 @@ const RemultFormMUI = <T extends { id: ID }>({
 				onSubmit={onSubmitInternal}
 				sx={{ display: 'flex', flexDirection: 'column' }}
 			>
-				<Typography sx={{ mb: 1 }}>
-					{title || `${isEdit ? 'Edit ' : 'Create'} ${repo?.metadata.caption}`}
-				</Typography>
+				{title || `${isEdit ? 'Edit ' : 'Create'} ${repo?.metadata.caption}`}
 				{repo && renderForm(repo.fields)}
 				<Button type='submit' sx={{ m: 1 }} variant='contained'>
 					{`${isEdit ? 'Save' : 'Create'}`}
