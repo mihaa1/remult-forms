@@ -75,7 +75,7 @@ export class User {
 			type: 'select',
 		},
 	})
-	availableDays1 = DAYS
+	availableDays1?: string
 
 	/******************** meta fields ********************/
 	@Fields.createdAt({

@@ -28,7 +28,6 @@ import RemultRadioGroup from '../components/RadioGroup'
 import { UILibContext } from '../UILibContext'
 
 const reducer = <T,>(state: T, action: any) => {
-	console.log('reducer', state, action)
 	return {
 		...state,
 		...action,
@@ -172,13 +171,13 @@ const RemultFormMUI = <T extends { id: ID }>({
 
 	const onEdit = async () => {
 		const res = await repo?.save(state)
-		onDone && onDone(res)
+		onDone?.(res)
 	}
 
 	const onCreate = async () => {
 		try {
 			const res = await repo?.insert(state)
-			onDone && onDone(res)
+			onDone?.(res)
 		} catch (e) {
 			console.error('Error creating item', e)
 			throw e
