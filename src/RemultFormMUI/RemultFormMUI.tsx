@@ -9,7 +9,7 @@ import {
 } from 'react'
 import { remult } from 'remult'
 import type { FieldMetadata, FieldsMetadata } from 'remult'
-import { Box, Button, Typography } from '@mui/material'
+import { Box, Button } from '@mui/material'
 import type { EntityMetaDisplay, ID, SelectOption, UI_LIB } from '../types'
 import {
 	getFieldType,
