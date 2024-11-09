@@ -29,7 +29,9 @@ export type HourInDay =
 	| 24
 
 export const GET_WEEK_DAYS = (start: WeekStart) =>
-	start === 'sun' ? DAYS : ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
+	start === WeekStart.sun
+		? DAYS
+		: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
 
 export const DAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat']
 
@@ -38,7 +40,11 @@ export type Lang = 'en' | 'he'
 export type UsagePlan = '' | 'plus_monthly' | 'plus_yearly' | 'enterprise'
 
 export type ScheduleType = 'day' | 'week' | 'month'
-export type WeekStart = 'sun' | 'mon'
+
+export enum WeekStart {
+	sun = 'sun',
+	mon = 'mon',
+}
 
 export interface HasId {
 	id: string
