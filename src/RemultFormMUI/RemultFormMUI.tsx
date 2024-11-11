@@ -40,9 +40,11 @@ interface RemultFormP<T> {
 	/** Custom form title */
 	title?: string | React.ReactNode
 	/** Trigger on form submit. This will pass the created/edited item and will NOT perform the action. */
-	onSubmit?: (item: T | undefined) => void
-	/** Trigger on action completed. When create/edit action is done this will be fired */
-	onDone?: (item: T[] | undefined) => void
+	onSubmitOutside?: (item: T | undefined) => void
+	/** Trigger on action start */
+	onSubmitStart?: (item: T[] | undefined) => void
+	/** Trigger on action completed */
+	onSubmitEnd?: (item: T[] | undefined) => void
 	uiLib?: UI_LIB
 }
 
@@ -54,8 +56,9 @@ const RemultFormMUI = <T extends { id: ID }>({
 	showCreatedAt,
 	showUpdatedAt,
 	title,
-	onSubmit,
-	onDone,
+	onSubmitOutside,
+	onSubmitStart,
+	onSubmitEnd,
 	fieldsToShow = [],
 	// [ ] options per form instance - checkbox in 1 vs select in other
 	// [ ] extra field not inside entity
@@ -151,17 +154,22 @@ const RemultFormMUI = <T extends { id: ID }>({
 	const onSubmitInternal = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
 		setErrors({})
-		if (onSubmit) {
-			onSubmit(state)
+
+		if (onSubmitOutside) {
+			onSubmitOutside(state)
 			return resetForm()
 		}
+
+		onSubmitStart?.(state)
 		try {
+			let res
 			if (isEdit) {
-				await onEdit()
+				res = await onEdit()
 			} else {
 				await onCreate()
 				resetForm()
 			}
+			onSubmitEnd?.(res)
 		} catch (e: any) {
 			if (e.modelState) {
 				setErrors({ ...e.modelState })
@@ -170,14 +178,17 @@ const RemultFormMUI = <T extends { id: ID }>({
 	}
 
 	const onEdit = async () => {
-		const res = await repo?.save(state)
-		onDone?.(res)
+		try {
+			return await repo?.save(state)
+		} catch (e) {
+			console.error('Error editing item', e)
+			throw e
+		}
 	}
 
 	const onCreate = async () => {
 		try {
-			const res = await repo?.insert(state)
-			onDone?.(res)
+			return await repo?.insert(state)
 		} catch (e) {
 			console.error('Error creating item', e)
 			throw e
