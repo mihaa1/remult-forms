@@ -63,6 +63,7 @@ const FormRoute = () => {
 					'name',
 					'personsPerShift',
 					{ key: 'shiftLengthHrs', disabled: true },
+					{ key: 'firstDayOfWeek', disabled: true },
 				]}
 				// uiLib='joy_ui'
 				// item={remult.repo(User).create()}

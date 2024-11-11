@@ -276,7 +276,6 @@ const RemultFormMUI = <T extends { id: ID }>({
 						remult.isAllowedForInstance(state, f.options.allowApiUpdate) ===
 							false ||
 						(typeof fieldToShow === 'object' && fieldToShow.disabled)
-					console.log(f.key, 'isDisabled', isDisabled)
 					// @ts-expect-error TODO: how to do keyof Partial<T>
 					// Thought of using PropertyKey as suggested here:
 					// https://stackoverflow.com/a/71531880/5248229
@@ -314,6 +313,7 @@ const RemultFormMUI = <T extends { id: ID }>({
 									selectedId={state[f.key]}
 									onSelect={(newVal) => onSingleSelect(newVal, f)}
 									error={errors[f.key]}
+									disabled={isDisabled}
 								/>
 							)
 						} else if (f.options.select.type === 'select') {
