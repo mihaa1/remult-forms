@@ -10,7 +10,13 @@ import {
 import { remult } from 'remult'
 import type { FieldMetadata, FieldsMetadata } from 'remult'
 import { Box, Button } from '@mui/material'
-import type { EntityMetaDisplay, ID, SelectOption, UI_LIB } from '../types'
+import type {
+	EntityMetaDisplay,
+	FieldToShow,
+	ID,
+	SelectOption,
+	UI_LIB,
+} from '../types'
 import {
 	getFieldType,
 	getSelectOptions,
@@ -195,166 +201,210 @@ const RemultFormMUI = <T extends { id: ID }>({
 		}
 	}
 
-	const renderForm = <T,>(fields: FieldsMetadata<T>) => {
-		return fields
-			.toArray()
-			.slice()
-			.sort((a, b) => {
-				if (fieldsToShow?.length) {
-					// @ts-expect-error TODO: fix type error here
-					if (fieldsToShow.indexOf(a.key) === -1) {
-						return 1
+	const renderForm = <U,>(fields: FieldsMetadata<U>) => {
+		return (
+			fields
+				.toArray()
+				.slice()
+				// .sort((a, b) => {
+				// 	if (fieldsToShow?.length) {
+				// 		// @ts-expect-error TODO: fix type error here
+				// 		if (fieldsToShow.indexOf(a.key) === -1) {
+				// 			return 1
+				// 		}
+				// 		// @ts-expect-error TODO: fix type error here
+				// 		if (fieldsToShow.indexOf(b.key) === -1) {
+				// 			return -1
+				// 		}
+				// 		// @ts-expect-error TODO: fix type error here
+				// 		return fieldsToShow.indexOf(a.key) - fieldsToShow.indexOf(b.key)
+				// 	} else {
+				// 		return 0
+				// 	}
+				// })
+				.sort((a, b) => {
+					// Helper function to find the index of a key in fieldsToShow
+					const getOrderIndex = (key: string) => {
+						for (let i = 0; i < fieldsToShow.length; i++) {
+							if (
+								typeof fieldsToShow[i] === 'string' &&
+								fieldsToShow[i] === key
+							) {
+								return i
+							}
+							if (
+								typeof fieldsToShow[i] === 'object' &&
+								(fieldsToShow[i] as FieldToShow<T>).key === key
+							) {
+								return i
+							}
+						}
+						return Infinity // If not found, set to a large number to place at the end
 					}
-					// @ts-expect-error TODO: fix type error here
-					if (fieldsToShow.indexOf(b.key) === -1) {
-						return -1
-					}
-					// @ts-expect-error TODO: fix type error here
-					return fieldsToShow.indexOf(a.key) - fieldsToShow.indexOf(b.key)
-				} else {
-					return 0
-				}
-			})
-			.map((f) => {
-				if (
-					isHideField(
-						f,
-						fields.toArray(),
-						isEdit,
-						showId,
-						showCreatedAt,
-						showUpdatedAt,
-						fieldsToShow
-					)
-				) {
-					return
-				}
-				const fieldType = getFieldType(f)
-				const rawVal = state[f.key as keyof typeof state]
-				const relationInfo = getRelationInfo(f.options)
-				const isDisabled =
-					remult.isAllowedForInstance(state, f.options.allowApiUpdate) === false
-				// @ts-expect-error TODO: how to do keyof Partial<T>
-				// Thought of using PropertyKey as suggested here:
-				// https://stackoverflow.com/a/71531880/5248229
-				// but this created other issues
-				if (relationInfo && relations[f.key]) {
-					// @ts-expect-error TODO: fix
-					const mapped = relations[f.key].map((r: any) => ({
-						id: r.id,
-						label: r.name || r.id,
-					}))
-					return (
-						<RemultAutocomplete
-							key={f.key}
-							label={f.caption || f.key}
-							options={mapped}
-							// @ts-expect-error TODO: fix this
-							selectedId={state[f.options.field]}
-							onSelect={(newVal) => onRelationSelect(newVal, f)}
-							error={errors[f.key]}
-							disabled={isDisabled}
-						/>
-					)
-				} else if (fieldType === 'singleSelect') {
-					const options = getSelectOptions(f)
-					if (!f.options.select?.type || f.options.select.type === 'radiobox') {
-						return (
-							<RemultRadioGroup
-								row
-								key={f.key}
-								label={f.caption || f.key}
-								options={options}
-								selectedId={state[f.key]}
-								onSelect={(newVal) => onSingleSelect(newVal, f)}
-								error={errors[f.key]}
-							/>
+
+					// Get index for each key in fields
+					const indexA = getOrderIndex(a.key)
+					const indexB = getOrderIndex(b.key)
+
+					// Sort by index values (lower index means higher priority)
+					return indexA - indexB
+				})
+				.map((f) => {
+					if (
+						isHideField(
+							f,
+							fields.toArray(),
+							isEdit,
+							showId,
+							showCreatedAt,
+							showUpdatedAt,
+							fieldsToShow
 						)
-					} else if (f.options.select.type === 'select') {
+					) {
+						return
+					}
+					const fieldToShow = fieldsToShow.find((field) => {
+						if (typeof field === 'object') {
+							return field.key === f.key
+						}
+						return field === f.key
+					})
+					const fieldType = getFieldType(f)
+					const rawVal = state[f.key as keyof typeof state]
+					const relationInfo = getRelationInfo(f.options)
+					const isDisabled =
+						remult.isAllowedForInstance(state, f.options.allowApiUpdate) ===
+							false ||
+						(typeof fieldToShow === 'object' && fieldToShow.disabled)
+					console.log(f.key, 'isDisabled', isDisabled)
+					// @ts-expect-error TODO: how to do keyof Partial<T>
+					// Thought of using PropertyKey as suggested here:
+					// https://stackoverflow.com/a/71531880/5248229
+					// but this created other issues
+					if (relationInfo && relations[f.key]) {
+						// @ts-expect-error TODO: fix
+						const mapped = relations[f.key].map((r: any) => ({
+							id: r.id,
+							label: r.name || r.id,
+						}))
 						return (
 							<RemultAutocomplete
 								key={f.key}
 								label={f.caption || f.key}
-								options={options}
-								selectedId={state[f.key]}
-								onSelect={(newVal) => onSingleSelect(newVal, f)}
+								options={mapped}
+								// @ts-expect-error TODO: fix this
+								selectedId={state[f.options.field]}
+								onSelect={(newVal) => onRelationSelect(newVal, f)}
 								error={errors[f.key]}
 								disabled={isDisabled}
 							/>
 						)
-					}
-				} else if (fieldType === 'multiSelect') {
-					if (!f.options.select?.type || f.options.select.type === 'checkbox') {
+					} else if (fieldType === 'singleSelect') {
+						const options = getSelectOptions(f)
+						if (
+							!f.options.select?.type ||
+							f.options.select.type === 'radiobox'
+						) {
+							return (
+								<RemultRadioGroup
+									row
+									key={f.key}
+									label={f.caption || f.key}
+									options={options}
+									selectedId={state[f.key]}
+									onSelect={(newVal) => onSingleSelect(newVal, f)}
+									error={errors[f.key]}
+								/>
+							)
+						} else if (f.options.select.type === 'select') {
+							return (
+								<RemultAutocomplete
+									key={f.key}
+									label={f.caption || f.key}
+									options={options}
+									selectedId={state[f.key]}
+									onSelect={(newVal) => onSingleSelect(newVal, f)}
+									error={errors[f.key]}
+									disabled={isDisabled}
+								/>
+							)
+						}
+					} else if (fieldType === 'multiSelect') {
+						if (
+							!f.options.select?.type ||
+							f.options.select.type === 'checkbox'
+						) {
+							return (
+								<RemultCheckboxMultiple
+									row
+									key={f.key}
+									label={f.caption || f.key}
+									options={f.options.select?.options || []}
+									selected={state[f.key]?.map((item: ID) => ({
+										id: item,
+									}))}
+									onSelect={(newVal) => onMultiSelect(newVal, f)}
+									error={errors[f.key]}
+									disabled={isDisabled}
+								/>
+							)
+						} else if (f.options.select.type === 'select') {
+							return (
+								<RemultAutocompleteMultiple
+									key={f.key}
+									label={f.caption || f.key}
+									options={f.options.select.options}
+									selected={state[f.key]?.map((item: ID) => ({
+										id: item,
+									}))}
+									onSelect={(newVal) => onMultiSelect(newVal, f)}
+									error={errors[f.key]}
+									disabled={isDisabled}
+								/>
+							)
+						}
+					} else if (fieldType === 'string' || fieldType === 'number') {
+						// if (f.valueType == String || f.valueType == Number) {
 						return (
-							<RemultCheckboxMultiple
-								row
+							<RemultTextField
+								key={f.key}
+								val={
+									(rawVal &&
+										f.valueConverter.toInput &&
+										f.valueConverter.toInput(rawVal)) ||
+									rawVal
+								}
+								disabled={isDisabled}
+								field={f}
+								onChange={(e) => onChangeTextfield(e, f.key)}
+								// @ts-expect-error TODO: fix
+								error={errors[f.key]}
+							/>
+						)
+					} else if (fieldType === 'boolean') {
+						return (
+							<RemultCheckbox
 								key={f.key}
 								label={f.caption || f.key}
-								options={f.options.select?.options || []}
-								selected={state[f.key]?.map((item: ID) => ({
-									id: item,
-								}))}
-								onSelect={(newVal) => onMultiSelect(newVal, f)}
-								error={errors[f.key]}
 								disabled={isDisabled}
+								checked={!!rawVal}
+								onChange={(e) => onChangeCheckbox(e, f.key)}
 							/>
 						)
-					} else if (f.options.select.type === 'select') {
-						return (
-							<RemultAutocompleteMultiple
-								key={f.key}
-								label={f.caption || f.key}
-								options={f.options.select.options}
-								selected={state[f.key]?.map((item: ID) => ({
-									id: item,
-								}))}
-								onSelect={(newVal) => onMultiSelect(newVal, f)}
-								error={errors[f.key]}
-								disabled={isDisabled}
-							/>
-						)
+					} else if (fieldType === 'date') {
+						console.log('NOT IMPLEMENTED YET')
+						return <div></div>
+						// return (
+						// 	<RemultDatepicker
+						// 		key={f.key}
+						// 		field={f}
+						// 		onChange={(newDate) => onChangeDate(newDate, f.key)}
+						// 		disabled={isDisabled}
+						// 	/>
+						// )
 					}
-				} else if (fieldType === 'string' || fieldType === 'number') {
-					// if (f.valueType == String || f.valueType == Number) {
-					return (
-						<RemultTextField
-							key={f.key}
-							val={
-								(rawVal &&
-									f.valueConverter.toInput &&
-									f.valueConverter.toInput(rawVal)) ||
-								rawVal
-							}
-							disabled={isDisabled}
-							field={f}
-							onChange={(e) => onChangeTextfield(e, f.key)}
-							// @ts-expect-error TODO: fix
-							error={errors[f.key]}
-						/>
-					)
-				} else if (fieldType === 'boolean') {
-					return (
-						<RemultCheckbox
-							key={f.key}
-							label={f.caption || f.key}
-							disabled={isDisabled}
-							checked={!!rawVal}
-							onChange={(e) => onChangeCheckbox(e, f.key)}
-						/>
-					)
-				} else if (fieldType === 'date') {
-					console.log('NOT IMPLEMENTED YET')
-					return <div></div>
-					// return (
-					// 	<RemultDatepicker
-					// 		key={f.key}
-					// 		field={f}
-					// 		onChange={(newDate) => onChangeDate(newDate, f.key)}
-					// 		disabled={isDisabled}
-					// 	/>
-					// )
-				}
-			})
+				})
+		)
 	}
 
 	return (

@@ -41,6 +41,7 @@ export interface MultipleSelectP {
 	label?: string
 	error?: string
 }
+export type FieldToShow<T> = { key: keyof T; disabled?: boolean }
 
 export interface EntityMetaDisplay<T> {
 	/** Model to generate form for */
@@ -53,7 +54,7 @@ export interface EntityMetaDisplay<T> {
 	/** Show updatedAt */
 	showUpdatedAt?: boolean
 	/** Fields for display & sort */
-	fieldsToShow?: (keyof T)[]
+	fieldsToShow?: (keyof T | FieldToShow<T>)[]
 }
 
 export type UI_LIB = 'mui_v5' | 'joy_ui' | 'mrt'

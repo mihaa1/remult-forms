@@ -6,6 +6,19 @@ import {
 	remult,
 } from 'remult'
 import { getRelationInfo } from 'remult/internals'
+import { FieldToShow } from '../types'
+
+const isKeyInArray = <T>(
+	f: FieldMetadata<T>,
+	fieldsToShow: (keyof T | FieldToShow<T>)[]
+) => {
+	return fieldsToShow.some((field) => {
+		if (typeof field === 'object') {
+			return f.key === field.key
+		}
+		return f.key === field
+	})
+}
 
 export const isHideField = <T>(
 	f: FieldMetadata<T>,
@@ -14,10 +27,10 @@ export const isHideField = <T>(
 	showId: boolean | undefined,
 	showCreatedAt: boolean | undefined,
 	showUpdatedAt: boolean | undefined,
-	fieldsToShow: (keyof T)[]
+	fieldsToShow: (keyof T | FieldToShow<T>)[]
 ) => {
 	if (f.key === 'id' || f.key === 'createdAt' || f.key === 'updatedAt') {
-		if (fieldsToShow?.length && fieldsToShow.includes(f.key as keyof T)) {
+		if (fieldsToShow?.length && isKeyInArray(f, fieldsToShow)) {
 			return false
 		}
 		return (
@@ -28,7 +41,7 @@ export const isHideField = <T>(
 		)
 	}
 	if (
-		(fieldsToShow?.length && !fieldsToShow.includes(f.key as keyof T)) ||
+		(fieldsToShow?.length && !isKeyInArray(f, fieldsToShow)) ||
 		(f.options.hideOnCreate && !isEdit) ||
 		remult.isAllowedForInstance(undefined, f.options.includeInApi) === false
 	) {
@@ -112,7 +125,7 @@ export const isRequired = <T>(field: FieldMetadata<any, T>) => {
 
 export const loadRelations = async <T>(
 	fields: FieldsMetadata<T> | undefined,
-	fieldsToShow: (keyof T)[]
+	fieldsToShow: (keyof T | FieldToShow<T>)[]
 ) => {
 	if (!fields) {
 		return

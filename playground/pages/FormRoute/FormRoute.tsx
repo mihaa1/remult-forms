@@ -59,14 +59,19 @@ const FormRoute = () => {
 				title={<span style={{ color: 'red' }}>Styled title</span>}
 				entity={Location}
 				item={loc}
+				fieldsToShow={[
+					'name',
+					'personsPerShift',
+					{ key: 'shiftLengthHrs', disabled: true },
+				]}
 				// uiLib='joy_ui'
 				// item={remult.repo(User).create()}
 				// onSubmit={(item) => console.log('onSubmit(): item', item)}
 				// showId
 				// fieldsToShow={['email', 'firstName', 'lastName', 'organization']}
-				onSubmitOutside={(item) => console.log('onSubmitOutside(): item', item)}
-				// onSubmitStart={(item) => console.log('onSubmitStart(): item', item)}
-				// onSubmitEnd={(item) => console.log('onSubmitEnd(): item', item)}
+				// onSubmitOutside={(item) => console.log('onSubmitOutside(): item', item)}
+				onSubmitStart={(item) => console.log('onSubmitStart(): item', item)}
+				onSubmitEnd={(item) => console.log('onSubmitEnd(): item', item)}
 			/>
 		</>
 	)
