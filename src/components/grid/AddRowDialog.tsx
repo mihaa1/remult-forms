@@ -23,7 +23,7 @@ const AddRowDialog = <T,>({ repo, toggle, onAddRow }: AddRowDialogP<T>) => {
 					<Close />
 				</IconButton>
 				{/* @ts-expect-error dunno what to do with this */}
-				<RemultFormMUI title=' ' repo={repo} onDone={onAddRow} />
+				<RemultFormMUI title=' ' repo={repo} onSubmitEnd={onAddRow} />
 			</Box>
 		</Dialog>
 	)
