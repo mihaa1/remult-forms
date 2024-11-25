@@ -8,9 +8,11 @@ env:
   CI: true
   PNPM_CACHE_FOLDER: .pnpm-store
 jobs:
-  version:
+  ci:
     timeout-minutes: 15
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: checkout code repository
         uses: actions/checkout@v4
