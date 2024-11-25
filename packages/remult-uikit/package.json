@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "build:watch": "tsc && vite build -w",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "publishme": "rm -rf dist && pnpm build && yarn version --patch && yarn copy:files && yarn publish dist/src --non-interactive && git push && git push --tags",
+    "copy:files": "cp package.json dist/src && cp README.md dist/src"
   },
   "devDependencies": {
     "@types/react": "^18.3.12",
