@@ -3,7 +3,7 @@ run-name: ${{ github.actor }} is deploying a new version 🚀
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   cd:
