@@ -3,6 +3,11 @@
   "private": true,
   "version": "0.0.2",
   "type": "module",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "license": "MIT",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
