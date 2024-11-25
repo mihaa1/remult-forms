@@ -8,7 +8,8 @@
 		"playground": "pnpm --filter playground",
 		"playground:dev": "pnpm --filter playground dev",
 		"remult-uikit": "pnpm --filter remult-uikit",
-		"ci:publish": "pnpm publish -r"
+		"ci:publish": "pnpm publish -r",
+		"ci:version": "pnpm changeset version"
 	},
 	"keywords": [],
 	"author": "",
