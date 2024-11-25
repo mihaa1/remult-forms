@@ -4,18 +4,22 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --force",
+    "dev": "vite",
+    "dev:node": "tsx watch --tsconfig tsconfig.server.json src/server",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
+    "express": "^4.21.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "remult": "^0.27.23",
     "remult-uikit": "workspace:*"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
+    "@types/express": "^5.0.0",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.3",
