@@ -1,0 +1,125 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = remultAdminHtml;
+exports.buildEntityInfo = buildEntityInfo;
+var tslib_1 = require("tslib");
+var relationInfoMember_js_1 = require("../src/remult3/relationInfoMember.js");
+var filter_interfaces_js_1 = require("../src/filter/filter-interfaces.js");
+var get_remult_admin_html_js_1 = require("./get-remult-admin-html.js");
+var RepositoryImplementation_js_1 = require("../src/remult3/RepositoryImplementation.js");
+function remultAdminHtml(options) {
+    var _a = tslib_1.__assign({}, options), remult = _a.remult, entities = _a.entities, optionsFromServer = tslib_1.__rest(_a, ["remult", "entities"]);
+    return (0, get_remult_admin_html_js_1.getHtml)().replace('<!--PLACE_HERE-->', "<script >const entities = ".concat(JSON.stringify(buildEntityInfo(options)), "\n  const optionsFromServer = ").concat(JSON.stringify(optionsFromServer), "\n</script>"));
+}
+function buildEntityInfo(options) {
+    var e_1, _a, e_2, _b, e_3, _c;
+    var _d, _e;
+    var entities = [];
+    try {
+        for (var _f = tslib_1.__values(options.entities.map(function (e) { return options.remult.repo(e).metadata; })), _g = _f.next(); !_g.done; _g = _f.next()) {
+            var metadata = _g.value;
+            var fields = [];
+            var relations = [];
+            var ids = {};
+            try {
+                for (var _h = (e_2 = void 0, tslib_1.__values(metadata.idMetadata.fields)), _j = _h.next(); !_j.done; _j = _h.next()) {
+                    var f = _j.value;
+                    ids[f.key] = true;
+                }
+            }
+            catch (e_2_1) { e_2 = { error: e_2_1 }; }
+            finally {
+                try {
+                    if (_j && !_j.done && (_b = _h.return)) _b.call(_h);
+                }
+                finally { if (e_2) throw e_2.error; }
+            }
+            var _loop_1 = function (x) {
+                if (!x.includedInApi(undefined))
+                    return "continue";
+                var relation = void 0;
+                var valFieldKey = x.key;
+                var info = (0, relationInfoMember_js_1.getRelationFieldInfo)(x);
+                if (info) {
+                    var relInfo = info.getFields();
+                    var relRepo = options.remult.repo(info.toEntity);
+                    var where = typeof info.options.findOptions === 'object' &&
+                        info.options.findOptions.where
+                        ? filter_interfaces_js_1.Filter.entityFilterToJson(relRepo.metadata, info.options.findOptions.where)
+                        : undefined;
+                    var idField_1 = relRepo.metadata.idMetadata.field.key;
+                    if (info.type === 'reference' || info.type === 'toOne') {
+                        if (info.type == 'toOne') {
+                            for (var key in relInfo.fields) {
+                                if (Object.prototype.hasOwnProperty.call(relInfo.fields, key)) {
+                                    var element = relInfo.fields[key];
+                                    valFieldKey = element;
+                                }
+                            }
+                        }
+                        if (relRepo.metadata.apiReadAllowed) {
+                            relation = tslib_1.__assign(tslib_1.__assign({}, relInfo), { where: where, entityKey: relRepo.metadata.key, idField: idField_1, captionField: (_d = relRepo.metadata.fields
+                                    .toArray()
+                                    .find(function (x) { return x.key != idField_1 && x.valueType == String; })) === null || _d === void 0 ? void 0 : _d.key });
+                        }
+                    }
+                    else if (info.type === 'toMany') {
+                        if (relRepo.metadata.apiReadAllowed) {
+                            relations.push(tslib_1.__assign(tslib_1.__assign({}, relInfo), { where: where, entityKey: relRepo.metadata.key }));
+                        }
+                        return "continue";
+                    }
+                }
+                fields.push({
+                    key: x.key,
+                    readOnly: !x.apiUpdateAllowed(),
+                    values: (0, RepositoryImplementation_js_1.getValueList)(x),
+                    valFieldKey: valFieldKey,
+                    caption: x.caption,
+                    relationToOne: relation,
+                    inputType: x.inputType,
+                    type: x.valueConverter.fieldTypeInDb == 'json'
+                        ? 'json'
+                        : x.valueType === Number
+                            ? 'number'
+                            : x.valueType === Boolean
+                                ? 'boolean'
+                                : x.valueType === Date
+                                    ? 'date'
+                                    : 'string',
+                });
+            };
+            try {
+                for (var _k = (e_3 = void 0, tslib_1.__values(metadata.fields.toArray())), _l = _k.next(); !_l.done; _l = _k.next()) {
+                    var x = _l.value;
+                    _loop_1(x);
+                }
+            }
+            catch (e_3_1) { e_3 = { error: e_3_1 }; }
+            finally {
+                try {
+                    if (_l && !_l.done && (_c = _k.return)) _c.call(_k);
+                }
+                finally { if (e_3) throw e_3.error; }
+            }
+            if (metadata.apiReadAllowed) {
+                entities.push({
+                    key: metadata.key,
+                    caption: metadata.caption,
+                    ids: ids,
+                    fields: fields,
+                    relations: relations,
+                    defaultOrderBy: (_e = metadata.options.defaultOrderBy) !== null && _e !== void 0 ? _e : { id: 'asc' },
+                });
+            }
+        }
+    }
+    catch (e_1_1) { e_1 = { error: e_1_1 }; }
+    finally {
+        try {
+            if (_g && !_g.done && (_a = _f.return)) _a.call(_f);
+        }
+        finally { if (e_1) throw e_1.error; }
+    }
+    return entities;
+}
