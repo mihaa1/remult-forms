@@ -1,31 +1,30 @@
 {
-  "name": "remult-uikit",
-  "private": true,
-  "version": "0.0.2",
-  "type": "module",
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org/"
-  },
-  "license": "MIT",
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "build:watch": "tsc && vite build -w",
-    "preview": "vite preview",
-    "publishme": "rm -rf dist && pnpm build && yarn version --patch && yarn copy:files && yarn publish dist/src --non-interactive && git push && git push --tags",
-    "copy:files": "cp package.json dist/src && cp README.md dist/src"
-  },
-  "devDependencies": {
-    "@types/react": "^18.3.12",
-    "@types/react-dom": "^18.3.1",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "remult": "^0.27.23",
-    "typescript": "~5.6.3",
-    "vite": "^5.4.10",
-    "vite-plugin-dts": "^4.3.0"
-  },
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts"
+	"name": "remult-uikit",
+	"version": "0.0.2",
+	"type": "module",
+	"publishConfig": {
+		"access": "public",
+		"registry": "https://registry.npmjs.org/"
+	},
+	"license": "MIT",
+	"scripts": {
+		"dev": "vite",
+		"build": "tsc && vite build",
+		"build:watch": "tsc && vite build -w",
+		"preview": "vite preview",
+		"publishme": "rm -rf dist && pnpm build && yarn version --patch && yarn copy:files && yarn publish dist/src --non-interactive && git push && git push --tags",
+		"copy:files": "cp package.json dist/src && cp README.md dist/src"
+	},
+	"devDependencies": {
+		"@types/react": "^18.3.12",
+		"@types/react-dom": "^18.3.1",
+		"react": "^18.3.1",
+		"react-dom": "^18.3.1",
+		"remult": "^0.27.23",
+		"typescript": "~5.6.3",
+		"vite": "^5.4.10",
+		"vite-plugin-dts": "^4.3.0"
+	},
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts"
 }
