@@ -1,5 +1,12 @@
 # playground
 
+## 0.0.4
+
+### Patch Changes
+
+- Updated dependencies
+  - remult-uikit@0.0.206
+
 ## 0.0.3
 
 ### Patch Changes
