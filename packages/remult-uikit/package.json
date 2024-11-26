@@ -1,6 +1,6 @@
 {
 	"name": "remult-uikit",
-	"version": "0.0.203",
+	"version": "0.0.204",
 	"type": "module",
 	"publishConfig": {
 		"access": "public",
@@ -13,7 +13,7 @@
 		"build:watch": "tsc && vite build -w",
 		"preview": "vite preview",
 		"publishme": "rm -rf dist && yarn build && yarn version --patch && yarn copy:files && yarn publish dist --non-interactive && git push && git push --tags",
-		"copy:files": "cp package.json dist/src && cp README.md dist/src"
+		"copy:files": "cp package.json dist && cp README.md dist"
 	},
 	"devDependencies": {
 		"@types/react": "^18.3.12",
