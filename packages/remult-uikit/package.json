@@ -25,6 +25,6 @@
 		"vite": "^5.4.10",
 		"vite-plugin-dts": "^4.3.0"
 	},
-	"main": "./dist/index.js",
-	"types": "./dist/index.d.ts"
+	"main": "index.js",
+	"types": "index.d.ts"
 }
