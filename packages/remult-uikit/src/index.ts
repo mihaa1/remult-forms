@@ -10,7 +10,7 @@ type FormError<T> = {
 }
 
 export const useRemultForm = <T>(repo: Repository<T>) => {
-	console.log('TEST PUBLISH')
+	console.log('TEST PUBLISH', 1)
 	// const [elements, setElements] = useState<T>({} as T);
 	const [errors, setErrors] = useState<FormError<T>>({})
 
