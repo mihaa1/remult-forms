@@ -1,5 +1,8 @@
 name: CI
 run-name: ${{ github.actor }} is deploying a new version 🚀
+# When I want to switch back to using only pnpm + changeset
+#  use this workflow (disabled in github). It first generates
+# a pr adn then you need to manually merge and it will publish the package
 on:
   push:
     branches:

@@ -3,7 +3,7 @@ run-name: ${{ github.actor }} is deploying a new version 🚀
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   cd:
@@ -43,6 +43,7 @@ jobs:
         run: |
           git config user.name "ci-bot"
           git config user.email "ci-bot@shwifty.com"
+          cd packages/remult-uikit
           rm -rf dist
           yarn build
           yarn version --patch
