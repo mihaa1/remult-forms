@@ -13,6 +13,7 @@ export const isRequired = <T>(field: FieldMetadata<any, T>) => {
 // export const getValidator = <T>(repo: Repository<T>, field: FieldMetadata<any, T>) => {
 export const getValidator = <T>(repo: Repository<T>, key: keyof T) => {
 	return async (value: any) => {
+		// @ts-ignore
 		const res = await repo.validate({ [key]: value } as Partial<T>, key)
 		return res?.message
 	}
