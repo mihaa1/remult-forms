@@ -1,7 +1,7 @@
 // import { FormEvent, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Repository } from 'remult'
-import { getValidator, isRequired } from './util'
+import { getValidator } from './util'
 
 export type SubmitData<T> = {
 	[k in keyof T]?: any
