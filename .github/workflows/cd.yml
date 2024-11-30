@@ -55,6 +55,6 @@ jobs:
           yarn build
           yarn version --patch
           yarn copy:files
-          yarn publish dist --non-interactive
+          yarn publish --non-interactive
           git push
           git push --tags
