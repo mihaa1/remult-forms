@@ -2,6 +2,8 @@
 import { useForm } from 'react-hook-form'
 import { Repository } from 'remult'
 import { getValidator } from './util'
+import Controller from './Controller'
+export { Controller }
 
 export type SubmitData<T> = {
 	[k in keyof T]?: any
@@ -19,6 +21,7 @@ export const useRemultForm = <T>(repo: Repository<T>) => {
 		register: registerInternal,
 		formState: { errors },
 		handleSubmit: handleSubmitInternal,
+		control,
 	} = useForm()
 
 	const register = (fieldId: keyof T) => {
@@ -79,5 +82,5 @@ export const useRemultForm = <T>(repo: Repository<T>) => {
 	const handleSubmit = (onSuccess: (data: SubmitData<T>) => void) => {
 		return handleSubmitInternal(onSuccess)
 	}
-	return { errors, handleSubmit, register }
+	return { errors, handleSubmit, register, control }
 }

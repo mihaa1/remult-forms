@@ -1,18 +1,20 @@
 import './App.css'
-import { useRemultForm } from 'remult-uikit'
+import { useRemultForm, Controller } from 'remult-uikit'
 import type { SubmitData } from 'remult-uikit'
 import { User } from './shared/User'
 import { remult } from 'remult'
+import { TextField } from '@mui/material'
 
 const userRepo = remult.repo(User)
 
 function App() {
-	const { handleSubmit, errors, register } = useRemultForm(userRepo)
+	const { handleSubmit, errors, register, control } = useRemultForm(userRepo)
 
 	const onSubmit = (data: SubmitData<User>) => {
 		console.log('data', data)
 	}
 
+	// const { control } = useForm()
 	console.log('errors', errors)
 
 	return (
@@ -34,9 +36,22 @@ function App() {
 			{/* <span>{userRepo.fields.age.caption}</span>
 			<input {...register('age')} /> */}
 			{/* {errors.age && <p style={{ color: 'red' }}>{errors.age}</p>} */}
-			{/* <span>Last Name</span>
-			<input {...register('lastName')} /> */}
-			<button>Submit</button>
+			<span>Last Name</span>
+			<Controller
+				name='lastName'
+				control={control}
+				defaultValue=''
+				repo={userRepo}
+				render={({ field }) => {
+					return <TextField {...field} />
+				}}
+			/>
+			{errors.lastName && (
+				<p style={{ color: 'red' }}>{String(errors.lastName.message)}</p>
+			)}
+
+			{/* <button type='submit'>Submit</button> */}
+			<input type='submit' />
 		</form>
 	)
 }

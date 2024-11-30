@@ -20,8 +20,16 @@ export class User {
 	})
 	firstName = ''
 
-	@Fields.string({
+	@Fields.string<User>({
 		caption: 'Last Name',
+		validate: [
+			Validators.required,
+			(row) => {
+				if (row.lastName.length < 5) {
+					return 'First Name must be at least 5 characters long'
+				}
+			},
+		],
 	})
 	lastName = ''
 
