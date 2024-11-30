@@ -17,15 +17,10 @@ export const useRemultForm = <T>(repo: Repository<T>) => {
 	// const [elements, setElements] = useState<T>({} as T);
 	// const [errorsX, setErrors] = useState<FormError<T>>({})
 
-	const {
-		register: registerInternal,
-		formState: { errors },
-		handleSubmit: handleSubmitInternal,
-		control,
-	} = useForm()
+	const useFormObj = useForm()
 
 	const register = (fieldId: keyof T) => {
-		return registerInternal(String(fieldId), {
+		return useFormObj.register(String(fieldId), {
 			// @ts-ignore
 			// required: !!isRequired(repo.fields[fieldId]),
 			validate: getValidator(repo, fieldId),
@@ -79,8 +74,8 @@ export const useRemultForm = <T>(repo: Repository<T>) => {
 	// 		setErrors(newErrors)
 	// 	}
 	// }
-	const handleSubmit = (onSuccess: (data: SubmitData<T>) => void) => {
-		return handleSubmitInternal(onSuccess)
-	}
-	return { errors, handleSubmit, register, control }
+	const handleSubmit = (onSuccess: (data: SubmitData<T>) => void) =>
+		useFormObj.handleSubmit(onSuccess)
+
+	return { ...useFormObj, handleSubmit, register }
 }

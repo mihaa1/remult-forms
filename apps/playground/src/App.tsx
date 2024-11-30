@@ -8,7 +8,12 @@ import { TextField } from '@mui/material'
 const userRepo = remult.repo(User)
 
 function App() {
-	const { handleSubmit, errors, register, control } = useRemultForm(userRepo)
+	const {
+		handleSubmit,
+		formState: { errors },
+		register,
+		control,
+	} = useRemultForm(userRepo)
 
 	const onSubmit = (data: SubmitData<User>) => {
 		console.log('data', data)
@@ -38,7 +43,7 @@ function App() {
 			<Controller
 				name='lastName'
 				control={control}
-				defaultValue=''
+				// defaultValue=''
 				repo={userRepo}
 				render={({ field }) => {
 					return <TextField {...field} />
