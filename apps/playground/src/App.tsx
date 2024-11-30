@@ -14,7 +14,6 @@ function App() {
 		console.log('data', data)
 	}
 
-	// const { control } = useForm()
 	console.log('errors', errors)
 
 	return (
@@ -36,7 +35,6 @@ function App() {
 			{/* <span>{userRepo.fields.age.caption}</span>
 			<input {...register('age')} /> */}
 			{/* {errors.age && <p style={{ color: 'red' }}>{errors.age}</p>} */}
-			<span>Last Name</span>
 			<Controller
 				name='lastName'
 				control={control}
@@ -49,8 +47,6 @@ function App() {
 			{errors.lastName && (
 				<p style={{ color: 'red' }}>{String(errors.lastName.message)}</p>
 			)}
-
-			{/* <button type='submit'>Submit</button> */}
 			<input type='submit' />
 		</form>
 	)
