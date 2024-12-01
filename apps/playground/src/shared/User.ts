@@ -2,6 +2,8 @@
 
 import { Entity, Fields, Validators } from 'remult'
 
+export type Role = 'superadmin' | 'admin' | 'user'
+
 @Entity('users', {
 	allowApiCrud: true,
 })
@@ -47,8 +49,15 @@ export class User {
 	})
 	age?: number
 
-	@Fields.boolean()
+	@Fields.boolean<User>({
+		validate: Validators.required,
+	})
 	completed = false
+
+	@Fields.string<User>({
+		validate: Validators.required,
+	})
+	role: Role = 'user'
 
 	@Fields.createdAt()
 	createdAt?: Date

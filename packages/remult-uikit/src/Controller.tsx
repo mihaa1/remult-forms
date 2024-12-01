@@ -1,11 +1,23 @@
 import { Controller as ControllerInternal } from 'react-hook-form'
-import type { ControllerProps } from 'react-hook-form'
+import type {
+	ControllerProps,
+	ControllerRenderProps,
+	FieldValues,
+} from 'react-hook-form'
 import { getValidator, isRequired } from './util'
 import { Repository } from 'remult'
 
 type ControllerPropsWithRepo<T> = Omit<ControllerProps, 'name'> & {
 	name: keyof T
 	repo: Repository<T>
+}
+
+type ControllerRenderPropsWithRemult = ControllerRenderProps<
+	FieldValues,
+	string
+> & {
+	label: string
+	required?: boolean
 }
 
 const Controller = <T,>(props: ControllerPropsWithRepo<T>) => {
@@ -17,11 +29,10 @@ const Controller = <T,>(props: ControllerPropsWithRepo<T>) => {
 				validate: getValidator(props.repo, props.name as keyof T),
 			}}
 			render={({ field, fieldState, formState }) => {
-				const newField = {
+				const newField: ControllerRenderPropsWithRemult = {
 					...field,
 					label: props.repo.fields[props.name as keyof T].caption,
-					// @ts-expect-error
-					required: isRequired(props.repo.fields[props.name]),
+					// required: isRequired(props.repo.fields[props.name]),
 				}
 				return props.render({ field: newField, fieldState, formState })
 			}}

@@ -3,7 +3,15 @@ import { useRemultForm, Controller } from 'remult-uikit'
 import type { SubmitData } from 'remult-uikit'
 import { User } from './shared/User'
 import { remult } from 'remult'
-import { TextField } from '@mui/material'
+import {
+	Checkbox,
+	FormControl,
+	FormControlLabel,
+	FormLabel,
+	Radio,
+	RadioGroup,
+	TextField,
+} from '@mui/material'
 
 const userRepo = remult.repo(User)
 
@@ -43,14 +51,62 @@ function App() {
 			<Controller
 				name='lastName'
 				control={control}
-				// defaultValue=''
+				defaultValue=''
 				repo={userRepo}
-				render={({ field }) => {
-					return <TextField {...field} />
-				}}
+				render={({ field }) => <TextField {...field} />}
 			/>
 			{errors.lastName && (
 				<p style={{ color: 'red' }}>{String(errors.lastName.message)}</p>
+			)}
+			<Controller
+				name='completed'
+				control={control}
+				// defaultValue=''
+				repo={userRepo}
+				render={({ field, formState, fieldState }) => {
+					return (
+						<>
+							<FormControlLabel
+								control={<Checkbox {...field} />}
+								label={field.label}
+							/>
+							{/* <p>{formState.isSubmitted ? 'submitted' : ''}</p>
+							<p>{fieldState.isTouched ? 'touched' : ''}</p>
+							<p>{fieldState.isDirty ? 'dirty' : ''}</p> */}
+						</>
+					)
+				}}
+			/>
+			{errors.completed && (
+				<p style={{ color: 'red' }}>{String(errors.completed.message)}</p>
+			)}
+			<FormControl>
+				<Controller
+					name='role'
+					control={control}
+					// rules={{ required: 'Gender is required' }}
+					defaultValue=''
+					repo={userRepo}
+					render={({ field }) => (
+						<RadioGroup {...field}>
+							<FormLabel>{field.label}</FormLabel>
+							<FormControlLabel value='user' control={<Radio />} label='User' />
+							<FormControlLabel
+								value='admin'
+								control={<Radio />}
+								label='Admin'
+							/>
+							<FormControlLabel
+								value='superadmin'
+								control={<Radio />}
+								label='Superadmin'
+							/>
+						</RadioGroup>
+					)}
+				/>
+			</FormControl>
+			{errors.role && (
+				<p style={{ color: 'red' }}>{String(errors.role.message)}</p>
 			)}
 			<input type='submit' />
 		</form>
