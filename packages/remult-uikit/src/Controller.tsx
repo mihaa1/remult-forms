@@ -4,7 +4,7 @@ import type {
 	ControllerRenderProps,
 	FieldValues,
 } from 'react-hook-form'
-import { getValidator, isRequired } from './util'
+import { getValidator } from './util'
 import { Repository } from 'remult'
 
 type ControllerPropsWithRepo<T> = Omit<ControllerProps, 'name'> & {
