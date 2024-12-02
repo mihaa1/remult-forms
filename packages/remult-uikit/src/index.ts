@@ -79,3 +79,20 @@ export const useRemultForm = <T>(repo: Repository<T>) => {
 
 	return { ...useFormObj, handleSubmit, register }
 }
+
+export const repoResolver = <T>(repo: Repository<T>) => {
+	return async (values: T) => {
+		const errors = await repo.validate(values)
+		if (errors && errors.modelState)
+			return {
+				values,
+				errors: Object.fromEntries(
+					Object.entries(errors.modelState).map(([key, value]) => [
+						key,
+						{ message: value },
+					])
+				),
+			}
+		return { values, errors: {} }
+	}
+}

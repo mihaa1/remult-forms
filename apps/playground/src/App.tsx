@@ -12,6 +12,7 @@ import {
 	RadioGroup,
 	TextField,
 } from '@mui/material'
+import Form from './form'
 
 const userRepo = remult.repo(User)
 
@@ -30,86 +31,99 @@ function App() {
 	console.log('errors', errors)
 
 	return (
-		<form
-			onSubmit={handleSubmit(onSubmit)}
-			style={{ display: 'flex', flexDirection: 'column' }}
-		>
-			<span>{userRepo.fields.email.caption}</span>
-			<input {...register('email')} />
-			{/* {errors.email && <p style={{ color: 'red' }}>{errors.email}</p>} */}
-			{errors.email && (
-				<p style={{ color: 'red' }}>{String(errors.email.message)}</p>
-			)}
-			<span>{userRepo.fields.firstName.caption}</span>
-			<input {...register('firstName')} />
-			{errors.firstName && (
-				<p style={{ color: 'red' }}>{String(errors.firstName.message)}</p>
-			)}
-			{/* <span>{userRepo.fields.age.caption}</span>
-			<input {...register('age')} /> */}
-			{/* {errors.age && <p style={{ color: 'red' }}>{errors.age}</p>} */}
-			<Controller
-				name='lastName'
-				control={control}
-				defaultValue=''
-				repo={userRepo}
-				render={({ field }) => <TextField {...field} />}
-			/>
-			{errors.lastName && (
-				<p style={{ color: 'red' }}>{String(errors.lastName.message)}</p>
-			)}
-			<Controller
-				name='completed'
-				control={control}
-				// defaultValue=''
-				repo={userRepo}
-				render={({ field, formState, fieldState }) => {
-					return (
-						<>
-							<FormControlLabel
-								control={<Checkbox {...field} />}
-								label={field.label}
-							/>
-							{/* <p>{formState.isSubmitted ? 'submitted' : ''}</p>
-							<p>{fieldState.isTouched ? 'touched' : ''}</p>
-							<p>{fieldState.isDirty ? 'dirty' : ''}</p> */}
-						</>
-					)
+		<>
+			<form
+				onSubmit={handleSubmit(onSubmit)}
+				style={{
+					display: 'flex',
+					flexDirection: 'column',
+					marginBottom: '20px',
+					borderBottom: '3px solid black',
 				}}
-			/>
-			{errors.completed && (
-				<p style={{ color: 'red' }}>{String(errors.completed.message)}</p>
-			)}
-			<FormControl>
+			>
+				<span>{userRepo.fields.email.caption}</span>
+				<input {...register('email')} />
+				{/* {errors.email && <p style={{ color: 'red' }}>{errors.email}</p>} */}
+				{errors.email && (
+					<p style={{ color: 'red' }}>{String(errors.email.message)}</p>
+				)}
+				<span>{userRepo.fields.firstName.caption}</span>
+				<input {...register('firstName')} />
+				{errors.firstName && (
+					<p style={{ color: 'red' }}>{String(errors.firstName.message)}</p>
+				)}
+				{/* <span>{userRepo.fields.age.caption}</span>
+			<input {...register('age')} /> */}
+				{/* {errors.age && <p style={{ color: 'red' }}>{errors.age}</p>} */}
 				<Controller
-					name='role'
+					name='lastName'
 					control={control}
-					// rules={{ required: 'Gender is required' }}
 					defaultValue=''
 					repo={userRepo}
-					render={({ field }) => (
-						<RadioGroup {...field}>
-							<FormLabel>{field.label}</FormLabel>
-							<FormControlLabel value='user' control={<Radio />} label='User' />
-							<FormControlLabel
-								value='admin'
-								control={<Radio />}
-								label='Admin'
-							/>
-							<FormControlLabel
-								value='superadmin'
-								control={<Radio />}
-								label='Superadmin'
-							/>
-						</RadioGroup>
-					)}
+					render={({ field }) => <TextField {...field} />}
 				/>
-			</FormControl>
-			{errors.role && (
-				<p style={{ color: 'red' }}>{String(errors.role.message)}</p>
-			)}
-			<input type='submit' />
-		</form>
+				{errors.lastName && (
+					<p style={{ color: 'red' }}>{String(errors.lastName.message)}</p>
+				)}
+				<Controller
+					name='completed'
+					control={control}
+					// defaultValue=''
+					repo={userRepo}
+					render={({ field, formState, fieldState }) => {
+						return (
+							<>
+								<FormControlLabel
+									control={<Checkbox {...field} />}
+									label={field.label}
+								/>
+								{/* <p>{formState.isSubmitted ? 'submitted' : ''}</p>
+							<p>{fieldState.isTouched ? 'touched' : ''}</p>
+							<p>{fieldState.isDirty ? 'dirty' : ''}</p> */}
+							</>
+						)
+					}}
+				/>
+				{errors.completed && (
+					<p style={{ color: 'red' }}>{String(errors.completed.message)}</p>
+				)}
+				<FormControl>
+					<Controller
+						name='role'
+						control={control}
+						// rules={{ required: 'Gender is required' }}
+						defaultValue=''
+						repo={userRepo}
+						render={({ field }) => (
+							<RadioGroup {...field}>
+								<FormLabel>{field.label}</FormLabel>
+								<FormControlLabel
+									value='user'
+									control={<Radio />}
+									label='User'
+								/>
+								<FormControlLabel
+									value='admin'
+									control={<Radio />}
+									label='Admin'
+								/>
+								<FormControlLabel
+									value='superadmin'
+									control={<Radio />}
+									label='Superadmin'
+								/>
+							</RadioGroup>
+						)}
+					/>
+				</FormControl>
+				{errors.role && (
+					<p style={{ color: 'red' }}>{String(errors.role.message)}</p>
+				)}
+				<input type='submit' />
+			</form>
+
+			<Form />
+		</>
 	)
 }
 
