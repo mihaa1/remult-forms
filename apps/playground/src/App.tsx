@@ -12,7 +12,6 @@ import {
 	RadioGroup,
 	TextField,
 } from '@mui/material'
-import Form from './form'
 
 const userRepo = remult.repo(User)
 

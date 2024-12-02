@@ -12,10 +12,11 @@ export type SubmitData<T> = {
 // 	[k in keyof T]?: string
 // }
 
-export const useRemultForm = <T extends FieldValues>(repo: Repository<T>) => {
+export const useRemultForm = <T>(repo: Repository<T>) => {
 	// const [elements, setElements] = useState<T>({} as T);
 	// const [errorsX, setErrors] = useState<FormError<T>>({})
 
+	// @ts-expect-error
 	const useFormObj = useForm({ resolver: repoResolver(repo) })
 
 	// const register = (fieldId: keyof T) => {
@@ -80,7 +81,7 @@ export const useRemultForm = <T extends FieldValues>(repo: Repository<T>) => {
 	return useFormObj
 }
 
-const repoResolver = <T extends FieldValues>(repo: Repository<T>) => {
+const repoResolver = <T>(repo: Repository<T>) => {
 	return async (values: T) => {
 		const errors = await repo.validate(values)
 		if (errors && errors.modelState)
