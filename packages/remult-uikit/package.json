@@ -1,6 +1,6 @@
 {
 	"name": "remult-uikit",
-	"version": "0.0.219",
+	"version": "0.0.220",
 	"type": "module",
 	"publishConfig": {
 		"access": "public",
