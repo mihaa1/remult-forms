@@ -76,6 +76,7 @@ function App() {
 								<FormControlLabel
 									control={<Checkbox {...field} />}
 									label={field.label}
+									// required={field.required}
 								/>
 								{/* <p>{formState.isSubmitted ? 'submitted' : ''}</p>
 							<p>{fieldState.isTouched ? 'touched' : ''}</p>
@@ -122,7 +123,7 @@ function App() {
 				<input type='submit' />
 			</form>
 
-			<Form />
+			{/* <Form /> */}
 		</>
 	)
 }

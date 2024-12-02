@@ -1,7 +1,6 @@
 // import { FormEvent, useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { Repository } from 'remult'
-import { getValidator } from './util'
+import { FieldValues, useForm } from 'react-hook-form'
+import type { Repository } from 'remult'
 import Controller from './Controller'
 export { Controller }
 
@@ -13,26 +12,26 @@ export type SubmitData<T> = {
 // 	[k in keyof T]?: string
 // }
 
-export const useRemultForm = <T>(repo: Repository<T>) => {
+export const useRemultForm = <T extends FieldValues>(repo: Repository<T>) => {
 	// const [elements, setElements] = useState<T>({} as T);
 	// const [errorsX, setErrors] = useState<FormError<T>>({})
 
-	const useFormObj = useForm()
+	const useFormObj = useForm({ resolver: repoResolver(repo) })
 
-	const register = (fieldId: keyof T) => {
-		return useFormObj.register(String(fieldId), {
-			// @ts-ignore
-			// required: !!isRequired(repo.fields[fieldId]),
-			validate: getValidator(repo, fieldId),
-		})
-		// return {
-		// 	// onChange: (event: ChangeEvent<HTMLInputElement>) => {
-		// 	//   setElements({ ...elements, [fieldId]: event.target.value });
-		// 	// },
-		// 	name: fieldId,
-		// 	type: repo.fields[fieldId].inputType,
-		// }
-	}
+	// const register = (fieldId: keyof T) => {
+	// 	return useFormObj.register(String(fieldId), {
+	// 		// @ts-ignore
+	// 		// required: !!isRequired(repo.fields[fieldId]),
+	// 		validate: getValidator(repo, fieldId),
+	// 	})
+	// 	// return {
+	// 	// 	// onChange: (event: ChangeEvent<HTMLInputElement>) => {
+	// 	// 	//   setElements({ ...elements, [fieldId]: event.target.value });
+	// 	// 	// },
+	// 	// 	name: fieldId,
+	// 	// 	type: repo.fields[fieldId].inputType,
+	// 	// }
+	// }
 
 	// const handleSubmit2 = async (
 	// 	e: FormEvent<HTMLFormElement>,
@@ -74,13 +73,14 @@ export const useRemultForm = <T>(repo: Repository<T>) => {
 	// 		setErrors(newErrors)
 	// 	}
 	// }
-	const handleSubmit = (onSuccess: (data: SubmitData<T>) => void) =>
-		useFormObj.handleSubmit(onSuccess)
+	// const handleSubmit = (onSuccess: (data: SubmitData<T>) => void) =>
+	// 	useFormObj.handleSubmit(onSuccess)
 
-	return { ...useFormObj, handleSubmit, register }
+	// return { ...useFormObj, handleSubmit, register }
+	return useFormObj
 }
 
-export const repoResolver = <T>(repo: Repository<T>) => {
+const repoResolver = <T extends FieldValues>(repo: Repository<T>) => {
 	return async (values: T) => {
 		const errors = await repo.validate(values)
 		if (errors && errors.modelState)
@@ -96,3 +96,9 @@ export const repoResolver = <T>(repo: Repository<T>) => {
 		return { values, errors: {} }
 	}
 }
+
+// const fieldsOf = <T>(repo: Repository<T>, ...fields: (string & keyof T)[]) => {
+// 	return fields
+// 		? fields.map((key) => repo.fields.find(key))
+// 		: repo.fields.toArray().filter((x) => x.key !== 'id')
+// }
