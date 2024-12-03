@@ -4,7 +4,7 @@ import type {
 	ControllerRenderProps,
 	FieldValues,
 } from 'react-hook-form'
-import { getValidator } from './util'
+import { getValidator, isRequired } from './util'
 import { Repository } from 'remult'
 
 type ControllerPropsWithRepo<T> = Omit<ControllerProps, 'name'> & {
@@ -29,9 +29,13 @@ const Controller = <T,>(props: ControllerPropsWithRepo<T>) => {
 				validate: getValidator(props.repo, props.name as keyof T),
 			}}
 			render={({ field, fieldState, formState }) => {
+				// @ts-expect-error
+				const isRequiredField = isRequired(props.repo.fields[props.name])
 				const newField: ControllerRenderPropsWithRemult = {
 					...field,
-					label: props.repo.fields[props.name as keyof T].caption,
+					label: `${props.repo.fields[props.name as keyof T].caption}${
+						isRequiredField ? ' *' : ''
+					}`,
 					// required: isRequired(props.repo.fields[props.name]),
 				}
 				return props.render({ field: newField, fieldState, formState })

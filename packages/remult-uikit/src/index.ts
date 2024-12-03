@@ -84,7 +84,7 @@ export const useRemultForm = <T>(repo: Repository<T>) => {
 const repoResolver = <T>(repo: Repository<T>) => {
 	return async (values: T) => {
 		const errors = await repo.validate(values)
-		if (errors && errors.modelState)
+		if (errors && errors.modelState) {
 			return {
 				values,
 				errors: Object.fromEntries(
@@ -94,6 +94,7 @@ const repoResolver = <T>(repo: Repository<T>) => {
 					])
 				),
 			}
+		}
 		return { values, errors: {} }
 	}
 }
