@@ -1,7 +1,7 @@
 import './App.css'
-import { repoResolver, type SubmitData } from 'remult-uikit'
+// import { repoResolver, type SubmitData } from 'remult-uikit'
 import { User } from './shared/User'
-import { remult } from 'remult'
+import { remult, Repository } from 'remult'
 import {
 	Checkbox,
 	FormControl,
@@ -12,9 +12,9 @@ import {
 	TextField,
 } from '@mui/material'
 import { Controller, useForm } from 'react-hook-form'
+import { repoResolver } from 'remult-uikit'
 
 const userRepo = remult.repo(User)
-
 function Form() {
 	const {
 		handleSubmit,
@@ -23,7 +23,7 @@ function Form() {
 		control,
 	} = useForm({ resolver: repoResolver(userRepo) })
 
-	const onSubmit = (data: SubmitData<User>) => {
+	const onSubmit = (data: User) => {
 		console.log('data', data)
 	}
 

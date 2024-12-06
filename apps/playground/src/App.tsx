@@ -21,9 +21,14 @@ function App() {
 		formState: { errors },
 		register,
 		control,
-	} = useRemultForm(userRepo)
+	} = useRemultForm({
+		repo: userRepo,
+		defaultValues: {
+			email: 'xxx',
+		},
+	})
 
-	const onSubmit = (data: SubmitData<User>) => {
+	const onSubmit = (data: User) => {
 		console.log('data', data)
 	}
 
@@ -63,6 +68,16 @@ function App() {
 				/>
 				{errors.lastName && (
 					<p style={{ color: 'red' }}>{String(errors.lastName.message)}</p>
+				)}
+				<Controller
+					name='name'
+					control={control}
+					defaultValue=''
+					repo={userRepo}
+					render={({ field }) => <TextField {...field} />}
+				/>
+				{errors.name && (
+					<p style={{ color: 'red' }}>{String(errors.name.message)}</p>
 				)}
 				<Controller
 					name='completed'

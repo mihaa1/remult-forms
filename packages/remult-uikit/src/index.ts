@@ -4,9 +4,9 @@ import type { Repository } from 'remult'
 import Controller from './Controller'
 export { Controller }
 
-export type SubmitData<T> = {
-	[k in keyof T]?: any
-}
+// export type SubmitData<T> = {
+// 	[k in keyof T]?: any
+// }
 
 // type FormError<T> = {
 // 	[k in keyof T]?: string
