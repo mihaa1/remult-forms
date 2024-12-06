@@ -1,6 +1,5 @@
 import './App.css'
 import { useRemultForm, Controller } from 'remult-uikit'
-import type { SubmitData } from 'remult-uikit'
 import { User } from './shared/User'
 import { remult } from 'remult'
 import {
@@ -64,7 +63,14 @@ function App() {
 					control={control}
 					defaultValue=''
 					repo={userRepo}
-					render={({ field }) => <TextField {...field} />}
+					render={({ field }) => (
+						<TextField
+							{...field}
+							label={field.label + (field._required ? ' *' : '')}
+							helperText={String(errors.lastName?.message)}
+							error={!!errors.lastName}
+						/>
+					)}
 				/>
 				{errors.lastName && (
 					<p style={{ color: 'red' }}>{String(errors.lastName.message)}</p>
@@ -74,7 +80,7 @@ function App() {
 					control={control}
 					defaultValue=''
 					repo={userRepo}
-					render={({ field }) => <TextField {...field} />}
+					render={({ field }) => <TextField {...field} label={field.label} />}
 				/>
 				{errors.name && (
 					<p style={{ color: 'red' }}>{String(errors.name.message)}</p>

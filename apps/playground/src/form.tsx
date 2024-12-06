@@ -12,7 +12,6 @@ import {
 	TextField,
 } from '@mui/material'
 import { Controller, useForm } from 'react-hook-form'
-import { repoResolver } from 'remult-uikit'
 
 const userRepo = remult.repo(User)
 function Form() {
@@ -21,7 +20,7 @@ function Form() {
 		formState: { errors },
 		register,
 		control,
-	} = useForm({ resolver: repoResolver(userRepo) })
+	} = useForm()
 
 	const onSubmit = (data: User) => {
 		console.log('data', data)
@@ -31,7 +30,7 @@ function Form() {
 
 	return (
 		<form
-			onSubmit={handleSubmit(onSubmit)}
+			// onSubmit={handleSubmit(onSubmit)}
 			style={{ display: 'flex', flexDirection: 'column' }}
 		>
 			<span>{userRepo.fields.email.caption}</span>
