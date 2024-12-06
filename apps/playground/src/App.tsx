@@ -66,7 +66,7 @@ function App() {
 					render={({ field }) => (
 						<TextField
 							{...field}
-							label={field.label + (field._required ? ' *' : '')}
+							label={field.label + (field['data-required'] ? ' *' : '')}
 							helperText={String(errors.lastName?.message)}
 							error={!!errors.lastName}
 						/>

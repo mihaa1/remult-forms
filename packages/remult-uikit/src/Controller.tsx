@@ -19,7 +19,7 @@ type ControllerPropsWithRepo<T> = Omit<ControllerProps, 'name' | 'render'> & {
 type ControllerRenderPropsWithRemult<TFieldValues extends FieldValues> =
 	ControllerRenderProps<TFieldValues, Path<TFieldValues>> & {
 		label: string
-		_required?: boolean
+		'data-required'?: boolean
 	}
 
 type ControllerRenderFunctionWithRemult<TFieldValues extends FieldValues> = ({
@@ -49,7 +49,7 @@ const Controller = <T,>(props: ControllerPropsWithRepo<T>) => {
 					// 	isRequiredField ? ' *' : ''
 					// }`,
 					label: props.repo.fields[props.name as keyof T].caption,
-					_required: !!isRequiredField,
+					['data-required']: !!isRequiredField,
 				}
 				return props.render({ field: newField, fieldState, formState })
 			}}
